@@ -17,8 +17,8 @@ namespace DAL.Models
         [Required]
         public int GameId { get; set; }
         public Game? Game { get; set; }
-        public Card CardDrawn { get; set; }
-        public Card CardThrown { get; set; }
-
+        public Card? CardDrawn { get; set; }
+        public Card? CardThrown { get; set; }
+        public int NumberOfTurn { get; set; }
     }
 }

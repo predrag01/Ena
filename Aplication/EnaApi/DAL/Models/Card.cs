@@ -16,6 +16,11 @@ namespace DAL.Models
             this.Value = Value;
             this.Color = Color;
         }
+        public Card()
+        {
+            this.Color = null;
+            this.Value = null;
+        }
 
     }
 }
