@@ -59,6 +59,8 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FriendId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("FriendsLists");
@@ -216,11 +218,19 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.FriendsList", b =>
                 {
-                    b.HasOne("DAL.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("DAL.Models.User", "Friend")
+                        .WithMany("FriendFriendsLists")
+                        .HasForeignKey("FriendId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("DAL.Models.User", "User")
+                        .WithMany("InitiatorFriendsLists")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Friend");
 
                     b.Navigation("User");
                 });
@@ -284,6 +294,13 @@ namespace DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Player");
+                });
+
+            modelBuilder.Entity("DAL.Models.User", b =>
+                {
+                    b.Navigation("FriendFriendsLists");
+
+                    b.Navigation("InitiatorFriendsLists");
                 });
 #pragma warning restore 612, 618
         }
