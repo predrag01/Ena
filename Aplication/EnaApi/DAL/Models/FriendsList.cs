@@ -12,15 +12,11 @@ namespace DAL.Models
     {
         [Key]
         public int Id { get; set; }
-        [ForeignKey("User")]
         public int UserId { get; set; }
-        [InverseProperty("InitiatorFriendsLists")]
-        public User? User { get; set; }
+        public virtual User? User { get; set; }
 
-        [ForeignKey("Friend")]
         public int FriendId { get; set; }
-        [InverseProperty("FriendFriendsLists")]
-        public User? Friend { get; set; }
+        public virtual User? Friend { get; set; }
 
     }
 }

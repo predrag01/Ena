@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(EnaContext))]
-    [Migration("20231227010218_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231227174514_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,25 +25,34 @@ namespace DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DAL.Models.Card", b =>
+            modelBuilder.Entity("DAL.Models.ChatMessage", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Color")
+                    b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("RecipientId")
+                        .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
 
-                    b.ToTable("Card");
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("DAL.Models.FriendsList", b =>
@@ -135,11 +144,13 @@ namespace DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CardDrawnID")
-                        .HasColumnType("int");
+                    b.Property<string>("CardDrawnJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CardThrownID")
-                        .HasColumnType("int");
+                    b.Property<string>("CardThrownJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NumberOfTurn")
                         .HasColumnType("int");
@@ -148,10 +159,6 @@ namespace DAL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CardDrawnID");
-
-                    b.HasIndex("CardThrownID");
 
                     b.HasIndex("PlayerId");
 
@@ -219,6 +226,25 @@ namespace DAL.Migrations
                     b.ToTable("Winners");
                 });
 
+            modelBuilder.Entity("DAL.Models.ChatMessage", b =>
+                {
+                    b.HasOne("DAL.Models.User", "Recipient")
+                        .WithMany("RecipientLists")
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Models.User", "Sender")
+                        .WithMany("SenderLists")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("DAL.Models.FriendsList", b =>
                 {
                     b.HasOne("DAL.Models.User", "Friend")
@@ -267,23 +293,11 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.Turn", b =>
                 {
-                    b.HasOne("DAL.Models.Card", "CardDrawn")
-                        .WithMany()
-                        .HasForeignKey("CardDrawnID");
-
-                    b.HasOne("DAL.Models.Card", "CardThrown")
-                        .WithMany()
-                        .HasForeignKey("CardThrownID");
-
                     b.HasOne("DAL.Models.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CardDrawn");
-
-                    b.Navigation("CardThrown");
 
                     b.Navigation("Player");
                 });
@@ -304,6 +318,10 @@ namespace DAL.Migrations
                     b.Navigation("FriendFriendsLists");
 
                     b.Navigation("InitiatorFriendsLists");
+
+                    b.Navigation("RecipientLists");
+
+                    b.Navigation("SenderLists");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,29 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class v1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Card",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Card", x => x.ID);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Games",
                 columns: table => new
@@ -96,6 +83,34 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SenderId = table.Column<int>(type: "int", nullable: false),
+                    RecipientId = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_Users_RecipientId",
+                        column: x => x.RecipientId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Messages_Users_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Players",
                 columns: table => new
                 {
@@ -135,23 +150,13 @@ namespace DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PlayerId = table.Column<int>(type: "int", nullable: false),
-                    CardDrawnID = table.Column<int>(type: "int", nullable: true),
-                    CardThrownID = table.Column<int>(type: "int", nullable: true),
+                    CardDrawnJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CardThrownJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NumberOfTurn = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Turns", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Turns_Card_CardDrawnID",
-                        column: x => x.CardDrawnID,
-                        principalTable: "Card",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_Turns_Card_CardThrownID",
-                        column: x => x.CardThrownID,
-                        principalTable: "Card",
-                        principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_Turns_Players_PlayerId",
                         column: x => x.PlayerId,
@@ -190,6 +195,16 @@ namespace DAL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Messages_RecipientId",
+                table: "Messages",
+                column: "RecipientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_SenderId",
+                table: "Messages",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Players_GameId",
                 table: "Players",
                 column: "GameId");
@@ -203,16 +218,6 @@ namespace DAL.Migrations
                 name: "IX_Players_UserId",
                 table: "Players",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Turns_CardDrawnID",
-                table: "Turns",
-                column: "CardDrawnID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Turns_CardThrownID",
-                table: "Turns",
-                column: "CardThrownID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Turns_PlayerId",
@@ -232,13 +237,13 @@ namespace DAL.Migrations
                 name: "FriendsLists");
 
             migrationBuilder.DropTable(
+                name: "Messages");
+
+            migrationBuilder.DropTable(
                 name: "Turns");
 
             migrationBuilder.DropTable(
                 name: "Winners");
-
-            migrationBuilder.DropTable(
-                name: "Card");
 
             migrationBuilder.DropTable(
                 name: "Players");

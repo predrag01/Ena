@@ -22,9 +22,13 @@ namespace DAL.Models
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
-        public List<FriendsList> InitiatorFriendsLists { get; set; }
+        public virtual ICollection<FriendsList> InitiatorFriendsLists { get; set; }
 
-        public List<FriendsList> FriendFriendsLists { get; set; }
+        public virtual ICollection<FriendsList> FriendFriendsLists { get; set; }
+        public virtual ICollection<ChatMessage> SenderLists { get; set; }
+        public virtual ICollection<ChatMessage> RecipientLists { get; set; }
+        public virtual ICollection<Request> SenderRequests { get; set; }
+        public virtual ICollection<Request> RecipientRequests { get; set; }
         public string ProfilePicture { get; set; }
         public int GamesWon { get; set; }
         public int GamesLost { get; set; }

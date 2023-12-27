@@ -15,6 +15,7 @@ namespace DAL.DataContext
         public DbSet<Turn>? Turns { get; set; }
         public DbSet<Winner>? Winners { get; set; }
         public DbSet<FriendsList>? FriendsLists { get; set; }
+        public DbSet<ChatMessage> Messages{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +29,30 @@ namespace DAL.DataContext
                 .HasOne(fl => fl.Friend)
                 .WithMany(u => u.FriendFriendsLists)
                 .HasForeignKey(fl => fl.FriendId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(fl => fl.Sender)
+                .WithMany(u => u.SenderLists)
+                .HasForeignKey(fl => fl.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(fl => fl.Recipient)
+                .WithMany(u => u.RecipientLists)
+                .HasForeignKey(fl => fl.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Request>()
+                .HasOne(fl => fl.Sender)
+                .WithMany(u => u.SenderRequests)
+                .HasForeignKey(fl => fl.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Request>()
+                .HasOne(fl => fl.Recipient)
+                .WithMany(u => u.RecipientRequests)
+                .HasForeignKey(fl => fl.RecipientId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
