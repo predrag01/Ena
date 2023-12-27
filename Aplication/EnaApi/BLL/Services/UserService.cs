@@ -45,5 +45,17 @@ namespace BLL.Services
             }
         }
 
+        public IQueryable<User> Login(string email,  string password)
+        {
+            try
+            {
+                return this._unitOfWork.User.Find(x => x.Email == email && x.Password == password);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
     }
 }

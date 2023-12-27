@@ -34,6 +34,21 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Route("Login/{email}/{password}")]
+        [HttpGet]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            try
+            {
+                var user = this._userService.Login(email, password);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 
     
