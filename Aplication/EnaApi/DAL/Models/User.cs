@@ -22,6 +22,9 @@ namespace DAL.Models
         public string Email { get; set; }
         [Required]
         public string Password { get; set; }
+        public List<FriendsList> InitiatorFriendsLists { get; set; }
+
+        public List<FriendsList> FriendFriendsLists { get; set; }
         public string ProfilePicture { get; set; }
         public int GamesWon { get; set; }
         public int GamesLost { get; set; }
