@@ -33,5 +33,35 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Route("AcceptFriendRequest")]
+        [HttpPost]
+        public async Task<IActionResult> AcceptFriendRequest(int requestId)
+        {
+            try
+            {
+                await this._requestService.AcceptFriendRequest(requestId);
+                return Ok(requestId);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Route("DeclineFriendRequest")]
+        [HttpPost]
+        public async Task<IActionResult> DeclineFriendRequest(int requestId)
+        {
+            try
+            {
+                await this._requestService.DeclineFriendRequest(requestId);
+                return Ok(requestId);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

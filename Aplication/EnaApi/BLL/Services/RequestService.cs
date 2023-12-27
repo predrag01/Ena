@@ -39,6 +39,28 @@ namespace BLL.Services
 
             }
         }
+        public async Task AcceptFriendRequest(int requestId)
+        {
+            var request = await this._unitOfWork.Request.GetRequestById(requestId);
+            if (request == null)
+            {
+                throw new Exception("No such friend request");
+            }
+            request.IsAccepted = true;
+            _unitOfWork.Request.Update(request);
+            await _unitOfWork.Save();
+        }
+
+        public async Task DeclineFriendRequest(int requestId)
+        {
+            var request = await this._unitOfWork.Request.GetRequestById(requestId);
+            if (request == null)
+            {
+                throw new Exception("No such friend request");
+            }
+            _unitOfWork.Request.Delete(request);
+            await _unitOfWork.Save();
+        }
 
     }
 }

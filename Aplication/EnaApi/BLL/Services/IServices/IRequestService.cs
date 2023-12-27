@@ -11,5 +11,7 @@ namespace BLL.Services.IServices
     public interface IRequestService
     {
         Task SendFriendRequest(RequestDTO request);
+        Task AcceptFriendRequest(int requestId);
+        Task DeclineFriendRequest(int requestId);
     }
 }

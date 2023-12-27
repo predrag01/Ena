@@ -23,5 +23,10 @@ namespace DAL.Repository
             var request = await _db.Requests.Where(x => x.SenderId == SenderId && x.RecipientId == RecipientId).FirstOrDefaultAsync();
             return request; 
         }
+        public async Task<Request> GetRequestById(int RequestId)
+        {
+            var request = await _db.Requests.Where(x => x.Id == RequestId).FirstOrDefaultAsync();
+            return request;
+        }
     }
 }

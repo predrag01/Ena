@@ -10,5 +10,6 @@ namespace DAL.Repository.IRepository
     public interface IRequestRepository : IRepository<Request>
     {
         Task<Request> GetRequestBySenderAndRecipient(int SenderId, int RecipientId);
+        Task<Request> GetRequestById(int RequestId);
     }
 }
