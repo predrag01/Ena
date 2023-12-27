@@ -29,6 +29,8 @@ namespace DAL.Models
         public virtual ICollection<ChatMessage> RecipientLists { get; set; }
         public virtual ICollection<Request> SenderRequests { get; set; }
         public virtual ICollection<Request> RecipientRequests { get; set; }
+        public virtual ICollection<GameRequest> SenderGameInvitations { get; set; }
+        public virtual ICollection<GameRequest> RecipientGameInvitations { get; set; }
         public string ProfilePicture { get; set; }
         public int GamesWon { get; set; }
         public int GamesLost { get; set; }

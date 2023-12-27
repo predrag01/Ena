@@ -57,5 +57,23 @@ namespace BLL.Services
             }
         }
 
+        public async Task UpdateProfile(UserUpdateDTO user)
+        {
+            if(user != null)
+            {
+                var userFound = await this._unitOfWork.User.GetUserById(user.Id);
+                userFound.Name = user.Name;
+                userFound.LastName= user.LastName;
+                userFound.Username= user.Username;
+                userFound.Email= user.Email;
+                userFound.Password= user.Password;
+                userFound.ProfilePicture= user.ProfilePicture;
+                userFound.GamesLost = user.GamesLost;
+                userFound.GamesWon= user.GamesWon;
+                this._unitOfWork.User.Update(userFound);
+                await this._unitOfWork.Save();
+            }
+        }
+
     }
 }

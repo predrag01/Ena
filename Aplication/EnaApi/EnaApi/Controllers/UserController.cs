@@ -49,6 +49,21 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Route("UpdateProfile")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateProfile([FromBody] UserUpdateDTO user)
+        {
+            try
+            {
+                await this._userService.UpdateProfile(user);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 
     

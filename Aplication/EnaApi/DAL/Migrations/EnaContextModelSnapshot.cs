@@ -88,6 +88,40 @@ namespace DAL.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("DAL.Models.GameRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RecipientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("GameRequests");
+                });
+
             modelBuilder.Entity("DAL.Models.Player", b =>
                 {
                     b.Property<int>("ID")
@@ -290,6 +324,33 @@ namespace DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DAL.Models.GameRequest", b =>
+                {
+                    b.HasOne("DAL.Models.Game", "Game")
+                        .WithMany("GameInvitations")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Models.User", "Recipient")
+                        .WithMany("RecipientGameInvitations")
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Models.User", "Sender")
+                        .WithMany("SenderGameInvitations")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("DAL.Models.Player", b =>
                 {
                     b.HasOne("DAL.Models.Game", "Game")
@@ -358,15 +419,24 @@ namespace DAL.Migrations
                     b.Navigation("Player");
                 });
 
+            modelBuilder.Entity("DAL.Models.Game", b =>
+                {
+                    b.Navigation("GameInvitations");
+                });
+
             modelBuilder.Entity("DAL.Models.User", b =>
                 {
                     b.Navigation("FriendFriendsLists");
 
                     b.Navigation("InitiatorFriendsLists");
 
+                    b.Navigation("RecipientGameInvitations");
+
                     b.Navigation("RecipientLists");
 
                     b.Navigation("RecipientRequests");
+
+                    b.Navigation("SenderGameInvitations");
 
                     b.Navigation("SenderLists");
 

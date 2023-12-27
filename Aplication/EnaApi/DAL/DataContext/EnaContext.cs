@@ -17,6 +17,7 @@ namespace DAL.DataContext
         public DbSet<FriendsList>? FriendsLists { get; set; }
         public DbSet<ChatMessage> Messages{ get; set; }
         public DbSet<Request>? Requests { get; set; }
+        public DbSet<GameRequest>? GameRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +55,24 @@ namespace DAL.DataContext
                 .HasOne(fl => fl.Recipient)
                 .WithMany(u => u.RecipientRequests)
                 .HasForeignKey(fl => fl.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameRequest>()
+                .HasOne(fl => fl.Sender)
+                .WithMany(u => u.SenderGameInvitations)
+                .HasForeignKey(fl => fl.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameRequest>()
+                .HasOne(fl => fl.Recipient)
+                .WithMany(u => u.RecipientGameInvitations)
+                .HasForeignKey(fl => fl.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<GameRequest>()
+                .HasOne(fl => fl.Game)
+                .WithMany(u => u.GameInvitations)
+                .HasForeignKey(fl => fl.GameId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

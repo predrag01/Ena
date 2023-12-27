@@ -23,6 +23,7 @@ namespace DAL.Models
         public bool TurnDirection { get; set; }
         [NotMapped]
         public Player PlayerOnTurn { get; set; }
+        public virtual ICollection<GameRequest> GameInvitations { get; set; }
 
     }
 }

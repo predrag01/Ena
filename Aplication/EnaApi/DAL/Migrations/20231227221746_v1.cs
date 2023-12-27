@@ -83,6 +83,41 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GameRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SenderId = table.Column<int>(type: "int", nullable: false),
+                    RecipientId = table.Column<int>(type: "int", nullable: false),
+                    GameId = table.Column<int>(type: "int", nullable: false),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GameRequests_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GameRequests_Users_RecipientId",
+                        column: x => x.RecipientId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GameRequests_Users_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
@@ -223,6 +258,21 @@ namespace DAL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GameRequests_GameId",
+                table: "GameRequests",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameRequests_RecipientId",
+                table: "GameRequests",
+                column: "RecipientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameRequests_SenderId",
+                table: "GameRequests",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Messages_RecipientId",
                 table: "Messages",
                 column: "RecipientId");
@@ -273,6 +323,9 @@ namespace DAL.Migrations
         {
             migrationBuilder.DropTable(
                 name: "FriendsLists");
+
+            migrationBuilder.DropTable(
+                name: "GameRequests");
 
             migrationBuilder.DropTable(
                 name: "Messages");

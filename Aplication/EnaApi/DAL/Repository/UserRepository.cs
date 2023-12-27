@@ -4,6 +4,7 @@ using DAL.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,18 @@ namespace DAL.Repository
         public async Task<User> GetUserByUsername(string username)    
         {
             var user = await this._db.Users.Where(x => x.Username == username).FirstOrDefaultAsync();
+            return user;
+        }
+
+        public async Task<User> UpdateUser(User user)
+        {
+            this._db.Users.Update(user);
+            return user;
+        }
+
+        public async Task<User> GetUserById(int id)
+        {
+            var user = await this._db.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
             return user;
         }
     }

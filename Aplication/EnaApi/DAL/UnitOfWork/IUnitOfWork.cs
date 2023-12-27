@@ -17,6 +17,7 @@ namespace DAL.UnitOfWork
         ITurnRepository Turn { get; }
         IUserRepository User { get; }
         IRequestRepository Request { get; }
+        IGameRequestRepository GameRequest { get; }
         Task Save();
     }
 }
