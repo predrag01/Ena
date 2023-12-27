@@ -39,7 +39,7 @@ namespace DAL.UnitOfWork
 
         public IUserRepository User { get; private set; }
 
-        public async Task Complete()
+        public async Task Save()
         {
             await _context.SaveChangesAsync();
         }

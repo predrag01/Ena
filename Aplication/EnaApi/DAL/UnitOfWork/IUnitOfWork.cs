@@ -16,6 +16,6 @@ namespace DAL.UnitOfWork
         IPlayerRepository Player { get; }
         ITurnRepository Turn { get; }
         IUserRepository User { get; }
-        Task Complete();
+        Task Save();
     }
 }
