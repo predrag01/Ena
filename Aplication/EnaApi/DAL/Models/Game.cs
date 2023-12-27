@@ -17,12 +17,8 @@ namespace DAL.Models
         public ListOfCards Deck { get; set; }
         [NotMapped]
         public ListOfCards Pile { get; set; }
+        [NotMapped]
         public List<Player>? Players { get; set; }
-        [ForeignKey("Winner")]
-        public int? WinnerId { get; set; }
-
-        public Player Winner { get; set; }
-
         [NotMapped]
         public bool TurnDirection { get; set; }
         [NotMapped]

@@ -7,18 +7,15 @@ using System.Threading.Tasks;
 
 namespace DAL.Models
 {
-    public class Turn
+    public class Winner
     {
         [Key]
-        public int Id { get; set; }
+        public int ID { get; set; }
         [Required]
         public int PlayerId { get; set; }
-        public Player? Player { get; set; }
+        public Player? Player{ get; set; }
         //[Required]
         //public int GameId { get; set; }
         //public Game? Game { get; set; }
-        public Card? CardDrawn { get; set; }
-        public Card? CardThrown { get; set; }
-        public int NumberOfTurn { get; set; }
     }
 }

@@ -8,20 +8,17 @@ using System.Threading.Tasks;
 
 namespace DAL.Models
 {
-    public class Player
+    public class FriendsList
     {
         [Key]
-        public int ID { get; set; }
-        [Required]
+        public int Id { get; set; }
+        [ForeignKey("User")]
         public int UserId { get; set; }
         public User? User { get; set; }
-        [Required]
-        public int GameId { get; set; }
-        public Game? Game { get; set; }
 
-        [ForeignKey(nameof(PlayerHandId))]
-        public int PlayerHandId { get; set; }
-        public PlayerHand? PlayerHand { get; set; }
+        [ForeignKey("Friend")]
+        public int FriendId { get; set; }
+        public User? Friend { get; set; }
 
     }
 }
