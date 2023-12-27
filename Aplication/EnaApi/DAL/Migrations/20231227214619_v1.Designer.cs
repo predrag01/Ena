@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(EnaContext))]
-    [Migration("20231227174514_v1")]
+    [Migration("20231227214619_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -134,6 +134,35 @@ namespace DAL.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("PlayerHands");
+                });
+
+            modelBuilder.Entity("DAL.Models.Request", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RecipientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Requests");
                 });
 
             modelBuilder.Entity("DAL.Models.Turn", b =>
@@ -291,6 +320,25 @@ namespace DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DAL.Models.Request", b =>
+                {
+                    b.HasOne("DAL.Models.User", "Recipient")
+                        .WithMany("RecipientRequests")
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DAL.Models.User", "Sender")
+                        .WithMany("SenderRequests")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("DAL.Models.Turn", b =>
                 {
                     b.HasOne("DAL.Models.Player", "Player")
@@ -321,7 +369,11 @@ namespace DAL.Migrations
 
                     b.Navigation("RecipientLists");
 
+                    b.Navigation("RecipientRequests");
+
                     b.Navigation("SenderLists");
+
+                    b.Navigation("SenderRequests");
                 });
 #pragma warning restore 612, 618
         }

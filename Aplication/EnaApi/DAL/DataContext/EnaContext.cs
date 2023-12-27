@@ -16,6 +16,7 @@ namespace DAL.DataContext
         public DbSet<Winner>? Winners { get; set; }
         public DbSet<FriendsList>? FriendsLists { get; set; }
         public DbSet<ChatMessage> Messages{ get; set; }
+        public DbSet<Request>? Requests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

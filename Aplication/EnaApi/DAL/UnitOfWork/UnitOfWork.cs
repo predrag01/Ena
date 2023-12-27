@@ -23,6 +23,7 @@ namespace DAL.UnitOfWork
             Player = new PlayerRepository(_context);
             Turn = new TurnRepository(_context);
             User = new UserRepository(_context);
+            Request = new RequestRepository(_context);
         }
 
         public ICardRepository Card { get; private set; }
@@ -39,6 +40,7 @@ namespace DAL.UnitOfWork
 
         public IUserRepository User { get; private set; }
 
+        public IRequestRepository Request{ get; private set; }
         public async Task Save()
         {
             await _context.SaveChangesAsync();

@@ -144,9 +144,6 @@ namespace DAL.Migrations
                     b.Property<bool>("IsAccepted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsFriendRequest")
-                        .HasColumnType("bit");
-
                     b.Property<int>("RecipientId")
                         .HasColumnType("int");
 
@@ -162,7 +159,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Request");
+                    b.ToTable("Requests");
                 });
 
             modelBuilder.Entity("DAL.Models.Turn", b =>
