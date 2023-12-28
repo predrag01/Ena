@@ -30,7 +30,7 @@ namespace BLL.Services
             //    throw new Exception("Player not exist!");
             //}
 
-            var turnCreated = new Turn(turn.PlayerId, turn.NumberOfTurn, turn.CardDrawnJson, turn.CardThrownJson);
+            var turnCreated = new Turn(turn.PlayerId, turn.NumberOfTurn, turn.CardDrawn, turn.CardThrown);
             this._unitOfWork.Turn.Add(turnCreated);
             await this._unitOfWork.Save();
         }

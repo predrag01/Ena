@@ -15,17 +15,8 @@ namespace DAL.DTOs
     {
         public int PlayerId { get; set; }
         public Card? CardDrawn { get; set; }
-        public string CardDrawnJson
-        {
-            get => JsonSerializer.Serialize(CardDrawn);
-            set => CardDrawn = JsonSerializer.Deserialize<Card>(value);
-        }
+
         public Card? CardThrown { get; set; }
-        public string CardThrownJson
-        {
-            get => JsonSerializer.Serialize(CardThrown);
-            set => CardThrown = JsonSerializer.Deserialize<Card>(value);
-        }
         public int NumberOfTurn { get; set; }
     }
 }

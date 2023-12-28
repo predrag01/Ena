@@ -18,32 +18,26 @@ namespace DAL.Models
         public Player? Player { get; set; }
         [NotMapped]
         public Card? CardDrawn { get; set; }
-        public string CardDrawnJson{
+        public string? CardDrawnJson{
             get => JsonSerializer.Serialize(CardDrawn);
             set => CardDrawn = JsonSerializer.Deserialize<Card>(value);
         }
         [NotMapped]
         public Card? CardThrown { get; set; }
-        public string CardThrownJson
+        public string? CardThrownJson
         {
             get => JsonSerializer.Serialize(CardThrown);
             set => CardThrown = JsonSerializer.Deserialize<Card>(value);
         }
         public int NumberOfTurn { get; set; }
-
+        public Turn()
+        {
+        }
         public Turn(int playerId, int number, Card drawn=null, Card thrown=null)
         {
             this.PlayerId = playerId;
             this.CardDrawn= drawn;
             this.CardThrown = thrown;
-            this.NumberOfTurn = number;
-        }
-
-        public Turn(int playerId, int number, string drawn = null, string thrown = null)
-        {
-            this.PlayerId = playerId;
-            this.CardDrawnJson = drawn;
-            this.CardThrownJson = thrown;
             this.NumberOfTurn = number;
         }
     }
