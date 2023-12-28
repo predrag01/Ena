@@ -18,5 +18,12 @@ namespace DAL.Models
         public virtual User Recipient { get; set; }
         public string Content { get; set; }
         public DateTime Timestamp { get; set; }
+        public ChatMessage(int senderId, int recipientId, string content, DateTime timestamp)
+        {
+            SenderId = senderId;
+            RecipientId = recipientId;
+            Content = content;
+            Timestamp = timestamp;
+        }
     }
 }

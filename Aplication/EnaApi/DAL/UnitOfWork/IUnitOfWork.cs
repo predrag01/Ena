@@ -18,6 +18,7 @@ namespace DAL.UnitOfWork
         IUserRepository User { get; }
         IRequestRepository Request { get; }
         IGameRequestRepository GameRequest { get; }
+        IChatMessageRepository ChatMessage { get; }
         Task Save();
     }
 }
