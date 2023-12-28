@@ -11,5 +11,6 @@ namespace BLL.Services.IServices
     public interface IFriendsListService
     {
         Task CreateFriendship(int requestId);
+        Task<List<FriendsList>> GetAllFriendsForUser(int UserId);
     }
 }

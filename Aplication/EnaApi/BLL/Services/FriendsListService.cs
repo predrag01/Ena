@@ -42,5 +42,11 @@ namespace BLL.Services
             }
         }
 
+        public async Task<List<FriendsList>> GetAllFriendsForUser(int UserId)
+        {
+            List<FriendsList> friends = await this._unitOfWork.FriendsList.GetFriendsListByUser(UserId);
+            return friends;
+        }
+
     }
 }
