@@ -26,6 +26,7 @@ namespace DAL.UnitOfWork
             User = new UserRepository(_context);
             Request = new RequestRepository(_context);
             GameRequest = new GameRequestRepository(_context);
+            FriendsList = new FriendsListRepository(_context);
         }
 
         public ICardRepository Card { get; private set; }
@@ -44,6 +45,7 @@ namespace DAL.UnitOfWork
 
         public IRequestRepository Request{ get; private set; }
         public IGameRequestRepository GameRequest { get; private set; }
+        public IFriendsListRepository FriendsList { get; private set; }
         public async Task Save()
         {
             await _context.SaveChangesAsync();
