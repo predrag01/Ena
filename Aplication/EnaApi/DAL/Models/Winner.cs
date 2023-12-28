@@ -17,5 +17,10 @@ namespace DAL.Models
         //[Required]
         //public int GameId { get; set; }
         //public Game? Game { get; set; }
+
+        public Winner(int playerId)
+        {
+            this.PlayerId = playerId;
+        }
     }
 }

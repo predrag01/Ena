@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using DAL.DataContext;
+using DAL.Models;
 using DAL.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,7 +12,7 @@ namespace DAL.Repository
 {
     public class WinnerRepository : Repository<Winner>, IWinnerRepository
     {
-        public WinnerRepository(DbContext context) : base(context)
+        public WinnerRepository(EnaContext context) : base(context)
         {
         }
     }

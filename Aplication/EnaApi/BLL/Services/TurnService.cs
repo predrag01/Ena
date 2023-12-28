@@ -1,0 +1,38 @@
+﻿using BLL.Services.IServices;
+using DAL.DataContext;
+using DAL.Models;
+using DAL.UnitOfWork;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DAL.DTOs;
+using Microsoft.AspNetCore.Http.HttpResults;
+
+namespace BLL.Services
+{
+    public class TurnService : ITurnService
+    {
+        private readonly EnaContext _db;
+        public UnitOfWork _unitOfWork { get; set; }
+
+        public TurnService(EnaContext db)
+        {
+            this._db = db;
+            this._unitOfWork = new UnitOfWork(db);
+        }
+        public async Task PlayMove(TurnDTO turn)
+        {
+            //var player = await this._unitOfWork.Player.GetPlayerById(turn.PlayerId);
+            //if (player == null)
+            //{
+            //    throw new Exception("Player not exist!");
+            //}
+
+            var turnCreated = new Turn(turn.PlayerId, turn.NumberOfTurn, turn.CardDrawnJson, turn.CardThrownJson);
+            this._unitOfWork.Turn.Add(turnCreated);
+            await this._unitOfWork.Save();
+        }
+    }
+}
