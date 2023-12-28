@@ -55,5 +55,17 @@ namespace BLL.Services
             this._unitOfWork.GameRequest.Update(request);
             await _unitOfWork.Save();
         }
+
+        public async Task DeclineGameRequset(int gameRequestId)
+        {
+            var request = await this._unitOfWork.GameRequest.GetGameRequestById(gameRequestId);
+            if (request == null)
+            {
+                throw new Exception("No game request");
+            }
+
+            this._unitOfWork.GameRequest.Delete(request);
+            await _unitOfWork.Save();
+        }
     }
 }

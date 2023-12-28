@@ -35,12 +35,27 @@ namespace EnaApi.Controllers
         }
 
         [Route("AcceptGameRequest/{requestId}")]
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> AcceptGameRequest(int requestId)
         {
             try
             {
                 await this._gameRequestService.AcceptGameRequset(requestId);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Route("AcceptGameRequest/{requestId}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteGameRequest(int requestId)
+        {
+            try
+            {
+                await this._gameRequestService.DeclineGameRequset(requestId);
                 return Ok();
             }
             catch (Exception e)
