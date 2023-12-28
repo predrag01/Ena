@@ -18,6 +18,7 @@ namespace DAL.DataContext
         public DbSet<ChatMessage> Messages{ get; set; }
         public DbSet<Request>? Requests { get; set; }
         public DbSet<GameRequest>? GameRequests { get; set; }
+        //public DbSet<ChatMessage>? ChatMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
