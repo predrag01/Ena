@@ -67,5 +67,17 @@ namespace BLL.Services
             this._unitOfWork.GameRequest.Delete(request);
             await _unitOfWork.Save();
         }
+
+        public Task<List<GameRequest>> GetAllGameRequestByRecipientId(int recipientId)
+        {
+            try
+            {
+                return _unitOfWork.GameRequest.GetAllGameRequestByRecipientId(recipientId);
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

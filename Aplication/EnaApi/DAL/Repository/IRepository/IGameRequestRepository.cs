@@ -11,5 +11,6 @@ namespace DAL.Repository.IRepository
     {
         Task<GameRequest> GetGameRequestBySenderAndRecipient(int SenderId, int RecipientId);
         Task<GameRequest> GetGameRequestById(int gameRequestId);
+        Task<List<GameRequest>> GetAllGameRequestByRecipientId(int recipientId);
     }
 }

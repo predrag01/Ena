@@ -49,7 +49,7 @@ namespace EnaApi.Controllers
             }
         }
 
-        [Route("AcceptGameRequest/{requestId}")]
+        [Route("DeleteGameRequest/{requestId}")]
         [HttpDelete]
         public async Task<IActionResult> DeleteGameRequest(int requestId)
         {
@@ -57,6 +57,21 @@ namespace EnaApi.Controllers
             {
                 await this._gameRequestService.DeclineGameRequset(requestId);
                 return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Route("GetAllGameRequestByRecipientId/{recipientId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllGameRequestByRecipientId(int recipientId)
+        {
+            try
+            {
+                var gameRequestList = await this._gameRequestService.GetAllGameRequestByRecipientId(recipientId);
+                return Ok(gameRequestList);
             }
             catch (Exception e)
             {
