@@ -62,5 +62,10 @@ namespace BLL.Services
             await _unitOfWork.Save();
         }
 
+        public async Task<List<Request>> GetAllFriendRequestsForUser(int UserId)
+        {
+            List<Request> friends = await this._unitOfWork.Request.GetFriendRequestsByUser(UserId);
+            return friends;
+        }
     }
 }

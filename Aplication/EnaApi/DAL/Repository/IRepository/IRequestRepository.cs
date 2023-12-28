@@ -11,5 +11,6 @@ namespace DAL.Repository.IRepository
     {
         Task<Request> GetRequestBySenderAndRecipient(int SenderId, int RecipientId);
         Task<Request> GetRequestById(int RequestId);
+        Task<List<Request>> GetFriendRequestsByUser(int UserId);
     }
 }

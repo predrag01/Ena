@@ -3,6 +3,7 @@ using BLL.Services;
 using DAL.DataContext;
 using Microsoft.AspNetCore.Mvc;
 using DAL.DTOs;
+using DAL.Models;
 
 namespace EnaApi.Controllers
 {
@@ -68,19 +69,21 @@ namespace EnaApi.Controllers
             }
         }
 
-        //[Route("GetAllFriends")]
-        //[HttpPost]
-        //public async Task<IActionResult> GetAllFriends(int requestId)
-        //{
-        //    try
-        //    {
-        //        await this._requestService.DeclineFriendRequest(requestId);
-        //        return Ok(requestId);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return BadRequest(e.Message);
-        //    }
-        //}
+        [Route("GetAllFriendRequests")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllFriendRequests(int UserId)
+        {
+            try
+            {
+
+                List<Request> requests = await this._requestService.GetAllFriendRequestsForUser(UserId);
+                return Ok(requests)
+                    ;
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }
