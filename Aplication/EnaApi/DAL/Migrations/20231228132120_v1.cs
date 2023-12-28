@@ -24,19 +24,6 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PlayerHands",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CardsJson = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlayerHands", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -153,7 +140,7 @@ namespace DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     GameId = table.Column<int>(type: "int", nullable: false),
-                    PlayerHandId = table.Column<int>(type: "int", nullable: false)
+                    Host = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -163,12 +150,6 @@ namespace DAL.Migrations
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Players_PlayerHands_PlayerHandId",
-                        column: x => x.PlayerHandId,
-                        principalTable: "PlayerHands",
-                        principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Players_Users_UserId",
@@ -204,6 +185,26 @@ namespace DAL.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlayerHands",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CardsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PlayerId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerHands", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_PlayerHands_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -283,14 +284,14 @@ namespace DAL.Migrations
                 column: "SenderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlayerHands_PlayerId",
+                table: "PlayerHands",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Players_GameId",
                 table: "Players",
                 column: "GameId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Players_PlayerHandId",
-                table: "Players",
-                column: "PlayerHandId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Players_UserId",
@@ -331,6 +332,9 @@ namespace DAL.Migrations
                 name: "Messages");
 
             migrationBuilder.DropTable(
+                name: "PlayerHands");
+
+            migrationBuilder.DropTable(
                 name: "Requests");
 
             migrationBuilder.DropTable(
@@ -344,9 +348,6 @@ namespace DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Games");
-
-            migrationBuilder.DropTable(
-                name: "PlayerHands");
 
             migrationBuilder.DropTable(
                 name: "Users");

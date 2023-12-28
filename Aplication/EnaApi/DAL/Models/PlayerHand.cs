@@ -24,5 +24,9 @@ namespace DAL.Models
             set => Cards = JsonSerializer.Deserialize<List<Card>>(value);
         }
 
+        [ForeignKey(nameof(PlayerId))]
+        public int PlayerId { get; set; }
+        public Player? Player { get; set; }
+
     }
 }

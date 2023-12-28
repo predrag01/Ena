@@ -133,8 +133,8 @@ namespace DAL.Migrations
                     b.Property<int>("GameId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PlayerHandId")
-                        .HasColumnType("int");
+                    b.Property<bool>("Host")
+                        .HasColumnType("bit");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -142,8 +142,6 @@ namespace DAL.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("GameId");
-
-                    b.HasIndex("PlayerHandId");
 
                     b.HasIndex("UserId");
 
@@ -162,7 +160,12 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("int");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("PlayerId");
 
                     b.ToTable("PlayerHands");
                 });
@@ -359,12 +362,6 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAL.Models.PlayerHand", "PlayerHand")
-                        .WithMany()
-                        .HasForeignKey("PlayerHandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DAL.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -373,9 +370,18 @@ namespace DAL.Migrations
 
                     b.Navigation("Game");
 
-                    b.Navigation("PlayerHand");
-
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DAL.Models.PlayerHand", b =>
+                {
+                    b.HasOne("DAL.Models.Player", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("DAL.Models.Request", b =>

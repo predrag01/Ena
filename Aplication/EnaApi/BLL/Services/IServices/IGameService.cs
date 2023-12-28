@@ -8,9 +8,8 @@ using DAL.DTOs;
 
 namespace BLL.Services.IServices
 {
-    public interface IGameRequestService
+    public interface IGameService
     {
-        Task SendGameRequest(GameRequestDTO request);
-        Task AcceptGameRequset(int gameRequestId);
+        Task CreateGame();
     }
 }

@@ -18,10 +18,13 @@ namespace DAL.Models
         [Required]
         public int GameId { get; set; }
         public Game? Game { get; set; }
+        public bool Host { get; set; }
 
-        [ForeignKey(nameof(PlayerHandId))]
-        public int PlayerHandId { get; set; }
-        public PlayerHand? PlayerHand { get; set; }
-
+        public Player(int userId, int gameId, bool host=false)
+        {
+            UserId = userId;
+            GameId = gameId;
+            Host = host;
+        }
     }
 }

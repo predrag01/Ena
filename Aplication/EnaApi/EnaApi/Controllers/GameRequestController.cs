@@ -33,5 +33,20 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Route("AcceptGameRequest/{requestId}")]
+        [HttpPost]
+        public async Task<IActionResult> AcceptGameRequest(int requestId)
+        {
+            try
+            {
+                await this._gameRequestService.AcceptGameRequset(requestId);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

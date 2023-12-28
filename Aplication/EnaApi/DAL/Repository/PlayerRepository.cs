@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using DAL.DataContext;
+using DAL.Models;
 using DAL.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,8 +12,15 @@ namespace DAL.Repository
 {
     public class PlayerRepository : Repository<Player>, IPlayerRepository
     {
-        public PlayerRepository(DbContext context) : base(context)
+        private EnaContext _db;
+        public PlayerRepository(EnaContext db) : base(db)
         {
+            _db = db;
+        }
+
+        public async Task<Player> GetPlayerByIdInGameById(int playerId, int gameId)
+        {
+            return await this._db.Players.Where(x => x.ID == playerId && x.GameId == gameId).FirstOrDefaultAsync();
         }
     }
 }

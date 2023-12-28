@@ -16,11 +16,13 @@ namespace BLL.Services
     {
         private readonly EnaContext _db;
         public UnitOfWork _unitOfWork { get; set; }
+        public PlayerService _playerService { get; set; }
 
         public GameRequestService(EnaContext db)
         {
             this._db = db;
             this._unitOfWork= new UnitOfWork(db);
+            this._playerService = new PlayerService(db);
         }
 
         public async Task SendGameRequest(GameRequestDTO request)
@@ -33,11 +35,25 @@ namespace BLL.Services
                     throw new Exception("Friend request already sent.");
                 }
 
-                var requestCreated = new GameRequest(request.SenderId, request.RecipientId, request.GameId, request.IsAccepted, request.Timestamp);
+                var requestCreated = new GameRequest(request.SenderId, request.RecipientId, request.GameId, false, request.Timestamp);
                 await _unitOfWork.GameRequest.Add(requestCreated);
                 await _unitOfWork.Save();
             }
         }
 
+        public async Task AcceptGameRequset(int gameRequestId)
+        {
+            var request = await this._unitOfWork.GameRequest.GetGameRequestById(gameRequestId);
+            if (request == null)
+            {
+                throw new Exception("No game request");
+            }
+
+            this._playerService.CreatePlayer(request.RecipientId, request.GameId);
+
+            request.IsAccepted= true;
+            this._unitOfWork.GameRequest.Update(request);
+            await _unitOfWork.Save();
+        }
     }
 }

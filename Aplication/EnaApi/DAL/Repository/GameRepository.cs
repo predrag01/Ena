@@ -1,5 +1,7 @@
-﻿using DAL.Models;
+﻿using DAL.DataContext;
+using DAL.Models;
 using DAL.Repository.IRepository;
+using DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,8 +13,11 @@ namespace DAL.Repository
 {
     public class GameRepository : Repository<Game>, IGameRepository
     {
-        public GameRepository(DbContext context) : base(context)
+        private readonly EnaContext _db;
+        public GameRepository(EnaContext db) : base(db)
         {
+            this._db = db;
         }
+
     }
 }
