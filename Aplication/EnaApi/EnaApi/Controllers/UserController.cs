@@ -1,14 +1,16 @@
-﻿using BLL.Services;
+﻿using BLL.Helpers;
+using BLL.Services;
 using BLL.Services.IServices;
 using DAL.DataContext;
 using DAL.DTOs;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace EnaApi.Controllers
 {
+    [Route("user")]
     [ApiController]
-    [Route("[controller]")]
     public class UserController : ControllerBase
     {
         private readonly EnaContext _db;
@@ -26,8 +28,8 @@ namespace EnaApi.Controllers
         {
             try
             {
-                await this._userService.Register(user);
-                return Ok(user);
+                var result = await this._userService.Register(user);
+                return Created("success", result);
             }
             catch (Exception e)
             {
@@ -35,14 +37,17 @@ namespace EnaApi.Controllers
             }
         }
 
-        [Route("Login/{email}/{password}")]
-        [HttpGet]
-        public async Task<IActionResult> Login(string email, string password)
+        [Route("Login")]
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] UserLoginDTO user)
         {
             try
             {
-                var user = this._userService.Login(email, password);
-                return Ok(user);
+                var result = await this._userService.Login(user.Email, user.Password);
+
+                Response.Cookies.Append("jwt", result, new CookieOptions { HttpOnly = true });
+
+                return Ok(new { message = "success"});
             }
             catch (Exception e)
             {
@@ -63,6 +68,33 @@ namespace EnaApi.Controllers
             {
                 return BadRequest(e.Message);
             }
+        }
+
+        [Route("GetUser")]
+        [HttpGet]
+        public async Task<IActionResult> GetUser()
+        {
+            try
+            {
+                var jwt = Request.Cookies["jwt"];
+
+                var user = await this._userService.GetUser(jwt);
+
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return Unauthorized();
+            }
+        }
+
+        [Route("Logout")]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            Response.Cookies.Delete("jwt");
+
+            return Ok(new {message = "success"});
         }
     }
 

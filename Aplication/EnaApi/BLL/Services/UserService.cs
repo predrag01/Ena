@@ -8,6 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DAL.DTOs;
+using BCrypt.Net;
+using Microsoft.AspNetCore.Http.HttpResults;
+using BLL.Helpers;
 
 namespace BLL.Services
 {
@@ -16,13 +19,18 @@ namespace BLL.Services
         private readonly EnaContext _db;
         public UnitOfWork _unitOfWork { get; set; }
 
+        private JwtService jwtService { get; set; }
+
+        public IUserService _userService { get; set; }
+
         public UserService(EnaContext db)
         {
             this._db = db;
             this._unitOfWork= new UnitOfWork(db);
+            jwtService = new JwtService();
         }
 
-        public async Task Register(UserDTO user)
+        public async Task<User> Register(UserDTO user)
         {
             if(user != null)
             {
@@ -38,23 +46,37 @@ namespace BLL.Services
                     throw new Exception("User with this username already exists.");
                 }
 
-                var userCreated = new User(user.Name, user.LastName, user.Username, user.Email, user.Password, user.ProfilePicture, user.GamesWon, user.GamesLost);
+                var userCreated = new User
+                (
+                    user.Name,
+                    user.LastName, 
+                    user.Username, 
+                    user.Email, 
+                    BCrypt.Net.BCrypt.HashPassword(user.Password), 
+                    user.ProfilePicture, 
+                    user.GamesWon, 
+                    user.GamesLost
+                );
 
-                await this._unitOfWork.User.Add(userCreated);
-                await this._unitOfWork.Save();
+                return await this._unitOfWork.User.Create(userCreated);
+            }
+            else
+            {
+                return null;
             }
         }
 
-        public IQueryable<User> Login(string email,  string password)
+        public async Task<string> Login(string email,  string password)
         {
-            try
-            {
-                return this._unitOfWork.User.Find(x => x.Email == email && x.Password == password);
-            }
-            catch
-            {
-                throw;
-            }
+            var userFound = await this._unitOfWork.User.GetUserByEmail(email);
+
+            if (userFound == null) throw new Exception("Invalid credential");
+
+            if (!BCrypt.Net.BCrypt.Verify(password, userFound.Password)) throw new Exception("Invalid credential");
+
+            var jwt = jwtService.Generate(userFound.Id);
+
+            return jwt;
         }
 
         public async Task UpdateProfile(UserUpdateDTO user)
@@ -75,5 +97,15 @@ namespace BLL.Services
             }
         }
 
+        public async Task<User> GetUser(string jwt)
+        {
+            var token = jwtService.Verify(jwt);
+
+            int userId = int.Parse(token.Issuer);
+
+            var user = await this._unitOfWork.User.GetUserById(userId);
+
+            return user;
+        }
     }
 }

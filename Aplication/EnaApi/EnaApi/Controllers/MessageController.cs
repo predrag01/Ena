@@ -8,7 +8,7 @@ using DAL.Models;
 namespace EnaApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("message")]
     public class MessageController : ControllerBase
     {
 

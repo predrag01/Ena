@@ -10,8 +10,10 @@ namespace BLL.Services.IServices
 {
     public interface IUserService
     {
-        Task Register(UserDTO user);
-        IQueryable<User> Login(string email,  string password);
+        Task<User> Register(UserDTO user);
+        Task<string> Login(string email,  string password);
         Task UpdateProfile(UserUpdateDTO user);
+
+        Task<User> GetUser(string jwt);
     }
 }

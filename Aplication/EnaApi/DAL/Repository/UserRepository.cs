@@ -51,5 +51,12 @@ namespace DAL.Repository
             var user = await this._db.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
             return user;
         }
+
+        public async Task<User> Create(User user)
+        {
+            _db.Users.Add(user);
+            user.Id = _db.SaveChanges();
+            return user;
+        }
     }
 }
