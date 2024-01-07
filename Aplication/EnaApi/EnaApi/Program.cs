@@ -27,7 +27,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors(options => options
-    .WithOrigins(new [] { "https://localhost:3000", "https://localhost:8000", "https://localhost:4200"})
+    .WithOrigins(new [] { "https://localhost:3000", "https://localhost:8000", "https://localhost:4200", "http://localhost:5173" })
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials());

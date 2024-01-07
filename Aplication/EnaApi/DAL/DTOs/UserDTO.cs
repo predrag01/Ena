@@ -21,6 +21,19 @@ namespace DAL.DTOs
         public int GamesLost { get; set; }
     }
 
+    public class UserRegisterDTO
+    {
+        public string Name { get; set; }
+        public string LastName { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string RepeatedPassword { get; set; }
+        public string ProfilePicture { get; set; }
+        public int GamesWon { get; set; }
+        public int GamesLost { get; set; }
+    }
+
     public class UserUpdateDTO
     {
         public int Id { get; set; }

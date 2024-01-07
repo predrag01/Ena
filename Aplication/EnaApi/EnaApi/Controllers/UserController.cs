@@ -24,7 +24,7 @@ namespace EnaApi.Controllers
 
         [Route("Register")]
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] UserDTO user)
+        public async Task<IActionResult> Register([FromBody] UserRegisterDTO user)
         {
             try
             {

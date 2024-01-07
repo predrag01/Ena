@@ -30,7 +30,7 @@ namespace BLL.Services
             jwtService = new JwtService();
         }
 
-        public async Task<User> Register(UserDTO user)
+        public async Task<User> Register(UserRegisterDTO user)
         {
             if(user != null)
             {
@@ -44,6 +44,11 @@ namespace BLL.Services
                 if (userFound != null)
                 {
                     throw new Exception("User with this username already exists.");
+                }
+
+                if (user.Password != user.RepeatedPassword)
+                {
+                    throw new Exception("Password missmatch");
                 }
 
                 var userCreated = new User
