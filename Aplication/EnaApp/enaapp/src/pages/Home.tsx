@@ -1,8 +1,8 @@
 
-const Home = () => {
+const Home = (props: {username:string}) => {
     return (
         <div>
-            Home
+            {props.username ? 'Hi' + props.username : 'You are not loged in'}
         </div>
     );
 };

@@ -45,7 +45,7 @@ namespace EnaApi.Controllers
             {
                 var result = await this._userService.Login(user.Email, user.Password);
 
-                Response.Cookies.Append("jwt", result, new CookieOptions { HttpOnly = true });
+                Response.Cookies.Append("jwt", result, new CookieOptions { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None });
 
                 return Ok(new { message = "success"});
             }
@@ -92,7 +92,7 @@ namespace EnaApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            Response.Cookies.Delete("jwt");
+            Response.Cookies.Delete("jwt", new CookieOptions { SameSite = SameSiteMode.None, Secure = true});
 
             return Ok(new {message = "success"});
         }
