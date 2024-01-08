@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DAL.Models
@@ -20,16 +21,24 @@ namespace DAL.Models
         public string Username { get; set; }
         [Required]
         public string Email { get; set; }
+        [JsonIgnore]
         [Required]
         public string Password { get; set; }
+        [JsonIgnore]
         public virtual ICollection<FriendsList> InitiatorFriendsLists { get; set; }
-
+        [JsonIgnore]
         public virtual ICollection<FriendsList> FriendFriendsLists { get; set; }
+        [JsonIgnore]
         public virtual ICollection<ChatMessage> SenderLists { get; set; }
+        [JsonIgnore]
         public virtual ICollection<ChatMessage> RecipientLists { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Request> SenderRequests { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Request> RecipientRequests { get; set; }
+        [JsonIgnore]
         public virtual ICollection<GameRequest> SenderGameInvitations { get; set; }
+        [JsonIgnore]
         public virtual ICollection<GameRequest> RecipientGameInvitations { get; set; }
         public string ProfilePicture { get; set; }
         public int GamesWon { get; set; }

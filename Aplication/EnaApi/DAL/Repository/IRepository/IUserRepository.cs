@@ -15,5 +15,6 @@ namespace DAL.Repository.IRepository
         Task<User> GetUserById(int id);
         Task<User> UpdateUser(User user);
         Task<User> Create(User user);
+        Task<IQueryable<User>> GetUsersByUsername(string username, string ownerUsername);
     }
 }

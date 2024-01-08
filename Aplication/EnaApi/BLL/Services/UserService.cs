@@ -112,5 +112,21 @@ namespace BLL.Services
 
             return user;
         }
+
+        public async Task<IQueryable<User>> Search(string username, string ownerUsername)
+        {
+            if (username == null)
+            {
+                throw new Exception("Type usernama for searching!");
+            }
+
+            if (ownerUsername == null)
+            {
+                throw new Exception("Missing username who searching!");
+            }
+
+            var users = await this._unitOfWork.User.GetUsersByUsername(username, ownerUsername);
+            return users;
+        }
     }
 }

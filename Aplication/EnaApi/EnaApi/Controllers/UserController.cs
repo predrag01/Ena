@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace EnaApi.Controllers
 {
-    [Route("user")]
+    [Route("User")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -95,6 +95,21 @@ namespace EnaApi.Controllers
             Response.Cookies.Delete("jwt", new CookieOptions { SameSite = SameSiteMode.None, Secure = true});
 
             return Ok(new {message = "success"});
+        }
+
+        [Route("Search/{username}/{ownerUsername}")]
+        [HttpGet]
+        public async Task<IActionResult> Search(string username, string ownerUsername)
+        {
+            try{
+                var users = await this._userService.Search(username, ownerUsername);
+
+                return Ok(users);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 

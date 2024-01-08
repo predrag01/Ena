@@ -40,6 +40,15 @@ namespace DAL.Repository
             return user;
         }
 
+        public async Task<IQueryable<User>> GetUsersByUsername(string username, string ownerUsername)
+        {
+            var users = this._db.Users.Where(x => x.Username.Contains(username));
+
+            users = users.Where(u => u.Username != ownerUsername);
+
+            return users;
+        }
+
         public async Task<User> UpdateUser(User user)
         {
             this._db.Users.Update(user);
