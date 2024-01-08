@@ -48,7 +48,7 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
         <Link className="navbar-brand" to={"/"} >Ena</Link>
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <SearchBar username = {props.username} setResults={setSearchResults}/>
-          <SearchResultList results={searchResults}/>
+          {searchResults.length > 0 && <SearchResultList results={searchResults} />}
         </div>
         <div className="d-flex">
             {menu}

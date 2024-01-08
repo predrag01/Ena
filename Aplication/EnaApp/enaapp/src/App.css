@@ -52,6 +52,18 @@ body {
 }
 
 .result-list {
-  width: 200px;
-  height: 150px;
+  position: absolute;
+  top: calc(100%); /* Adjust the spacing as needed */
+  left: 0;
+  width: calc(100% - 20px); /* Adjust the padding as needed */
+  max-height: 200px; /* Set a maximum height for the result list */
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+  background-color: white; /* Set the background color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+  z-index: 1; /* Set a higher z-index to overlay other elements */
+  border-radius: 4px; /* Add rounded corners */
+  border: 1px solid #ddd; /* Add a border for separation */
+  padding: 10px; /* Adjust padding as needed */
+  max-width: 210px;
+  margin-left: 58px;
 }
