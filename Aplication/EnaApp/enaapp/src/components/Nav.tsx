@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { User } from "../models/user.model";
+import SearchBar from "./SearchBar";
+import SearchResultList from "./SearchResultList";
 
 
 const Nav = (props: {username:string, setUsername: (username: string) => void}) => {
 
-  const [find, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<User[]>([]);
-
-  const searching = props.username;
 
   const logout = async () => {
     await fetch('https://localhost:44364' + '/User/Logout', {
@@ -18,24 +17,6 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
     });
 
     props.setUsername('');
-  }
-
-  const search = async (event: { preventDefault: () => void; }) => {
-    event.preventDefault();
-    const response = await fetch(`https://localhost:44364/User/Search/${encodeURIComponent(find)}/${encodeURIComponent(searching)}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'credentials': 'include'
-            },
-        });
-
-    const users: User[] = await response.json();
-
-    if(response.ok) {
-      setSearchResults(users);
-    }
-    console.log(users)
   }
 
   let menu;
@@ -66,15 +47,8 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
       <div className="container-fluid">
         <Link className="navbar-brand" to={"/"} >Ena</Link>
         <div className="collapse navbar-collapse" id="navbarCollapse">
-          <form className="d-flex" role="search" onSubmit={search}>
-            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" onChange={e => setSearch(e.target.value)}/>
-            <button className="btn btn-outline-success" type="submit">Search</button>
-          </form>
-          <div className="result-box">
-            {searchResults.map((user, index) => (
-              <div key={index}>{user.UserName}</div>
-            ))}
-          </div>
+          <SearchBar username = {props.username} setResults={setSearchResults}/>
+          <SearchResultList results={searchResults}/>
         </div>
         <div className="d-flex">
             {menu}
