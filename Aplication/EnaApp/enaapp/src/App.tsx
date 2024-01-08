@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 
 function App() {
   const [username, setUserName] = useState('');
+  const [userId, setUserId] = useState(-1);
   
 
     useEffect(() => {
@@ -22,6 +23,7 @@ function App() {
                 const content = await respone.json();
     
                 setUserName(content.username)
+                setUserId(content.id)
             }
         )();
     });
@@ -33,7 +35,7 @@ function App() {
 
         <main className='main'>
           <Routes>
-            <Route path='/' element={<Home username={username} />} />
+            <Route path='/' element={<Home username={username} userId={userId}/>} />
             <Route path='/Login' element={<Login setUsername={setUserName}/>}/>
             <Route path='/Register' element={<Register />}/>
           </Routes>

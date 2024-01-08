@@ -24,7 +24,7 @@ namespace EnaApi.Controllers
 
 
 
-        [Route("GetAllFriends")]
+        [Route("GetAllFriends/{UserId}")]
         [HttpGet]
         public async Task<IActionResult> GetAllFriends(int UserId)
         {
