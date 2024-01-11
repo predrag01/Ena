@@ -128,5 +128,16 @@ namespace BLL.Services
             var users = await this._unitOfWork.User.GetUsersByUsername(username, ownerUsername);
             return users;
         }
+
+        public async Task<User> GetUserByUsername(string username)
+        {
+            if (username != null)
+            {
+                var user = await this._unitOfWork.User.GetUserByUsername(username);
+                return user;
+            }
+            throw new ArgumentNullException(nameof(username), "Username cannot be null.");
+        }
+
     }
 }

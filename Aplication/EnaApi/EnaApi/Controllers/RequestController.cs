@@ -14,22 +14,54 @@ namespace EnaApi.Controllers
         private readonly EnaContext _db;
         public IRequestService _requestService { get; set; }
         public IFriendsListService _friendsListService { get; set; }
+        public IUserService _userService { get; set; }
 
         public RequestController(EnaContext db)
         {
             this._db = db;
             _requestService = new RequestService(db);
             _friendsListService = new FriendsListService(db);
+            _userService=new UserService(db);
         }
 
-        [Route("SendFriendRequest")]
+        //[Route("SendFriendRequest")]
+        //[HttpPost]
+        //public async Task<IActionResult> SendFriendRequest([FromBody] RequestDTO request)
+        //{
+        //    try
+        //    {
+        //        await this._requestService.SendFriendRequest(request);
+        //        return Ok(request);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
+
+        [Route("SendFriendRequest/{username}/{friendUsername}")]
         [HttpPost]
-        public async Task<IActionResult> SendFriendRequest([FromBody] RequestDTO request)
+        public async Task<IActionResult> SendFriendRequest(string username, string friendUsername)
         {
             try
             {
-                await this._requestService.SendFriendRequest(request);
-                return Ok(request);
+                var friend1 = await this._userService.GetUserByUsername(username);
+                var friend2 = await this._userService.GetUserByUsername(friendUsername);
+                if (friend1 != null && friend2 != null)
+                {
+
+                    RequestDTO request = new RequestDTO
+                    {
+                        SenderId = friend1.Id,
+                        RecipientId = friend2.Id,
+                        IsAccepted = false,
+                        Timestamp = DateTime.Now
+                    };
+                    await this._requestService.SendFriendRequest(request);
+                    return Ok(request);
+                }
+                else
+                    return BadRequest();
             }
             catch (Exception e)
             {

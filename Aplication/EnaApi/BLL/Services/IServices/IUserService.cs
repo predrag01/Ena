@@ -15,6 +15,7 @@ namespace BLL.Services.IServices
         Task UpdateProfile(UserUpdateDTO user);
 
         Task<User> GetUser(string jwt);
+        Task<User> GetUserByUsername(string username);
         Task<IQueryable<User>> Search(string username, string ownerUsername);
     }
 }

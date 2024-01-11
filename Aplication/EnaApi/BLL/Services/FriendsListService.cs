@@ -21,13 +21,13 @@ namespace BLL.Services
         public FriendsListService(EnaContext db)
         {
             this._db = db;
-            this._unitOfWork= new UnitOfWork(db);
+            this._unitOfWork = new UnitOfWork(db);
         }
 
-        public async Task CreateFriendship(int  requestId)
+        public async Task CreateFriendship(int requestId)
         {
             var request = await this._unitOfWork.Request.GetRequestById(requestId);
-            if(request != null)
+            if (request != null)
             {
                 var friendsList = await this._unitOfWork.FriendsList.GetFriendsListByUserAndFriend(request.SenderId, request.RecipientId);
                 if (friendsList == null)
@@ -46,6 +46,20 @@ namespace BLL.Services
         {
             List<FriendsList> friends = await this._unitOfWork.FriendsList.GetFriendsListByUser(UserId);
             return friends;
+        }
+
+        public async Task<bool> CheckIfFriends(string UserName, string FriendName)
+        {
+            var friend1 = await this._unitOfWork.User.GetUserByUsername(UserName);
+            var friend2 = await this._unitOfWork.User.GetUserByUsername(FriendName);
+            if (friend1 == null || friend2 == null)
+            {
+                return false;
+            }
+            var friendsList = await this._unitOfWork.FriendsList.GetFriendsListByUserAndFriend(friend1.Id, friend2.Id);
+            if (friendsList == null)
+                return false;
+            return true;
         }
 
     }

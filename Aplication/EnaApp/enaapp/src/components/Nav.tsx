@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { User } from "../models/user.model";
 import SearchBar from "./SearchBar";
 import SearchResultList from "./SearchResultList";
-
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
 const Nav = (props: {username:string, setUsername: (username: string) => void}) => {
 
@@ -35,6 +36,9 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
   } else {
     menu = (
       <ul className="navbar-nav me-auto mb-2 mb-md-0">
+        {/* <li className="nav-item active">
+          <Link className="nav-link" to={"FriendRequests"} ><FontAwesomeIcon icon={faUserPlus} /></Link>
+        </li> */}
         <li className="nav-item active">
           <Link className="nav-link" to={"Login"} onClick={logout}>Logout</Link>
         </li>
@@ -48,7 +52,7 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
         <Link className="navbar-brand" to={"/"} >Ena</Link>
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <SearchBar username = {props.username} setResults={setSearchResults}/>
-          {searchResults.length > 0 && <SearchResultList results={searchResults} />}
+          {searchResults.length > 0 && <SearchResultList username={props.username} results={searchResults}  />}
         </div>
         <div className="d-flex">
             {menu}
