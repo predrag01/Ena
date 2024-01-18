@@ -19,7 +19,7 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
 
     props.setUsername('');
   }
-
+  
   let menu;
 
   if(props.username === undefined){
@@ -36,9 +36,9 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
   } else {
     menu = (
       <ul className="navbar-nav me-auto mb-2 mb-md-0">
-        {/* <li className="nav-item active">
-          <Link className="nav-link" to={"FriendRequests"} ><FontAwesomeIcon icon={faUserPlus} /></Link>
-        </li> */}
+        <li className="nav-item active">
+          <Link className="nav-link" to={"FriendRequests"} >Friend Requests</Link>
+        </li>
         <li className="nav-item active">
           <Link className="nav-link" to={"Login"} onClick={logout}>Logout</Link>
         </li>
@@ -58,6 +58,7 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
             {menu}
         </div>
       </div>
+      
     </nav>
   );
 };

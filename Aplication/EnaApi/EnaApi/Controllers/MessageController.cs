@@ -4,6 +4,7 @@ using DAL.DataContext;
 using Microsoft.AspNetCore.Mvc;
 using DAL.DTOs;
 using DAL.Models;
+using Microsoft.AspNetCore.SignalR;
 
 namespace EnaApi.Controllers
 {
@@ -16,19 +17,52 @@ namespace EnaApi.Controllers
         public IChatMessageService _messageService { get; set; }
         public IRequestService _requestService { get; set; }
         public IFriendsListService _friendsListService { get; set; }
+        public IUserService _userService { get; set; }
+        protected readonly IHubContext<ChatHub> _chatHub;
 
-        public MessageController(EnaContext db)
+        public MessageController(EnaContext db, IHubContext<ChatHub> chatHub)
         {
             this._db = db;
             _messageService = new ChatMessageService(db);
             _requestService = new RequestService(db);
             _friendsListService = new FriendsListService(db);
+            _userService = new UserService(db);
+            _chatHub = chatHub;
         }
+
+        [Route("Create")]
+        [HttpPost]
+        public async Task<IActionResult> Create(MessagePost messagePost)
+        {
+            await _chatHub.Clients.All.SendAsync("sendToReact", "The message '" +
+            messagePost.Message + "' has been received");
+            return Ok();
+        }
+
+        //[Route("SendMessage")]
+        //[HttpPost]
+        //public async Task<IActionResult> SendMessage([FromBody] ChatMessageDTO message)
+        //{
+
+        //    try
+        //    {
+        //        await this._messageService.SendMessage(message);
+        //        return Ok(message);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
 
         [Route("SendMessage")]
         [HttpPost]
-        public async Task<IActionResult> SendMessage([FromBody] ChatMessageDTO message)
+        public async Task<IActionResult> SendMessage(string senderUsername, string recipientUsername, string content)
         {
+            var friend1 = await this._userService.GetUserByUsername(senderUsername);
+            var friend2 = await this._userService.GetUserByUsername(recipientUsername);
+
+            ChatMessageDTO message = new ChatMessageDTO(friend1.Id, friend2.Id, content, DateTime.Now);
             try
             {
                 await this._messageService.SendMessage(message);
@@ -42,12 +76,14 @@ namespace EnaApi.Controllers
 
         [Route("GetAllMessagesForChat")]
         [HttpGet]
-        public async Task<IActionResult> GetAllMessagesForChat(int SenderId, int RecipientId)
+        public async Task<IActionResult> GetAllMessagesForChat(string senderUsername, string recipientUsername)
         {
+            var friend1 = await this._userService.GetUserByUsername(senderUsername);
+            var friend2 = await this._userService.GetUserByUsername(recipientUsername);
             try
             {
-                List<ChatMessage> messages1= await this._messageService.GetAllMessagesForChat(SenderId, RecipientId);
-                List<ChatMessage> messages2 = await this._messageService.GetAllMessagesForChat(RecipientId, SenderId);
+                List<ChatMessage> messages1= await this._messageService.GetAllMessagesForChat(friend1.Id, friend2.Id);
+                List<ChatMessage> messages2 = await this._messageService.GetAllMessagesForChat(friend2.Id, friend1.Id);
                 messages1.AddRange(messages2);
                 return Ok(messages1.OrderBy(m => m.Timestamp).ToList());
             }
@@ -57,5 +93,9 @@ namespace EnaApi.Controllers
             }
         }
 
+    }
+    public class MessagePost
+    {
+        public virtual string Message { get; set; }
     }
 }

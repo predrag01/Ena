@@ -103,14 +103,18 @@ namespace EnaApi.Controllers
 
         [Route("GetAllFriendRequests")]
         [HttpGet]
-        public async Task<IActionResult> GetAllFriendRequests(int UserId)
+        public async Task<IActionResult> GetAllFriendRequests(string username)
         {
+            var friend1 = await this._userService.GetUserByUsername(username);
             try
             {
 
-                List<Request> requests = await this._requestService.GetAllFriendRequestsForUser(UserId);
-                return Ok(requests)
-                    ;
+                List<Request> requests = await this._requestService.GetAllFriendRequestsForUser(friend1.Id);
+                foreach(Request req in requests)
+                {
+                    req.Sender = await this._userService.GetUserByUserId(req.SenderId);
+                }
+                return Ok(requests);
             }
             catch (Exception e)
             {

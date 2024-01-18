@@ -139,5 +139,11 @@ namespace BLL.Services
             throw new ArgumentNullException(nameof(username), "Username cannot be null.");
         }
 
+        public async Task<User> GetUserByUserId(int userId)
+        {
+            var user = await this._unitOfWork.User.GetUserById(userId);
+            return user;
+        }
+
     }
 }

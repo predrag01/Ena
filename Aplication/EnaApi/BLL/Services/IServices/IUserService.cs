@@ -13,7 +13,7 @@ namespace BLL.Services.IServices
         Task<User> Register(UserRegisterDTO user);
         Task<string> Login(string email,  string password);
         Task UpdateProfile(UserUpdateDTO user);
-
+        Task<User> GetUserByUserId(int userId);
         Task<User> GetUser(string jwt);
         Task<User> GetUserByUsername(string username);
         Task<IQueryable<User>> Search(string username, string ownerUsername);

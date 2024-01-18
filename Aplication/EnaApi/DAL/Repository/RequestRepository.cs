@@ -30,7 +30,7 @@ namespace DAL.Repository
         }
         public async Task<List<Request>> GetFriendRequestsByUser(int UserId)
         {
-            var requests = await _db.Requests.Where(x => x.RecipientId == UserId).ToListAsync();
+            var requests = await _db.Requests.Where(x => x.RecipientId == UserId && x.IsAccepted == false).ToListAsync();
             return requests;
         }
     }

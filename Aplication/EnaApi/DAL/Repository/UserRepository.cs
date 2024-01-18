@@ -57,7 +57,7 @@ namespace DAL.Repository
 
         public async Task<User> GetUserById(int id)
         {
-            var user = await this._db.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var user = await _db.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
             return user;
         }
 
