@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { FriendRequest } from "../models/friendRequest.model";
+import * as signalR from "@microsoft/signalr";
 const FriendRequests = (props:{ username: String }) => {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+
 
   useEffect(() => {
     const fetchFriendRequests = async () => {
@@ -11,23 +14,66 @@ const FriendRequests = (props:{ username: String }) => {
             });
       const data = await response.json();
       console.log(data);
-      
       setFriendRequests(data);
-    };
+      const newConnection = new signalR.HubConnectionBuilder()
+			.withUrl('https://localhost:44364/chatHub') 
+			.build();
+	
+		newConnection.on('FetchFriendRequests', (username: string) => {
+			fetchFriendRequests();
+		});
 
+    // newConnection.start();
+		newConnection.start()
+			.then(() => {
+				// Join a group using the usernames of the two users
+				newConnection.invoke('JoinGroup', props.username);
+				console.log('SignalR connection established');
+			})
+			.catch((error) => {
+				console.error('Error establishing SignalR connection:', error);
+			});
+	
+		setConnection(newConnection);
+	
+		return () => {
+			if (newConnection) {
+				// Leave the group when the component unmounts
+				newConnection.invoke('LeaveGroup', props.username);
+				// newConnection.invoke('LeaveGroup', friendUsername);
+				newConnection.stop();
+			}
+		};
+    };
+    
     fetchFriendRequests();
   }, []);
 
-  const handleAccept = (requestId: number) => {
-    // Handle accepting friend request logic
-    console.log(`Accepting friend request with ID: ${requestId}`);
+  // useEffect(() => {
+		
+	// }, []);
+
+  const acceptFriendRequest = async (requestId: number) => {
+    if (connection) {
+      try {
+        // Invoke the 'SendMessageToUser' method on the server
+        await connection.invoke('AcceptFriendRequest', requestId, props.username);
+      } catch (error) {
+        console.error('Error acceptiing friend request:', error);
+      }
+    }
   };
 
-  const handleDecline = (requestId: number) => {
-    // Handle declining friend request logic
-    console.log(`Declining friend request with ID: ${requestId}`);
+  const declineFriendRequest = async (requestId: number) => {
+    if (connection) {
+      try {
+        // Invoke the 'SendMessageToUser' method on the server
+        await connection.invoke('DeclineFriendRequest', requestId, props.username);
+      } catch (error) {
+        console.error('Error acceptiing friend request:', error);
+      }
+    }
   };
-
 
   return (
     <div className="friend-requests">
@@ -39,8 +85,8 @@ const FriendRequests = (props:{ username: String }) => {
               <p>{request.sender!.name}</p>
             </div>
             <div className="friend-request-actions">
-              <button onClick={() => handleAccept(request.id!)}>Accept</button>
-              <button onClick={() => handleDecline(request.id!)}>Decline</button>
+              <button onClick={() => acceptFriendRequest(request.id!)}>Accept</button>
+              <button onClick={() => declineFriendRequest(request.id!)}>Decline</button>
             </div>
           </div>
         ))

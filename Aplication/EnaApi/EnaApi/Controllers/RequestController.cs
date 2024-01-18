@@ -121,5 +121,21 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Route("CheckIfFriendRequestSent/{UserName}/{FriendName}")]
+        [HttpGet]
+        public async Task<IActionResult> CheckIfFriendRequestSent(string UserName, string FriendName)
+        {
+            try
+            {
+                bool friends = await this._requestService.CheckIfFriendRequestSent(UserName, FriendName);
+
+                return Ok(friends);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

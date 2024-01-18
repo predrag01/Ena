@@ -13,7 +13,7 @@ namespace BLL.Services.IServices
         Task SendFriendRequest(RequestDTO request);
         Task AcceptFriendRequest(int requestId);
         Task DeclineFriendRequest(int requestId);
-
+        Task<bool> CheckIfFriendRequestSent(string UserName, string FriendName);
         Task<List<Request>> GetAllFriendRequestsForUser(int UserId);
     }
 }

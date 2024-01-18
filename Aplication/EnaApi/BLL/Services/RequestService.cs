@@ -67,5 +67,18 @@ namespace BLL.Services
             List<Request> friends = await this._unitOfWork.Request.GetFriendRequestsByUser(UserId);
             return friends;
         }
+        public async Task<bool> CheckIfFriendRequestSent(string UserName, string FriendName)
+        {
+            var friend1 = await this._unitOfWork.User.GetUserByUsername(UserName);
+            var friend2 = await this._unitOfWork.User.GetUserByUsername(FriendName);
+            if (friend1 == null || friend2 == null)
+            {
+                return false;
+            }
+            var friendsList = await this._unitOfWork.Request.GetRequestBySenderAndRecipient(friend1.Id, friend2.Id);
+            if (friendsList == null)
+                return false;
+            return true;
+        }
     }
 }
