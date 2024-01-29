@@ -16,10 +16,10 @@ namespace EnaApi.Controllers
         private readonly EnaContext _db;
         public IUserService _userService { get; set; }
 
-        public UserController(EnaContext db)
+        public UserController(EnaContext db, IUserService userService)
         {
             this._db = db;
-            _userService = new UserService(db);
+            _userService = userService;
         }
 
         [Route("Register")]

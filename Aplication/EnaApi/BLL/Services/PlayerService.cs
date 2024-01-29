@@ -14,12 +14,12 @@ namespace BLL.Services
     public class PlayerService : IPlayerService
     {
         private readonly EnaContext _db;
-        public UnitOfWork _unitOfWork { get; set; }
+        public IUnitOfWork _unitOfWork { get; set; }
 
-        public PlayerService(EnaContext db)
+        public PlayerService(EnaContext db, IUnitOfWork unitOfWork)
         {
             this._db = db;
-            this._unitOfWork= new UnitOfWork(db);
+            this._unitOfWork = unitOfWork;
         }
 
         public async Task CreatePlayer(int userId, int gameId, bool host = false)

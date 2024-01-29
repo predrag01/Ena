@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Repository
 {
-    internal class UserRepository : Repository<User>, IUserRepository
+    public class UserRepository : Repository<User>, IUserRepository
     {
         //public UserRepository(DbContext context) : base(context)
         //{

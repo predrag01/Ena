@@ -13,14 +13,14 @@ namespace EnaApi
         public IUserService _userService { get; set; }
         public IRequestService _requestService { get; set; }
         public IFriendsListService _friendsListService { get; set; }
-        public UnitOfWork _unitOfWork { get; set; }
-        public ChatHub(EnaContext db)
+        public IUnitOfWork _unitOfWork { get; set; }
+        public ChatHub(EnaContext db, IChatMessageService messageService, IUserService userService, IRequestService requestService, IFriendsListService friendsListService, IUnitOfWork unitOfWork)
         {
-            _messageService = new ChatMessageService(db);
-            _userService = new UserService(db);
-            _requestService = new RequestService(db);
-            _friendsListService = new FriendsListService(db);
-            this._unitOfWork = new UnitOfWork(db);
+            _messageService = messageService;
+            _userService = userService;
+            _requestService = requestService;
+            _friendsListService = friendsListService;
+            this._unitOfWork = unitOfWork;
         }
         //public async Task JoinChat(UserConnection connection)
         //{

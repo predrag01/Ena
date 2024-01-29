@@ -17,16 +17,16 @@ namespace BLL.Services
     public class UserService : IUserService
     {
         private readonly EnaContext _db;
-        public UnitOfWork _unitOfWork { get; set; }
+        public IUnitOfWork _unitOfWork { get; set; }
 
         private JwtService jwtService { get; set; }
 
         public IUserService _userService { get; set; }
 
-        public UserService(EnaContext db)
+        public UserService(EnaContext db, IUnitOfWork unitOfWork)
         {
             this._db = db;
-            this._unitOfWork= new UnitOfWork(db);
+            this._unitOfWork = unitOfWork;
             jwtService = new JwtService();
         }
 

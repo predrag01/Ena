@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using DAL.DataContext;
+using DAL.Models;
 using DAL.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,8 +12,11 @@ namespace DAL.Repository
 {
     public class CardRepository : Repository<Card>, ICardRepository
     {
-        public CardRepository(DbContext context) : base(context)
+        private readonly EnaContext _db;
+        public CardRepository(EnaContext db) : base(db)
         {
+            _db = db;
+
         }
     }
 }

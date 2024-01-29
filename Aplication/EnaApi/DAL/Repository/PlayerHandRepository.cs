@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using DAL.DataContext;
+using DAL.Models;
 using DAL.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,8 +12,11 @@ namespace DAL.Repository
 {
     public class PlayerHandRepository : Repository<PlayerHand>, IPlayerHandRepository
     {
-        public PlayerHandRepository(DbContext context) : base(context)
+        private EnaContext _db;
+        public PlayerHandRepository(EnaContext db) : base(db)
         {
+            _db = db;
+
         }
     }
 }

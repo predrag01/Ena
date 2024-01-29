@@ -17,12 +17,12 @@ namespace BLL.Services
     public class ChatMessageService : IChatMessageService
     {
         private readonly EnaContext _db;
-        public UnitOfWork _unitOfWork { get; set; }
+        public IUnitOfWork _unitOfWork { get; set; }
 
-        public ChatMessageService(EnaContext db)
+        public ChatMessageService(EnaContext db, IUnitOfWork unitOfWork)
         {
             this._db = db;
-            this._unitOfWork= new UnitOfWork(db);
+            this._unitOfWork= unitOfWork;
         }
 
         public async Task SendMessage(ChatMessageDTO message)

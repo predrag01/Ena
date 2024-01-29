@@ -15,12 +15,12 @@ namespace BLL.Services
     public class WinnerService : IWinnerService
     {
         private readonly EnaContext _db;
-        public UnitOfWork _unitOfWork { get; set; }
+        public IUnitOfWork _unitOfWork { get; set; }
 
-        public WinnerService(EnaContext db)
+        public WinnerService(EnaContext db, IUnitOfWork unitOfWork)
         {
             this._db = db;
-            this._unitOfWork= new UnitOfWork(db);
+            this._unitOfWork = unitOfWork;
         }
 
         public async Task CreateWinner(int playerId)

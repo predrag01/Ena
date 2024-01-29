@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using DAL.DataContext;
+using DAL.Models;
 using DAL.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,10 +10,13 @@ using System.Threading.Tasks;
 
 namespace DAL.Repository
 {
-    internal class TurnRepository : Repository<Turn>, ITurnRepository
+    public class TurnRepository : Repository<Turn>, ITurnRepository
     {
-        public TurnRepository(DbContext context) : base(context)
+        private EnaContext _db;
+        public TurnRepository(EnaContext db) : base(db)
         {
+            _db = db;
+
         }
     }
 }

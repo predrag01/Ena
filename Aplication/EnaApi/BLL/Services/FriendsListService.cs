@@ -16,12 +16,12 @@ namespace BLL.Services
     public class FriendsListService : IFriendsListService
     {
         private readonly EnaContext _db;
-        public UnitOfWork _unitOfWork { get; set; }
+        public IUnitOfWork _unitOfWork { get; set; }
 
-        public FriendsListService(EnaContext db)
+        public FriendsListService(EnaContext db, IUnitOfWork unitOfWork)
         {
             this._db = db;
-            this._unitOfWork = new UnitOfWork(db);
+            this._unitOfWork = unitOfWork;
         }
 
         public async Task CreateFriendship(int requestId)

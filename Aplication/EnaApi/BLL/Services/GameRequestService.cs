@@ -15,14 +15,14 @@ namespace BLL.Services
     public class GameRequestService : IGameRequestService
     {
         private readonly EnaContext _db;
-        public UnitOfWork _unitOfWork { get; set; }
-        public PlayerService _playerService { get; set; }
+        public IUnitOfWork _unitOfWork { get; set; }
+        public IPlayerService _playerService { get; set; }
 
-        public GameRequestService(EnaContext db)
+        public GameRequestService(EnaContext db, IUnitOfWork unitOfWork, IPlayerService playerService)
         {
             this._db = db;
-            this._unitOfWork= new UnitOfWork(db);
-            this._playerService = new PlayerService(db);
+            this._unitOfWork= unitOfWork;
+            this._playerService = playerService;
         }
 
         public async Task SendGameRequest(GameRequestDTO request)

@@ -13,10 +13,10 @@ namespace EnaApi.Controllers
         private readonly EnaContext _db;
         public IPlayerService _playerService { get; set; }
 
-        public PlayerController(EnaContext db)
+        public PlayerController(EnaContext db, IPlayerService playerService)
         {
             this._db = db;
-            _playerService = new PlayerService(db);
+            _playerService = playerService;
         }
 
         [Route("CreatePlayer")]

@@ -10,15 +10,17 @@ namespace DAL.UnitOfWork
     public interface IUnitOfWork : IDisposable
     {
         ICardRepository Card { get; }
+        IChatMessageRepository ChatMessage { get; }
+        IFriendsListRepository FriendsList { get; }
         IGameRepository Game { get; }
+        IGameRequestRepository GameRequest { get; }
         IListOfCardsRepository ListOfCards { get; }
         IPlayerHandRepository PlayerHand { get; }
         IPlayerRepository Player { get; }
+        IRequestRepository Request { get; }
         ITurnRepository Turn { get; }
         IUserRepository User { get; }
-        IRequestRepository Request { get; }
-        IGameRequestRepository GameRequest { get; }
-        IChatMessageRepository ChatMessage { get; }
+        IWinnerRepository Winner { get; }
         Task Save();
     }
 }

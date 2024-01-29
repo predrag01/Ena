@@ -13,10 +13,10 @@ namespace EnaApi.Controllers
         private readonly EnaContext _db;
         public IGameRequestService _gameRequestService { get; set; }
 
-        public GameRequestController(EnaContext db)
+        public GameRequestController(EnaContext db, IGameRequestService gameRequestService)
         {
             this._db = db;
-            _gameRequestService = new GameRequestService(db);
+            _gameRequestService = gameRequestService;
         }
 
         [Route("SendGameRequest")]

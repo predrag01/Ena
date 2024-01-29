@@ -12,8 +12,10 @@ namespace DAL.Repository
 {
     public class WinnerRepository : Repository<Winner>, IWinnerRepository
     {
-        public WinnerRepository(EnaContext context) : base(context)
+        private EnaContext _db;
+        public WinnerRepository(EnaContext db) : base(db)
         {
+            _db = db;
         }
     }
 }

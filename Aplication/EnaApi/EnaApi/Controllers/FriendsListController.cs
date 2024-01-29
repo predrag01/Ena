@@ -16,12 +16,12 @@ namespace EnaApi.Controllers
         public IFriendsListService _friendsListService { get; set; }
         public IUserService _userService { get; set; }
 
-        public FriendsController(EnaContext db)
+        public FriendsController(EnaContext db, IRequestService requestService, IFriendsListService friendsListService, IUserService userService)
         {
             this._db = db;
-            _requestService = new RequestService(db);
-            _friendsListService = new FriendsListService(db);
-            _userService = new UserService(db);
+            _requestService = requestService;
+            _friendsListService = friendsListService;
+            _userService = userService;
         }
 
 

@@ -13,10 +13,10 @@ namespace EnaApi.Controllers
         private readonly EnaContext _db;
         public IWinnerService _winnerService { get; set; }
 
-        public WinnerController(EnaContext db)
+        public WinnerController(EnaContext db, IWinnerService winnerService)
         {
             this._db = db;
-            _winnerService = new WinnerService(db);
+            _winnerService = winnerService;
         }
 
         [Route("CreateWinner/{playerId}")]

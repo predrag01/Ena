@@ -20,13 +20,13 @@ namespace EnaApi.Controllers
         public IUserService _userService { get; set; }
         protected readonly IHubContext<ChatHub> _chatHub;
 
-        public MessageController(EnaContext db, IHubContext<ChatHub> chatHub)
+        public MessageController(EnaContext db, IHubContext<ChatHub> chatHub, IChatMessageService messageService, IRequestService requestService, IFriendsListService friendsListService, IUserService userService)
         {
             this._db = db;
-            _messageService = new ChatMessageService(db);
-            _requestService = new RequestService(db);
-            _friendsListService = new FriendsListService(db);
-            _userService = new UserService(db);
+            _messageService = messageService;
+            _requestService = requestService;
+            _friendsListService = friendsListService;
+            _userService = userService;
             _chatHub = chatHub;
         }
 

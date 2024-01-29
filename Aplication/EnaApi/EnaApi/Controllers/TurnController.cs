@@ -13,10 +13,10 @@ namespace EnaApi.Controllers
         private readonly EnaContext _db;
         public ITurnService _turnService { get; set; }
 
-        public TurnController(EnaContext db)
+        public TurnController(EnaContext db, ITurnService turnService)
         {
             this._db = db;
-            _turnService = new TurnService(db);
+            _turnService = turnService;
         }
 
         [Route("PlayMove")]
