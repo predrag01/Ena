@@ -39,7 +39,7 @@ const SearchBar = (props: { username: string; setResults: (users: User[]) => voi
   
     return (
       <div className="d-flex" role="search">
-        <input className="form-control me-2" placeholder="Search" value={find} onChange={e => handleChange(e.target.value)} />
+        <input className="form-control me-2 search" placeholder="Search" value={find} onChange={e => handleChange(e.target.value)} />
       </div>
     );
   };

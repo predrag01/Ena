@@ -11,6 +11,9 @@ using DAL.DTOs;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
 using BLL.Helpers;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using System.IO;
 
 namespace BLL.Services
 {
@@ -57,11 +60,37 @@ namespace BLL.Services
                     user.LastName, 
                     user.Username, 
                     user.Email, 
-                    BCrypt.Net.BCrypt.HashPassword(user.Password), 
-                    user.ProfilePicture, 
+                    BCrypt.Net.BCrypt.HashPassword(user.Password),
+                    "",
                     user.GamesWon, 
                     user.GamesLost
                 );
+
+                if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
+                {
+                    string fileName = Guid.NewGuid().ToString();
+                    var uploads = Path.Combine("C:\\VII semestar\\Arhitektura i projektovanje softvera\\Ena\\Aplication\\EnaApp\\enaapp\\public", @"ProfilePictures");
+                    var extension = Path.GetExtension(user.ProfilePicture.FileName);
+
+                    using (var fileStream = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                    {
+                        await user.ProfilePicture.CopyToAsync(fileStream);
+                    }
+
+                    using (var image = Image.Load(Path.Combine(uploads, fileName + extension)))
+                    {
+                        image.Mutate(x => x
+                            .Resize(new ResizeOptions
+                            {
+                                Size = new Size(120, 120),
+                                Mode = ResizeMode.Crop
+                            }));
+
+                        image.Save(Path.Combine(uploads, fileName + extension));
+                    }
+
+                    userCreated.ProfilePicture = @"ProfilePictures\" + fileName + extension;
+                }
 
                 return await this._unitOfWork.User.Create(userCreated);
             }
@@ -93,10 +122,58 @@ namespace BLL.Services
                 userFound.LastName= user.LastName;
                 userFound.Username= user.Username;
                 userFound.Email= user.Email;
-                userFound.Password= user.Password;
-                userFound.ProfilePicture= user.ProfilePicture;
                 userFound.GamesLost = user.GamesLost;
                 userFound.GamesWon= user.GamesWon;
+
+                if (user.ChangePass)
+                {
+                    if (BCrypt.Net.BCrypt.Verify(user.OldPass, userFound.Password))
+                    {
+                        userFound.Password = BCrypt.Net.BCrypt.HashPassword(user.NewPass);
+                    }
+                }
+
+                if (user.ChangeProfilePicture)
+                {
+                    if (!string.IsNullOrEmpty(userFound.ProfilePicture))
+                    {
+                        string filePath = Path.Combine("C:\\VII semestar\\Arhitektura i projektovanje softvera\\Ena\\Aplication\\EnaApp\\enaapp\\public", userFound.ProfilePicture);
+
+                        if (File.Exists(filePath))
+                        {
+                            File.Delete(filePath);
+                        }
+
+                        userFound.ProfilePicture = "";
+                    }
+
+                    if (user.ProfilePicture != null && user.ProfilePicture.Length > 0)
+                    {
+                        string fileName = Guid.NewGuid().ToString();
+                        var uploads = Path.Combine("C:\\VII semestar\\Arhitektura i projektovanje softvera\\Ena\\Aplication\\EnaApp\\enaapp\\public", @"ProfilePictures");
+                        var extension = Path.GetExtension(user.ProfilePicture.FileName);
+
+                        using (var fileStream = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                        {
+                            await user.ProfilePicture.CopyToAsync(fileStream);
+                        }
+
+                        using (var image = Image.Load(Path.Combine(uploads, fileName + extension)))
+                        {
+                            image.Mutate(x => x
+                                .Resize(new ResizeOptions
+                                {
+                                    Size = new Size(120, 120),
+                                    Mode = ResizeMode.Crop
+                                }));
+
+                            image.Save(Path.Combine(uploads, fileName + extension));
+                        }
+
+                        userFound.ProfilePicture = @"ProfilePictures\" + fileName + extension;
+                    }
+                }
+
                 this._unitOfWork.User.Update(userFound);
                 await this._unitOfWork.Save();
             }

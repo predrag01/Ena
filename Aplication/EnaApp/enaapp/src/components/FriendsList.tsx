@@ -19,7 +19,6 @@ const FrindsList = (props: {userId: number}) => {
     
             const content: FriendList[] = await response.json();
             setFriendsList(content);
-            console.log(content)
         };
     
         fetchData();
@@ -27,7 +26,7 @@ const FrindsList = (props: {userId: number}) => {
     
     return (
         <div className="friend-list">
-            
+            <h3 className="friends-headline">Friends</h3>
             {frinedsList.map((friend, id) => {
                 return <Friend result={friend} key={id}/>
             })}

@@ -7,10 +7,14 @@ import Login from './pages/Login'
 import { useEffect, useState } from 'react'
 import Chat from './pages/Chat'
 import FriendRequests from './pages/FriendRequests'
+import Settings from './pages/Settings'
 
 function App() {
+  const [profileImg, setProfileImg] = useState('');
   const [username, setUserName] = useState('');
   const [userId, setUserId] = useState(-1);
+  const [gamesWon, setGamesWon] = useState(0);
+  const [gamesLost, setGamesLost] = useState(0);
   
 
     useEffect(() => {
@@ -22,10 +26,13 @@ function App() {
                     mode: 'cors'
                 });
     
-                const content = await respone.json();
-    
-                setUserName(content.username)
-                setUserId(content.id)
+                const content = await respone.json();         
+                
+                setProfileImg(content.profilePicture);
+                setUserName(content.username);
+                setUserId(content.id);
+                setGamesWon(content.gamesWon);
+                setGamesLost(content.gamesLost);
             }
         )();
     });
@@ -33,7 +40,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-      <Nav username={username} setUsername={setUserName}/>
+        <Nav username={username} setUsername={setUserName} userId={userId} setUserId={setUserId} profileImg={profileImg} gamesLost={gamesLost} gamesWon={gamesWon}/>
 
         <main className='main'>
           <Routes>
@@ -42,6 +49,7 @@ function App() {
             <Route path='/Register' element={<Register />}/>
             <Route path='/Chat' element={<Chat />}/>
             <Route path='/FriendRequests' element={<FriendRequests username={username} />}/>
+            <Route path='/Settings' element={<Settings setUsername={setUserName} setProfilePic={setProfileImg}/>}/>
           </Routes>
         </main>
       </BrowserRouter>

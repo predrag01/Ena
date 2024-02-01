@@ -1,24 +1,46 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { User } from "../models/user.model";
 import SearchBar from "./SearchBar";
 import SearchResultList from "./SearchResultList";
+import image from "./../assets/noProfilePicture.png"
+import DropDownMenu from "./DropDownMenu";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
-const Nav = (props: {username:string, setUsername: (username: string) => void}) => {
+const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, username:string, profileImg:string, setUsername: (username: string) => void, setUserId: (userId: number) => void}) => {
 
   const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [showMenu, setShowMenu] = useState(false);
+  const [friendRequest, setFriendrequest] = useState(false);
+  const [messages, setMessages] = useState(false);
+  const [gameRequest, setMGameRequest] = useState(false);
 
-  const logout = async () => {
-    await fetch('https://localhost:44364' + '/User/Logout', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        credentials: 'include'
-    });
+  const menuRef = useRef<HTMLDivElement>(null);
+  const searchResultsRef = useRef<HTMLDivElement>(null);
 
-    props.setUsername('');
-  }
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+
+      if (searchResultsRef.current && !searchResultsRef.current.contains(event.target as Node)) {
+        setSearchResults([]);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+  const showHideMenu = () => {
+    setShowMenu(!showMenu);
+    console.log(props.profileImg);
+  };
   
   let menu;
 
@@ -35,14 +57,51 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
     )
   } else {
     menu = (
-      <ul className="navbar-nav me-auto mb-2 mb-md-0">
-        <li className="nav-item active">
-          <Link className="nav-link" to={"FriendRequests"} >Friend Requests</Link>
-        </li>
-        <li className="nav-item active">
-          <Link className="nav-link" to={"Login"} onClick={logout}>Logout</Link>
-        </li>
-      </ul>
+      <div className="nav-menu" ref={menuRef}>
+        <div className="icons">
+          <Link className="nav-icons game-request-icon" to={""} >
+            {gameRequest ? 
+              (<div>
+                <i className="bi bi-controller"></i>
+              </div>) : 
+              (<div>
+                <i className="bi bi-controller"></i>
+              </div>)}
+          </Link>
+          <Link className="nav-icons friend-request-icon" to={"FriendRequests"} >
+            {friendRequest ? 
+              (<div>
+                <i className="bi bi-person-plus-fill"></i>
+              </div>) : 
+              (<div>
+                <i className="bi bi-person"></i>
+              </div>)}
+          </Link>
+          <Link className="nav-icons message-icon" to={""} >
+            {messages ? 
+              (<div>
+                <i className="bi bi-chat-left-fill"></i>
+              </div>) : 
+              (<div>
+                <i className="bi bi-chat-left"></i>
+              </div>)}
+          </Link>
+        </div>
+        <div className="nav-counter">
+          <i className="bi bi-trophy nav-wons"></i>
+          <label className="gamesWonLost"> {props.gamesWon}</label>
+        </div>
+        <div className="nav-counter">
+          <i className="bi bi-bandaid nav-wons"></i>
+          <label className="gamesWonLost"> {props.gamesLost}</label>
+        </div>
+        <div className="nav-username-img" onClick={showHideMenu}>
+          <img className="nav-profile-image" src={props.profileImg ? ('./../public/' + props.profileImg) : image } alt={props.username} />
+          <label className="nav-username">{props.username}</label>
+          {showMenu && <DropDownMenu setUsername={props.setUsername} userId={props.userId} setUserId={props.setUserId} closeMenu={setShowMenu}/>}
+        </div>
+        
+      </div>
     )
   }
 
@@ -52,7 +111,11 @@ const Nav = (props: {username:string, setUsername: (username: string) => void}) 
         <Link className="navbar-brand" to={"/"} >Ena</Link>
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <SearchBar username = {props.username} setResults={setSearchResults}/>
-          {searchResults.length > 0 && <SearchResultList username={props.username} results={searchResults}  />}
+          {searchResults.length > 0 && (
+            <div ref={searchResultsRef}>
+              <SearchResultList username={props.username} results={searchResults}  />
+            </div>
+          )}
         </div>
         <div className="d-flex">
             {menu}

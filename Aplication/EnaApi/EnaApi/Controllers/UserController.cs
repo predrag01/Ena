@@ -1,11 +1,7 @@
-﻿using BLL.Helpers;
-using BLL.Services;
-using BLL.Services.IServices;
+﻿using BLL.Services.IServices;
 using DAL.DataContext;
 using DAL.DTOs;
-using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace EnaApi.Controllers
 {
@@ -24,7 +20,7 @@ namespace EnaApi.Controllers
 
         [Route("Register")]
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] UserRegisterDTO user)
+        public async Task<IActionResult> Register([FromForm] UserRegisterDTO user)
         {
             try
             {
@@ -57,7 +53,7 @@ namespace EnaApi.Controllers
 
         [Route("UpdateProfile")]
         [HttpPut]
-        public async Task<IActionResult> UpdateProfile([FromBody] UserUpdateDTO user)
+        public async Task<IActionResult> UpdateProfile([FromForm] UserUpdateDTO user)
         {
             try
             {

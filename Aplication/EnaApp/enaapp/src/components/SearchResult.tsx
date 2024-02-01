@@ -4,6 +4,7 @@ import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 import { faUserCheck } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from "react";
 import * as signalR from '@microsoft/signalr';
+import image from "./../assets/noProfilePicture.png"
 
 const SearchResult = (props: {username: string; result: User}) => {
 
@@ -120,14 +121,15 @@ const sendFriendRequestSignalR = async () => {
   
 
   return (
-    <>
-    <div>{props.result.username} 
-    &nbsp;
-    <span onClick={handleIconClick}>
-      {!isFriendshipTrue&&<FontAwesomeIcon icon={isIconClicked || isFriendRequestedTrue ? faUserCheck : faUserPlus} />}
-    </span>
+    <div className="signle-search-result">
+      <img className="result-profile-image" src={props.result.profilePicture ? ('./../public/' + props.result.profilePicture) : image } alt={props.username} />
+      <label className="result-username">{props.result.username}</label>
+      <div className="result-icon">
+        <label className="result-icon-icon" onClick={handleIconClick}>
+          {!isFriendshipTrue&& ((isIconClicked || isFriendRequestedTrue) ? (<i className="bi bi-person-plus-fill"></i>) : (<i className="bi bi-person-check-fill"></i>))}
+        </label>
+      </div>
     </div>
-    </>
   );
 };
 

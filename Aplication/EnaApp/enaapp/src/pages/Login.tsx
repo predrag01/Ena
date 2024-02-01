@@ -1,5 +1,5 @@
 import { SyntheticEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = (props: {setUsername: (username: string) => void}) => {
 
@@ -24,8 +24,6 @@ const Login = (props: {setUsername: (username: string) => void}) => {
 
         const content = await response.json();
 
-        
-
         props.setUsername(content.message);
         setRedirect(true);
     };
@@ -35,16 +33,17 @@ const Login = (props: {setUsername: (username: string) => void}) => {
     };
     
     return (
-        <form onSubmit={submit}>
-            <h1 className="h3 mb-3 fw-normal">Please log in</h1>
-            <div className="form-floating">
+        <form className="login" onSubmit={submit}>
+            <h1 className="h3 mb-3 fw-normal">Log in</h1>
+            <div className="form-floating input-row">
                 <input type="email" className="form-control" placeholder="name@example.com" required onChange={e => setEmail(e.target.value)}/>
                 <label >Email address</label>
             </div>
-            <div className="form-floating text-start mb-3">
+            <div className="form-floating text-start input-row">
                 <input type="password" className="form-control" placeholder="Password" required onChange={e => setPassword(e.target.value)}/>
                 <label >Password</label>
             </div>
+            <Link className="nav-link login-label" to={"/Register"}>Don't have an account?</Link>
             <button className="btn btn-primary w-100 py-2" type="submit">Sign in</button>
         </form>
     );

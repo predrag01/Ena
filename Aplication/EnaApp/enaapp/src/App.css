@@ -56,7 +56,7 @@ body {
   position: absolute;
   top: calc(100%);
   left: 0;
-  width: calc(100% - 20px);
+  width: 255px;
   max-height: 200px;
   overflow-y: auto;
   background-color: white; 
@@ -65,7 +65,6 @@ body {
   border-radius: 4px; 
   border: 1px solid #ddd;
   padding: 10px;
-  max-width: 210px;
   margin-left: 58px;
 }
 
@@ -76,14 +75,14 @@ body {
 }
 
 .home{
-  min-width: 80%;
+  width: calc(100% - 290px);
   height: 100%;
 }
 
 .friends{
-  width: 20%;
+  width: 290px;
   height: 100%;
-  background-color: #eee;
+  background-color: #f5f5f5;
 }
 
 .friend-list{
@@ -102,8 +101,349 @@ body {
   font-size: 30px;
 }
 
+.nav-username-img{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  width: 150px;
+}
+
+.gamesWonLost{
+  font-size: 16px;
+  color: white;
+}
+
+.nav-counter{
+  margin-right: 12px;
+}
+
+.nav-profile-image{
+  width: 30px;
+  height: auto;
+  border-radius: 15px;
+}
+
+.nav-username{
+  margin-left: 10px;
+  color: white;
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.drop-down-menu {
+  position: absolute;
+  top: 100%;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  padding: 10px;
+  z-index: 1000;
+  width: 125px;
+}
+
+.drop-down-menu a {
+  display: block;
+  padding: 8px 10px;
+  color: #333;
+  text-decoration: none;
+}
+
+.drop-down-menu a:hover {
+  background-color: #f5f5f5;
+  color: black;
+}
+
+.nav-menu{
+  display: flex;
+  flex-direction: row;
+  margin-right: 25px;
+  align-items: center;
+}
+
+.nav-icons{
+  color: white;
+  margin-right: 12px;
+}
+
+.nav-wons{
+  color: white;
+  margin-right: 5px;
+  font-size: 18px;
+}
+.message-icon{
+  font-size: 20px;
+}
+
+.friend-request-icon{
+  font-size: 23px;
+}
+
+.game-request-icon{
+  font-size: 22px;
+}
+
+.icons {
+  display: flex;
+  flex-direction: row;
+  margin-right: 30px;
+  align-items: center;
+}
+
+.nav-icons:hover {
+  color: white;
+}
+
+.signle-search-result
+{
+  display: flex;
+  flex-direction: row;
+}
+
+.result-profile-image{
+  width: 40px;
+  height: auto;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.result-username{
+  margin-left: 10px;
+  margin-top: 3px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.result-icon{
+  margin-left: 20px;
+  margin-bottom: 2px;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+}
+
+.result-icon-icon{
+  cursor: pointer;
+}
+
+.search{
+  width: 250px;
+}
+
 .friend{
   display: flex;
-  margin-left: 30px;
+  flex-direction: row;
+  margin-left: 20px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.friend:hover{
+  background-color: #ddd;
+  border-radius: 15px;
+}
+
+.friend-profile-image{
+  margin-left: 10px;
+  width: 50px;
+  height: auto;
+  border-radius: 25px;
+}
+
+.friend-username-counts{
+  display: flex;
+  flex-direction: column;
+  justify-items: start;
+  margin-top: 2px;
+  margin-left: 8px;
+}
+
+.friend-username-div{
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: flex-start;
+}
+
+.friend-username{
   font-size: 20px;
+  font-weight: 500;
+}
+
+.friend-counts{
+  display: flex;
+  flex-direction: row;
+}
+
+.friend-wons-lost{
+  margin-left: 10px;
+  margin-right: 5px;
+  font-size: 15px;
+}
+
+.friend-list-gamesWonLost{
+  font-size: 14px;
+}
+
+.friend-message-game-icon{
+  color: black;
+  font-size: 23px;
+  margin-left: 20px;
+}
+
+.login{
+  margin-top: 30px;
+}
+
+.input-row{
+  margin-top: 10px;
+}
+
+.login-label{
+  font-size: 14px;
+  text-decoration: underline;
+  display: flex;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.profile-picture-container {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: #ddd;
+  justify-content: start;
+}
+
+.profile-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-picture-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.profile-picture-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.register-x{
+  margin-left: 100px;
+}
+
+.settings-main{
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.settings-content{
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  max-width: 700px;
+  margin-top: 50px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  margin-bottom: 50px;
+  height: fit-content;
+}
+
+.settings-title-div{
+  border-bottom: 2px solid black;
+  margin: 20px;
+}
+
+.setting-title{
+  display: flex;
+  justify-content: start;
+  font-size: 33px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  margin-left: 15px;
+}
+
+.settings-row{
+  display: flex;
+  flex-direction: row;
+  margin-top: 20px;
+  margin-left: 35px;
+  margin-right: 35px;
+  align-items: center;
+}
+
+.settings-input{
+  max-width: 45%;
+  margin-right: 25px;
+}
+
+.settings-email{
+  margin-right: 35px;
+}
+
+.settings-checkBox-lab{
+  margin-left: 5px;
+}
+
+.settings-save{
+  border-top: 2px solid black;
+  margin-top: 30px;
+  margin-left: 20px;
+  margin-right: 20px;
+  display: flex;
+  justify-content: end;
+  align-items: end;
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
+
+.settings-label{
+  margin-right: 10px;
+}
+
+.settings-username{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 35px;
+}
+
+.settings-name{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.settings-lastname{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 35px;
+}
+
+.input-name-lastname{
+  width: 200px;
+}
+
+.row-name-lastname{
+  justify-content: space-between;
 }
