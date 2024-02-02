@@ -76,7 +76,7 @@ const FriendRequests = (props:{ username: String }) => {
   };
 
   return (
-    <div className="friend-requests">
+    <div className="friends-request">
       <h3>Friend Requests</h3>
       {Array.isArray(friendRequests) && friendRequests.length > 0 ? (
         friendRequests.map((request) => (

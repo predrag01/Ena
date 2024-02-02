@@ -103,10 +103,10 @@ body {
 
 .nav-username-img{
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   align-items: center;
   cursor: pointer;
-  width: 150px;
+  width: 120px;
 }
 
 .gamesWonLost{
@@ -446,4 +446,27 @@ body {
 
 .row-name-lastname{
   justify-content: space-between;
+}
+
+.friends-request {
+  position: absolute;
+  top: 100%;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  padding: 10px;
+  z-index: 1000;
+  width: 150px;
+}
+
+.friends-request a {
+  display: block;
+  padding: 8px 10px;
+  color: #333;
+  text-decoration: none;
+}
+
+.friends-request a:hover {
+  background-color: #f5f5f5;
+  color: black;
 }

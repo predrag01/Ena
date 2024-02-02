@@ -5,6 +5,7 @@ import SearchBar from "./SearchBar";
 import SearchResultList from "./SearchResultList";
 import image from "./../assets/noProfilePicture.png"
 import DropDownMenu from "./DropDownMenu";
+import FriendRequests from "./FriendRequests";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
@@ -12,6 +13,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
 
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [showMenu, setShowMenu] = useState(false);
+  const [showFriendrequest, setShowFriendrequest] = useState(false);
   const [friendRequest, setFriendrequest] = useState(false);
   const [messages, setMessages] = useState(false);
   const [gameRequest, setMGameRequest] = useState(false);
@@ -39,7 +41,10 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
 
   const showHideMenu = () => {
     setShowMenu(!showMenu);
-    console.log(props.profileImg);
+  };
+
+  const showHideFriendRequest = () => {
+    setShowFriendrequest(!showFriendrequest);
   };
   
   let menu;
@@ -68,15 +73,17 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
                 <i className="bi bi-controller"></i>
               </div>)}
           </Link>
-          <Link className="nav-icons friend-request-icon" to={"FriendRequests"} >
+          <label className="nav-icons friend-request-icon" onClick={showHideFriendRequest}>
             {friendRequest ? 
               (<div>
                 <i className="bi bi-person-plus-fill"></i>
               </div>) : 
               (<div>
                 <i className="bi bi-person"></i>
-              </div>)}
-          </Link>
+              </div>
+            )}
+            {showFriendrequest && <FriendRequests username={props.username}/>}
+          </label>
           <Link className="nav-icons message-icon" to={""} >
             {messages ? 
               (<div>
@@ -96,11 +103,10 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
           <label className="gamesWonLost"> {props.gamesLost}</label>
         </div>
         <div className="nav-username-img" onClick={showHideMenu}>
-          <img className="nav-profile-image" src={props.profileImg ? ('./../public/' + props.profileImg) : image } alt={props.username} />
-          <label className="nav-username">{props.username}</label>
           {showMenu && <DropDownMenu setUsername={props.setUsername} userId={props.userId} setUserId={props.setUserId} closeMenu={setShowMenu}/>}
-        </div>
-        
+          <label className="nav-username">{props.username}</label>
+          <img className="nav-profile-image" src={props.profileImg ? ('./../public/' + props.profileImg) : image } alt={props.username} />
+        </div>  
       </div>
     )
   }

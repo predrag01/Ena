@@ -6,7 +6,7 @@ import Register from './pages/Register'
 import Login from './pages/Login'
 import { useEffect, useState } from 'react'
 import Chat from './pages/Chat'
-import FriendRequests from './pages/FriendRequests'
+import FriendRequests from './components/FriendRequests'
 import Settings from './pages/Settings'
 
 function App() {
@@ -48,7 +48,7 @@ function App() {
             <Route path='/Login' element={<Login setUsername={setUserName}/>}/>
             <Route path='/Register' element={<Register />}/>
             <Route path='/Chat' element={<Chat />}/>
-            <Route path='/FriendRequests' element={<FriendRequests username={username} />}/>
+            {/* <Route path='/FriendRequests' element={<FriendRequests username={username} />}/> */}
             <Route path='/Settings' element={<Settings setUsername={setUserName} setProfilePic={setProfileImg}/>}/>
           </Routes>
         </main>

@@ -50,7 +50,7 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-
+        
         [Route("UpdateProfile")]
         [HttpPut]
         public async Task<IActionResult> UpdateProfile([FromForm] UserUpdateDTO user)
