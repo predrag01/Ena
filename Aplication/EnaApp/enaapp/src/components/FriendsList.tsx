@@ -3,6 +3,7 @@ import { FriendList } from "../models/friendList.model";
 import Friend from "./Friend";
 import ChatItem from "./ChatItem";
 import { User } from "../models/user.model";
+import Cookies from "js-cookie";
 
 const FrindsList = (props: {userId: number, chat: boolean, setUser?: (user: User) => void}) => {
     const[frinedsList, setFriendsList] = useState<FriendList[]>([])
@@ -10,7 +11,10 @@ const FrindsList = (props: {userId: number, chat: boolean, setUser?: (user: User
     useEffect(() => {
         const fetchData = async () => {
             const response = await fetch('https://localhost:44364' + '/Friends/GetAllFriends/' + props.userId, {
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + Cookies.get('jwt') 
+            },
               credentials: 'include'
             });
     

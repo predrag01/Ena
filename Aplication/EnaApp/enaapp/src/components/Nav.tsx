@@ -8,6 +8,7 @@ import DropDownMenu from "./DropDownMenu";
 import FriendRequests from "./FriendRequests";
 import { FriendRequest } from "../models/friendRequest.model";
 import * as signalR from "@microsoft/signalr";
+import Cookies from "js-cookie";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
@@ -46,7 +47,10 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     const fetchFriendRequests = async () => {
       if(props.username){
         const response = await fetch('https://localhost:44364' + '/Request/GetAllFriendRequests?username=' + props.username, {
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + Cookies.get('jwt')
+                },
                 credentials: 'include'
         });
         

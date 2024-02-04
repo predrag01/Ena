@@ -1,11 +1,15 @@
 import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const DropDownMenu = (props: {userId:number, setUsername: (username: string) => void, setUserId: (userId: number) => void, closeMenu: (close: boolean) => void}) => {
 
     const logout = async () => {
           await fetch('https://localhost:44364' + '/User/Logout', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + Cookies.get('jwt')
+            },
             credentials: 'include'
         });
     

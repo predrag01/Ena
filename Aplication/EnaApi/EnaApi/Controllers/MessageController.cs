@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using DAL.DTOs;
 using DAL.Models;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EnaApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("message")]
     public class MessageController : ControllerBase

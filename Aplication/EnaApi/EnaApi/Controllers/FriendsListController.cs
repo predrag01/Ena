@@ -4,9 +4,11 @@ using DAL.DataContext;
 using Microsoft.AspNetCore.Mvc;
 using DAL.DTOs;
 using DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EnaApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FriendsController : ControllerBase

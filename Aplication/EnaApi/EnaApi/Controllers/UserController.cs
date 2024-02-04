@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace EnaApi.Controllers
 {
+    [Authorize]
     [Route("User")]
     [ApiController]
     public class UserController : ControllerBase
@@ -19,6 +20,7 @@ namespace EnaApi.Controllers
             _userService = userService;
         }
 
+        [AllowAnonymous]
         [Route("Register")]
         [HttpPost]
         public async Task<IActionResult> Register([FromForm] UserRegisterDTO user)
@@ -34,6 +36,7 @@ namespace EnaApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [Route("Login")]
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] UserLoginDTO user)
@@ -67,6 +70,8 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [AllowAnonymous]
         [Route("GetUser")]
         [HttpGet]
         public async Task<IActionResult> GetUser()
@@ -94,7 +99,7 @@ namespace EnaApi.Controllers
             return Ok(new {message = "success"});
         }
 
-        [Authorize]
+
         [Route("Search/{username}/{ownerUsername}")]
         [HttpGet]
         public async Task<IActionResult> Search(string username, string ownerUsername)

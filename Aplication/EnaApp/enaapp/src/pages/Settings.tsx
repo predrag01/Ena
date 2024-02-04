@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { User } from "../models/user.model"
+import Cookies from "js-cookie";
 
 const Settings = ( props: {setUsername: (username: string) => void, setProfilePic: (profilePic: string) => void} ) => {
 
@@ -88,6 +89,7 @@ const Settings = ( props: {setUsername: (username: string) => void, setProfilePi
         formData.append('profilePicture', profilePicture || '');
 
         const response = await fetch('https://localhost:44364/User/UpdateProfile', {
+            headers:{'Authorization': 'Bearer ' + Cookies.get('jwt')},
             method: 'PUT',
             body: formData,
             credentials: 'include',

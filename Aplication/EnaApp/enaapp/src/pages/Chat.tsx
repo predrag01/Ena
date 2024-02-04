@@ -6,6 +6,7 @@ import { User } from "../models/user.model";
 import ChatMessages from "../components/ChatMessages";
 import image from "./../assets/noProfilePicture.png"
 import { Message } from "../models/message.model";
+import Cookies from "js-cookie";
 // const ChatComponent = (props: { username: string; friendUsername: string}) => {
 const Chat = () => {
 	const location = useLocation();
@@ -55,7 +56,10 @@ const Chat = () => {
 
 	const loadUser = async (username: string) => {
 		const respone = await fetch('https://localhost:44364' + `/User/GetUserByUsername/${encodeURIComponent(username)}`, {
-				headers: {'Content-Type': 'application/json'},
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + Cookies.get('jwt')
+				},
 				credentials: 'include',
 				mode: 'cors'
 			});
@@ -70,7 +74,10 @@ const Chat = () => {
 		setChatUser(newChatUser);
 		if (username && newChatUser.username) {
 		  const response = await fetch('https://localhost:44364' + '/message/GetAllMessagesForChat?senderUsername=' + username + '&recipientUsername=' + newChatUser.username, {
-			headers: { 'Content-Type': 'application/json' },
+			headers: { 
+				'Content-Type': 'application/json',
+            	'Authorization': 'Bearer ' + Cookies.get('jwt') 
+			},
 			credentials: 'include'
 		  });
 	
@@ -83,7 +90,10 @@ const Chat = () => {
 
 		const fetchUser = async () => {
 			const respone = await fetch('https://localhost:44364' + '/User/GetUser', {
-				headers: {'Content-Type': 'application/json'},
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + Cookies.get('jwt')
+				},
 				credentials: 'include',
 				mode: 'cors'
 			});
@@ -97,7 +107,10 @@ const Chat = () => {
 		if(username && friendUsername && username !== friendUsername){
 			const fetchMessages = async () => {
 				const response = await fetch('https://localhost:44364' + '/message/GetAllMessagesForChat?senderUsername=' + username + '&recipientUsername=' + friendUsername, {
-					headers: { 'Content-Type': 'application/json' },
+					headers: { 
+						'Content-Type': 'application/json',
+						'Authorization': 'Bearer ' + Cookies.get('jwt')
+					},
 					credentials: 'include'
 				});
 					

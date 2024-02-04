@@ -3,6 +3,7 @@ import { FriendList } from "../models/friendList.model";
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import image from "./../assets/noProfilePicture.png"
+import Cookies from "js-cookie";
 
 const Friend = (props: {result: FriendList}) => {
   const [username, setUserName] = useState('');
@@ -10,7 +11,10 @@ const Friend = (props: {result: FriendList}) => {
     (
         async () => {
             const respone = await fetch('https://localhost:44364' + '/User/GetUser', {
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + Cookies.get('jwt')
+                },
                 credentials: 'include',
                 mode: 'cors'
             });

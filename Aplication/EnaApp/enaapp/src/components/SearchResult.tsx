@@ -5,6 +5,7 @@ import { faUserCheck } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from "react";
 import * as signalR from '@microsoft/signalr';
 import image from "./../assets/noProfilePicture.png"
+import Cookies from "js-cookie";
 
 const SearchResult = (props: {username: string; result: User}) => {
 
@@ -21,7 +22,8 @@ const SearchResult = (props: {username: string; result: User}) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'credentials': 'include'
+        'credentials': 'include',
+        'Authorization': 'Bearer ' + Cookies.get('jwt')
       },
     });
 
@@ -37,7 +39,8 @@ const SearchResult = (props: {username: string; result: User}) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'credentials': 'include'
+        'credentials': 'include',
+        'Authorization': 'Bearer ' + Cookies.get('jwt')
       },
     });
 

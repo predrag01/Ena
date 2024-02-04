@@ -3,9 +3,11 @@ using BLL.Services;
 using DAL.DataContext;
 using Microsoft.AspNetCore.Mvc;
 using DAL.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EnaApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class TurnController : ControllerBase
