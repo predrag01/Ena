@@ -85,6 +85,7 @@ namespace EnaApi
                     Timestamp = DateTime.Now
                 };
                 await this._requestService.SendFriendRequest(request);
+                await Clients.Group(friendUsername).SendAsync("FriendRequestSent", username);
             }
         }
         public async Task AcceptFriendRequest(int requestId, string username)

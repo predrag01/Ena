@@ -9,6 +9,7 @@ import FriendRequests from "./FriendRequests";
 import { FriendRequest } from "../models/friendRequest.model";
 import * as signalR from "@microsoft/signalr";
 import Cookies from "js-cookie";
+import { any } from "prop-types";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
@@ -44,6 +45,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     //   document.removeEventListener("click", handleClickOutside);
     // };
 
+    
     const fetchFriendRequests = async () => {
       if(props.username){
         const response = await fetch('https://localhost:44364' + '/Request/GetAllFriendRequests?username=' + props.username, {
@@ -54,21 +56,34 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
                 credentials: 'include'
         });
         
-        const data = await response.json();
-        console.log("Ucitani zahtevi" + data);
-        console.log(props.username + " korisnicko ime")
-        setFriendRequests(data);
+        const data: FriendRequest[] = await response.json();
+        console.log(data);
+        console.log(props.username + " korisnicko ime");
+
+        var list: FriendRequest[] = [];
+
+        data.forEach(element => {
+          list.push(element);
+        });
+                
+        setFriendRequests(list);
 
         if(friendRequests.length>0){
           setFriendrequest(true);
         }else{
-          setFriendrequest(false)
+          setFriendrequest(false);
+          console.log(friendRequests);
         }
         
         const newConnection = new signalR.HubConnectionBuilder().withUrl('https://localhost:44364/chatHub').build();
     
         newConnection.on('FetchFriendRequests', (username: string) => {
           fetchFriendRequests();
+        });
+
+        newConnection.on('FriendRequestSent', (username: string) => {
+          console.log(username);
+          setFriendrequest(true);
         });
 
         // newConnection.start();
@@ -95,14 +110,40 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
         };
       };
     }
+
+
     
-    fetchFriendRequests();
+    if(props.username !== "success" && props.username !== undefined && props.username !== ''){ 
+      fetchFriendRequests();
+    }
 
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
 
   }, [props.username]);
+
+  const acceptFriendRequest = async (requestId: number) => {
+    if (connection) {
+      try {
+        // Invoke the 'SendMessageToUser' method on the server
+        await connection.invoke('AcceptFriendRequest', requestId, props.username);
+      } catch (error) {
+        console.error('Error acceptiing friend request:', error);
+      }
+    }
+  };
+
+  const declineFriendRequest = async (requestId: number) => {
+    if (connection) {
+      try {
+        // Invoke the 'SendMessageToUser' method on the server
+        await connection.invoke('DeclineFriendRequest', requestId, props.username);
+      } catch (error) {
+        console.error('Error acceptiing friend request:', error);
+      }
+    }
+  };
 
   const showHideMenu = () => {
     setShowMenu(!showMenu);
@@ -141,13 +182,13 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
           <label className="nav-icons friend-request-icon" onClick={showHideFriendRequest}>
             {friendRequest ? 
               (<div>
-                <i className="bi bi-person-plus-fill"></i>
+                <i className="bi bi-person-fill"></i>
               </div>) : 
               (<div>
                 <i className="bi bi-person"></i>
               </div>
             )}
-            {showFriendrequest && <FriendRequests username={props.username} friendRequests={friendRequests} connection={connection}/>}
+            {showFriendrequest && <FriendRequests username={props.username} friendRequests={friendRequests} connection={connection} acceptFriendRequest={acceptFriendRequest} declineFriendRequest={declineFriendRequest}/>}
           </label>
           <Link className="nav-icons message-icon" to={`/chat?username=${props.username}&friendUsername=${props.username}`} >
             {messages ? 
