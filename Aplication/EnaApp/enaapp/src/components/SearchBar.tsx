@@ -16,6 +16,9 @@ const SearchBar = (props: { username: string; setResults: (users: User[]) => voi
           props.setResults([]);
           return;
         }
+
+        const cookies = document.cookie;
+        console.log('All cookies:', cookies);
   
         const response = await fetch(`https://localhost:44364/User/Search/${encodeURIComponent(find)}/${encodeURIComponent(searching)}`, {
           method: 'GET',
@@ -26,7 +29,7 @@ const SearchBar = (props: { username: string; setResults: (users: User[]) => voi
           },
         });
         
-        console.log(Cookies.get('jwt') + "cookie")
+        console.log(Cookies.get())
         const users: User[] = await response.json();
   
         if (response.ok) {

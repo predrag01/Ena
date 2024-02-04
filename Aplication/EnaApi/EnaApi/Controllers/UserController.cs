@@ -42,7 +42,7 @@ namespace EnaApi.Controllers
             {
                 var result = await this._userService.Login(user.Email, user.Password);
 
-                Response.Cookies.Append("jwt", result, new CookieOptions { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None });
+                Response.Cookies.Append("jwt", result, new CookieOptions { HttpOnly = false, Secure = true, SameSite = SameSiteMode.None });
                 
 
                 return Ok(new { message = "success"});
@@ -94,6 +94,7 @@ namespace EnaApi.Controllers
             return Ok(new {message = "success"});
         }
 
+        [Authorize]
         [Route("Search/{username}/{ownerUsername}")]
         [HttpGet]
         public async Task<IActionResult> Search(string username, string ownerUsername)
