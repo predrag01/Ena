@@ -126,7 +126,7 @@ const sendFriendRequestSignalR = async () => {
       <label className="result-username">{props.result.username}</label>
       <div className="result-icon">
         <label className="result-icon-icon" onClick={handleIconClick}>
-          {!isFriendshipTrue&& ((isIconClicked || isFriendRequestedTrue) ? (<i className="bi bi-person-plus-fill"></i>) : (<i className="bi bi-person-check-fill"></i>))}
+          {!isFriendshipTrue&& ((isIconClicked || isFriendRequestedTrue) ?  (<i className="bi bi-person-check-fill"></i>) : (<i className="bi bi-person-plus-fill"></i>))}
         </label>
       </div>
     </div>

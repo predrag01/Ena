@@ -10,6 +10,5 @@ namespace DAL.Repository.IRepository
     public interface IChatMessageRepository : IRepository<ChatMessage>
     {
         Task<List<ChatMessage>> GetChatMessagesBySenderAndRecipient(int SenderId, int RecipientId);
-        
     }
 }

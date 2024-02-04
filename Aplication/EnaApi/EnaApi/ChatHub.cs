@@ -2,6 +2,7 @@
 using BLL.Services.IServices;
 using DAL.DataContext;
 using DAL.DTOs;
+using DAL.Models;
 using DAL.UnitOfWork;
 using Microsoft.AspNetCore.SignalR;
 
@@ -60,12 +61,12 @@ namespace EnaApi
         {
             await Clients.Group(groupName).SendAsync("ReceiveMessage", Context.User.Identity.Name, message);
         }
-        public async Task SendMessageToUser(string userId,string username, string message)
+        public async Task SendMessageToUser(string userId,string username, ChatMessage message)
         {
             var friend1 = await this._userService.GetUserByUsername(userId);
             var friend2 = await this._userService.GetUserByUsername(username);
 
-            ChatMessageDTO messagedto = new ChatMessageDTO(friend2.Id, friend1.Id, message, DateTime.Now);
+            ChatMessageDTO messagedto = new ChatMessageDTO(friend2.Id, friend1.Id, message.Content, DateTime.Now);
             await this._messageService.SendMessage(messagedto);
             await Clients.Group(userId).SendAsync("ReceiveMessage", username, message);
         }

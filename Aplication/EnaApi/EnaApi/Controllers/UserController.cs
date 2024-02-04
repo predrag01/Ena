@@ -107,6 +107,22 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Route("GetUserByUsername/{username}")]
+        [HttpGet]
+        public async Task<IActionResult> GetUserByUsername(string username)
+        {
+            try
+            {
+                var users = await this._userService.GetUserByUsername(username);
+
+                return Ok(users);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 
     

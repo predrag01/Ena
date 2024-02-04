@@ -7,7 +7,8 @@ const Home = (props: {username:string, userId: number}) => {
                 {props.username ? 'Hi ' + props.username : 'You are not loged in' }
             </div>
             <div className="friends">
-                <FrindsList userId={props.userId}/>
+                <h3 className="friends-headline">Friends</h3>
+                <FrindsList userId={props.userId} chat={false}/>
             </div>
         </div>
     );

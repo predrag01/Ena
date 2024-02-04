@@ -6,6 +6,8 @@ import SearchResultList from "./SearchResultList";
 import image from "./../assets/noProfilePicture.png"
 import DropDownMenu from "./DropDownMenu";
 import FriendRequests from "./FriendRequests";
+import { FriendRequest } from "../models/friendRequest.model";
+import * as signalR from "@microsoft/signalr";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
@@ -21,6 +23,9 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   const menuRef = useRef<HTMLDivElement>(null);
   const searchResultsRef = useRef<HTMLDivElement>(null);
 
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -34,10 +39,66 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
 
     document.addEventListener("click", handleClickOutside);
 
+    // return () => {
+    //   document.removeEventListener("click", handleClickOutside);
+    // };
+
+    const fetchFriendRequests = async () => {
+      if(props.username){
+        const response = await fetch('https://localhost:44364' + '/Request/GetAllFriendRequests?username=' + props.username, {
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+        });
+        
+        const data = await response.json();
+        console.log("Ucitani zahtevi" + data);
+        console.log(props.username + " korisnicko ime")
+        setFriendRequests(data);
+
+        if(friendRequests.length>0){
+          setFriendrequest(true);
+        }else{
+          setFriendrequest(false)
+        }
+        
+        const newConnection = new signalR.HubConnectionBuilder().withUrl('https://localhost:44364/chatHub').build();
+    
+        newConnection.on('FetchFriendRequests', (username: string) => {
+          fetchFriendRequests();
+        });
+
+        // newConnection.start();
+        newConnection.start().then(() => {
+          // Join a group using the usernames of the two users
+          newConnection.invoke('JoinGroup', props.username);
+          console.log('SignalR connection established');
+        }).catch((error) => {
+          console.error('Error establishing SignalR connection:', error);
+        });
+    
+        setConnection(newConnection);
+      
+        return () => {
+          if (newConnection) {
+            // Leave the group when the component unmounts
+            newConnection.invoke('LeaveGroup', props.username);
+            // newConnection.invoke('LeaveGroup', friendUsername);
+            newConnection.stop();
+
+            document.removeEventListener("click", handleClickOutside);
+          }
+          document.removeEventListener("click", handleClickOutside);
+        };
+      };
+    }
+    
+    fetchFriendRequests();
+
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, []);
+
+  }, [props.username]);
 
   const showHideMenu = () => {
     setShowMenu(!showMenu);
@@ -64,7 +125,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     menu = (
       <div className="nav-menu" ref={menuRef}>
         <div className="icons">
-          <Link className="nav-icons game-request-icon" to={""} >
+          <Link className="nav-icons game-request-icon" to={''} >
             {gameRequest ? 
               (<div>
                 <i className="bi bi-controller"></i>
@@ -82,9 +143,9 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
                 <i className="bi bi-person"></i>
               </div>
             )}
-            {showFriendrequest && <FriendRequests username={props.username}/>}
+            {showFriendrequest && <FriendRequests username={props.username} friendRequests={friendRequests} connection={connection}/>}
           </label>
-          <Link className="nav-icons message-icon" to={""} >
+          <Link className="nav-icons message-icon" to={`/chat?username=${props.username}&friendUsername=${props.username}`} >
             {messages ? 
               (<div>
                 <i className="bi bi-chat-left-fill"></i>

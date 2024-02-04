@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { FriendList } from "../models/friendList.model";
 import Friend from "./Friend";
+import ChatItem from "./ChatItem";
+import { User } from "../models/user.model";
 
-const FrindsList = (props: {userId: number}) => {
+const FrindsList = (props: {userId: number, chat: boolean, setUser?: (user: User) => void}) => {
     const[frinedsList, setFriendsList] = useState<FriendList[]>([])
 
     useEffect(() => {
@@ -26,9 +28,9 @@ const FrindsList = (props: {userId: number}) => {
     
     return (
         <div className="friend-list">
-            <h3 className="friends-headline">Friends</h3>
+            
             {frinedsList.map((friend, id) => {
-                return <Friend result={friend} key={id}/>
+                return (props.chat ? <ChatItem result={friend} key={id} setUser={props.setUser || (() => {})}/> : <Friend result={friend} key={id}/>)
             })}
         </div>
     );

@@ -83,6 +83,8 @@ body {
   width: 290px;
   height: 100%;
   background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
 }
 
 .friend-list{
@@ -456,7 +458,7 @@ body {
   border: 1px solid #ddd;
   padding: 10px;
   z-index: 1000;
-  width: 150px;
+  width: 250px;
 }
 
 .friends-request a {
@@ -469,4 +471,117 @@ body {
 .friends-request a:hover {
   background-color: #f5f5f5;
   color: black;
+}
+
+.black{
+  color: black;
+}
+
+.chat-main{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.chat-item{
+  cursor: pointer;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.chat-messages{
+  width: calc(100% - 290px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-input-message {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.chat-input-message input {
+  border-radius: 10px;
+  flex-grow: 1; 
+  margin-right: 10px;
+}
+
+.chat-input-message button {
+  padding: 8px;
+  background-color: #5edd80;
+}
+
+.chat-title{
+  display: flex;
+  margin-left: 15px;
+  margin-top: 8px;
+  margin-bottom: 5px;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.chat-displaying-messages{
+  width: 100%;
+  height: calc(100% - 68px);
+  overflow-y: auto;
+  padding-top: 10px;
+
+}
+
+.chat-messages-user-info{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 2px solid black;
+}
+
+.chat-message-username{
+  font-size: 20px;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.message{
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.message-row-left{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.message-row-right{
+  display: flex;
+  flex-direction: row-reverse;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.message-profile-img{
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  margin-right: 8px;
+  margin-left: 8px;
+}
+
+.message-content{
+  max-width: 35%;
+  background-color: #d3d3d3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border-radius: 10px;
+  padding: 8px;
 }
