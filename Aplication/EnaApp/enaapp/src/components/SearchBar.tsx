@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { User } from "../models/user.model";
+import Cookies from 'js-cookie';
+
 
 const SearchBar = (props: { username: string; setResults: (users: User[]) => void }) => {
     const [find, setSearch] = useState('');
@@ -19,10 +21,12 @@ const SearchBar = (props: { username: string; setResults: (users: User[]) => voi
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'credentials': 'include'
+            'credentials': 'include',
+            'Authorization': 'Bearer ' + Cookies.get('jwt')
           },
         });
-  
+        
+        console.log(Cookies.get('jwt') + "cookie")
         const users: User[] = await response.json();
   
         if (response.ok) {

@@ -9,7 +9,6 @@ const DropDownMenu = (props: {userId:number, setUsername: (username: string) => 
             credentials: 'include'
         });
     
-        props.setUsername('ma niej');
         props.setUserId(-1);
         console.log("logout")
     };
