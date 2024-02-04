@@ -67,7 +67,6 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [Authorize]
         [Route("GetUser")]
         [HttpGet]
         public async Task<IActionResult> GetUser()
