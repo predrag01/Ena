@@ -89,14 +89,11 @@ const FriendRequests = (props:{ username: String, friendRequests: FriendRequest[
       <h3>Friend Requests</h3>
       {(Array.isArray(props.friendRequests) && props.friendRequests.length > 0) ? (
         props.friendRequests.map((request) => (
-          <div key={request.id} className="friend-request-item">
-            <div className="friend-request-info">
-              <p>{request.sender!.name}</p>
-            </div>
-            <div className="friend-request-actions">
-              <button onClick={() => handleAcceptClick(request.id!)}>Accept</button>
-              <button onClick={() => handleDeclineClick(request.id!)}>Decline</button>
-            </div>
+          <div key={request.id} className="friends-request-item">
+            {request.sender?.username}
+            <label>Sented you a friend request.</label>
+            <label onClick={() => handleAcceptClick(request.id!)}><i className="bi bi-check2"></i></label>
+            <label onClick={() => handleDeclineClick(request.id!)}><i className="bi bi-x"></i></label>
           </div>
         ))
       ) : (

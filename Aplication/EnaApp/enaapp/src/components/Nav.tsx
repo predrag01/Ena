@@ -17,11 +17,11 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
 
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [showMenu, setShowMenu] = useState(false);
-  const [showFriendrequest, setShowFriendrequest] = useState(false);
+  const [showFriendrequest, setShowFriendrequest] = useState(true);
   const [friendRequest, setFriendrequest] = useState(false);
   const [messages, setMessages] = useState(false);
   const [gameRequest, setMGameRequest] = useState(false);
-
+   
   const menuRef = useRef<HTMLDivElement>(null);
   const searchResultsRef = useRef<HTMLDivElement>(null);
 
@@ -68,11 +68,11 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
                 
         setFriendRequests(list);
 
-        if(friendRequests.length>0){
+        if (list.length > 0) {
           setFriendrequest(true);
-        }else{
+        } else {
           setFriendrequest(false);
-          console.log(friendRequests);
+          console.log(list);
         }
         
         const newConnection = new signalR.HubConnectionBuilder().withUrl('https://localhost:44364/chatHub').build();
@@ -124,25 +124,27 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   }, [props.username]);
 
   const acceptFriendRequest = async (requestId: number) => {
-    if (connection) {
-      try {
-        // Invoke the 'SendMessageToUser' method on the server
-        await connection.invoke('AcceptFriendRequest', requestId, props.username);
-      } catch (error) {
-        console.error('Error acceptiing friend request:', error);
-      }
-    }
+    // if (connection) {
+    //   try {
+    //     // Invoke the 'SendMessageToUser' method on the server
+    //     await connection.invoke('AcceptFriendRequest', requestId, props.username);
+    //     setFriendrequest(false);
+    //   } catch (error) {
+    //     console.error('Error acceptiing friend request:', error);
+    //   }
+    // }
   };
 
-  const declineFriendRequest = async (requestId: number) => {
-    if (connection) {
-      try {
-        // Invoke the 'SendMessageToUser' method on the server
-        await connection.invoke('DeclineFriendRequest', requestId, props.username);
-      } catch (error) {
-        console.error('Error acceptiing friend request:', error);
-      }
-    }
+  const declineFriendRequest = async (requestId: number) => { 
+    // if (connection) {
+    //   try {
+    //     // Invoke the 'SendMessageToUser' method on the server
+    //     await connection.invoke('DeclineFriendRequest', requestId, props.username);
+    //     setFriendrequest(false);
+    //   } catch (error) {
+    //     console.error('Error acceptiing friend request:', error);
+    //   }
+    // }
   };
 
   const showHideMenu = () => {
@@ -151,6 +153,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
 
   const showHideFriendRequest = () => {
     setShowFriendrequest(!showFriendrequest);
+    console.log('clicked')
   };
   
   let menu;
