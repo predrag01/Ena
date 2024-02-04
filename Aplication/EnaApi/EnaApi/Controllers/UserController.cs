@@ -2,6 +2,7 @@
 using DAL.DataContext;
 using DAL.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EnaApi.Controllers
 {
@@ -42,6 +43,7 @@ namespace EnaApi.Controllers
                 var result = await this._userService.Login(user.Email, user.Password);
 
                 Response.Cookies.Append("jwt", result, new CookieOptions { HttpOnly = true, Secure = true, SameSite = SameSiteMode.None });
+                
 
                 return Ok(new { message = "success"});
             }
@@ -65,7 +67,7 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-
+        [Authorize]
         [Route("GetUser")]
         [HttpGet]
         public async Task<IActionResult> GetUser()
