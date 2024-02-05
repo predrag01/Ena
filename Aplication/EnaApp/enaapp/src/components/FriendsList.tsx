@@ -5,7 +5,7 @@ import ChatItem from "./ChatItem";
 import { User } from "../models/user.model";
 import Cookies from "js-cookie";
 
-const FrindsList = (props: {userId: number, chat: boolean, setUser?: (user: User) => void}) => {
+const FrindsList = (props: {userId: number, chat: boolean, setUser?: (user: User) => void, refetchFriends:boolean}) => {
     const[frinedsList, setFriendsList] = useState<FriendList[]>([])
 
     useEffect(() => {
@@ -28,7 +28,7 @@ const FrindsList = (props: {userId: number, chat: boolean, setUser?: (user: User
         };
     
         fetchData();
-      }, [props.userId]);
+      }, [props.userId, props.refetchFriends]);
     
     return (
         <div className="friend-list">

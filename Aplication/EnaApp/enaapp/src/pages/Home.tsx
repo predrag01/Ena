@@ -1,6 +1,6 @@
 import FrindsList from "../components/FriendsList";
 
-const Home = (props: {username:string, userId: number}) => {
+const Home = (props: {username:string, userId: number, refetchFriends: boolean}) => {
     return (
         <div className="home-div">
             <div className="home">
@@ -8,7 +8,7 @@ const Home = (props: {username:string, userId: number}) => {
             </div>
             <div className="friends">
                 <h3 className="friends-headline">Friends</h3>
-                <FrindsList userId={props.userId} chat={false}/>
+                <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends}/>
             </div>
         </div>
     );

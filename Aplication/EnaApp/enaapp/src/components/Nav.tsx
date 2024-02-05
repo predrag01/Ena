@@ -10,23 +10,36 @@ import { FriendRequest } from "../models/friendRequest.model";
 import * as signalR from "@microsoft/signalr";
 import Cookies from "js-cookie";
 import { any } from "prop-types";
+import { Store } from 'react-notifications-component';
+import { Message } from "../models/message.model";
+
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
-const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, username:string, profileImg:string, setUsername: (username: string) => void, setUserId: (userId: number) => void}) => {
+const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, username:string, profileImg:string, setUsername: (username: string) => void, setUserId: (userId: number) => void, setRefetchFriends:(value: boolean) => void, refetchFriends: boolean, showMessages: boolean}) => {
 
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [showMenu, setShowMenu] = useState(false);
-  const [showFriendrequest, setShowFriendrequest] = useState(true);
+  const [showFriendrequest, setShowFriendrequest] = useState(false);
   const [friendRequest, setFriendrequest] = useState(false);
   const [messages, setMessages] = useState(false);
+  // const [showMessages, setShowMessages] = useState(false);
   const [gameRequest, setMGameRequest] = useState(false);
+  
    
   const menuRef = useRef<HTMLDivElement>(null);
   const searchResultsRef = useRef<HTMLDivElement>(null);
 
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+
+  useEffect(()=>{
+    if(props.showMessages===false)
+      setMessages(props.showMessages);
+    console.log(props.showMessages);
+    console.log(messages);
+    
+  },[props.showMessages]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -75,6 +88,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
           console.log(list);
         }
         
+
         const newConnection = new signalR.HubConnectionBuilder().withUrl('https://localhost:44364/chatHub').build();
     
         newConnection.on('FetchFriendRequests', (username: string) => {
@@ -84,18 +98,76 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
         newConnection.on('FriendRequestSent', (username: string) => {
           console.log(username);
           setFriendrequest(true);
+
+          fetchFriendRequests();
+          
+          Store.addNotification({
+            title: "New Friend Request!",
+            message: `${username} sent you a friend request`,
+            type: "default",
+            insert: "bottom",
+            container: "bottom-right",
+            animationIn: ["animate__animated", "animate__fadeIn"],
+            animationOut: ["animate__animated", "animate__fadeOut"],
+            dismiss: {
+              duration: 5000,
+              onScreen: true
+            }
+          });
+        });
+
+        newConnection.on('RefetchFriends', (username: string) => {
+          props.setRefetchFriends(!props.refetchFriends);
+        });
+
+        newConnection.on('ReceiveMessage', (username: string, message: Message) => {
+          if(props.showMessages)
+            setMessages(true);
+
+          Store.addNotification({
+            title: `${username} sent you a message!`,
+            message: message.content,
+            type: "success",
+            insert: "bottom",
+            container: "bottom-right",
+            animationIn: ["animate__animated", "animate__fadeIn"],
+            animationOut: ["animate__animated", "animate__fadeOut"],
+            dismiss: {
+              duration: 5000,
+              onScreen: true
+            }
+          });
+        });
+
+        newConnection.on('FriendRequestAccepted', (username: string) => {
+          Store.addNotification({
+            title: `${username} accepted your friend request!`,
+            // message: `${username} sent you a friend request`,
+            type: "default",
+            insert: "bottom",
+            container: "bottom-right",
+            animationIn: ["animate__animated", "animate__fadeIn"],
+            animationOut: ["animate__animated", "animate__fadeOut"],
+            dismiss: {
+              duration: 5000,
+              onScreen: true
+            }
+          });
         });
 
         // newConnection.start();
-        newConnection.start().then(() => {
-          // Join a group using the usernames of the two users
-          newConnection.invoke('JoinGroup', props.username);
-          console.log('SignalR connection established');
-        }).catch((error) => {
-          console.error('Error establishing SignalR connection:', error);
-        });
-    
-        setConnection(newConnection);
+        if(connection === null){
+          newConnection.start().then(() => {
+            // Join a group using the usernames of the two users
+            newConnection.invoke('JoinGroup', props.username);
+            console.log('SignalR connection established');
+          }).catch((error) => {
+            console.error('Error establishing SignalR connection:', error);
+          });
+      
+          setConnection(newConnection);
+
+        }
       
         return () => {
           if (newConnection) {
@@ -123,28 +195,28 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
 
   }, [props.username]);
 
-  const acceptFriendRequest = async (requestId: number) => {
-    // if (connection) {
-    //   try {
-    //     // Invoke the 'SendMessageToUser' method on the server
-    //     await connection.invoke('AcceptFriendRequest', requestId, props.username);
-    //     setFriendrequest(false);
-    //   } catch (error) {
-    //     console.error('Error acceptiing friend request:', error);
-    //   }
-    // }
+  const acceptFriendRequest = async (requestId: number, sender: string) => {
+    if (connection) {
+      try {
+        // Invoke the 'SendMessageToUser' method on the server
+        await connection.invoke('AcceptFriendRequest', requestId, props.username, sender);
+        setFriendrequest(false);
+      } catch (error) {
+        console.error('Error acceptiing friend request:', error);
+      }
+    }
   };
 
   const declineFriendRequest = async (requestId: number) => { 
-    // if (connection) {
-    //   try {
-    //     // Invoke the 'SendMessageToUser' method on the server
-    //     await connection.invoke('DeclineFriendRequest', requestId, props.username);
-    //     setFriendrequest(false);
-    //   } catch (error) {
-    //     console.error('Error acceptiing friend request:', error);
-    //   }
-    // }
+    if (connection) {
+      try {
+        // Invoke the 'SendMessageToUser' method on the server
+        await connection.invoke('DeclineFriendRequest', requestId, props.username);
+        setFriendrequest(false);
+      } catch (error) {
+        console.error('Error acceptiing friend request:', error);
+      }
+    }
   };
 
   const showHideMenu = () => {
@@ -194,7 +266,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
             {showFriendrequest && <FriendRequests username={props.username} friendRequests={friendRequests} connection={connection} acceptFriendRequest={acceptFriendRequest} declineFriendRequest={declineFriendRequest}/>}
           </label>
           <Link className="nav-icons message-icon" to={`/chat?username=${props.username}&friendUsername=${props.username}`} >
-            {messages ? 
+            {messages && props.showMessages ? 
               (<div>
                 <i className="bi bi-chat-left-fill"></i>
               </div>) : 

@@ -88,11 +88,14 @@ namespace EnaApi
                 await Clients.Group(friendUsername).SendAsync("FriendRequestSent", username);
             }
         }
-        public async Task AcceptFriendRequest(int requestId, string username)
+        public async Task AcceptFriendRequest(int requestId, string username, string sender)
         {
             await this._requestService.AcceptFriendRequest(requestId);
             await this._friendsListService.CreateFriendship(requestId);
-            await Clients.Group(username).SendAsync("FetchFriendRequests", Context.User.Identity.Name);
+            await Clients.Group(username).SendAsync("FetchFriendRequests", sender);
+            await Clients.Group(sender).SendAsync("FriendRequestAccepted", username);
+            await Clients.Group(username).SendAsync("RefetchFriends", sender);
+            await Clients.Group(sender).SendAsync("RefetchFriends", username);
         }
         public async Task DeclineFriendRequest(int requestId, string username)
         {
