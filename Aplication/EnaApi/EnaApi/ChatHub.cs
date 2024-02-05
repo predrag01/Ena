@@ -107,5 +107,9 @@ namespace EnaApi
             _unitOfWork.Request.Delete(request);
             await Clients.Group(username).SendAsync("FetchFriendRequests", Context.User.Identity.Name);
         }
+        public async Task SendGameInviteToUser(string username, string friendname)
+        {
+            await Clients.Group(friendname).SendAsync("ReceiveGameInvite", username);
+        }
     }
 }

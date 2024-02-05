@@ -20,7 +20,7 @@ namespace DAL.Repository
         }
         public async Task<List<FriendsList>> GetFriendsListByUser(int UserId)
         {
-            var friends = await _db.FriendsLists.Include(x=> x.Friend).Where(x => x.UserId == UserId).ToListAsync();
+            var friends = await _db.FriendsLists.Include(x=> x.Friend).Include(x=>x.User).Where(x => x.UserId == UserId).ToListAsync();
             return friends; 
         }
         public async Task<FriendsList> GetFriendsListByUserAndFriend(int UserId, int FriendId)

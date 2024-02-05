@@ -16,7 +16,7 @@ import { Message } from "../models/message.model";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
-const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, username:string, profileImg:string, setUsername: (username: string) => void, setUserId: (userId: number) => void, setRefetchFriends:(value: boolean) => void, refetchFriends: boolean, showMessages: boolean}) => {
+const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, username:string, profileImg:string, setUsername: (username: string) => void, setUserId: (userId: number) => void, setRefetchFriends:(value: boolean) => void, refetchFriends: boolean, showMessages: boolean, setConnection:(connection:signalR.HubConnection | null) => void}) => {
 
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [showMenu, setShowMenu] = useState(false);
@@ -166,6 +166,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
           });
       
           setConnection(newConnection);
+          props.setConnection(newConnection);
 
         }
       

@@ -5,7 +5,7 @@ import ChatItem from "./ChatItem";
 import { User } from "../models/user.model";
 import Cookies from "js-cookie";
 
-const FrindsList = (props: {userId: number, chat: boolean, setUser?: (user: User) => void, refetchFriends:boolean}) => {
+const FrindsList = (props: {userId: number, chat: boolean, setUser?: (user: User) => void, refetchFriends:boolean, connection:signalR.HubConnection|null}) => {
     const[frinedsList, setFriendsList] = useState<FriendList[]>([])
 
     useEffect(() => {
@@ -34,7 +34,7 @@ const FrindsList = (props: {userId: number, chat: boolean, setUser?: (user: User
         <div className="friend-list">
             
             {frinedsList.map((friend, id) => {
-                return (props.chat ? <ChatItem result={friend} key={id} setUser={props.setUser || (() => {})}/> : <Friend result={friend} key={id}/>)
+                return (props.chat ? <ChatItem result={friend} key={id} setUser={props.setUser || (() => {})}/> : <Friend result={friend} key={id} connection={props.connection}/>)
             })}
         </div>
     );
