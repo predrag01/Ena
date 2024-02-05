@@ -5,7 +5,7 @@ export interface Player{
     id?:number;
     userId?: number;
     user?: User;
-    gameId?: number;
+    gameId: number;
     game?: Game;
     host?: boolean;
 }

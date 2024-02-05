@@ -22,6 +22,8 @@ function App() {
   const[showMessages, setShowMessages] = useState(true);
 
   const [refetchFriends, setRefetchFriends] = useState(false);
+
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
   
 
     useEffect(() => {
@@ -50,11 +52,11 @@ function App() {
       <ReactNotifications />
       }
       <BrowserRouter>
-        <Nav username={username} setUsername={setUserName} userId={userId} setUserId={setUserId} profileImg={profileImg} gamesLost={gamesLost} gamesWon={gamesWon} setRefetchFriends={setRefetchFriends} refetchFriends={refetchFriends} showMessages={showMessages}/>
+        <Nav username={username} setUsername={setUserName} userId={userId} setUserId={setUserId} profileImg={profileImg} gamesLost={gamesLost} gamesWon={gamesWon} setRefetchFriends={setRefetchFriends} refetchFriends={refetchFriends} showMessages={showMessages} setConnection={setConnection}/>
 
         <main className='main'>
           <Routes>
-            <Route path='/' element={<Home username={username} userId={userId} refetchFriends={refetchFriends}/>} />
+            <Route path='/' element={<Home username={username} userId={userId} refetchFriends={refetchFriends} connection={connection}/>} />
             <Route path='/Login' element={<Login setUsername={setUserName}/>}/>
             <Route path='/Register' element={<Register />}/>
             <Route path='/Chat' element={<Chat setShowNotifications={setShowNotifications} setShowMessages={setShowMessages} showMessages={showMessages}/>}/>

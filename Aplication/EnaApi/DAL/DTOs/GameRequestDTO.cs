@@ -14,7 +14,7 @@ namespace DAL.DTOs
         public int SenderId { get; set; }
         public int RecipientId { get; set; }
         public int GameId { get; set; }
-        public bool IsAccepted { get; set; }
-        public DateTime Timestamp { get; set; }
+        public bool IsAccepted { get; set; } = false;
+        public DateTime Timestamp { get; set; } = DateTime.Now;
     }
 }

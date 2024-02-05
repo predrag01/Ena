@@ -18,9 +18,9 @@ namespace DAL.Repository
             _db = db;
 
         }
-        public async Task<GameRequest> GetGameRequestBySenderAndRecipient(int SenderId, int RecipientId)
+        public async Task<GameRequest> GetGameRequestBySenderAndRecipient(int SenderId, int RecipientId, int gameId)
         {
-            var request = await _db.GameRequests.Where(x => x.SenderId == SenderId && x.RecipientId == RecipientId).FirstOrDefaultAsync();
+            var request = await _db.GameRequests.Where(x => x.SenderId == SenderId && x.RecipientId == RecipientId && x.GameId == gameId).FirstOrDefaultAsync();
             return request;
         }
 
@@ -32,7 +32,13 @@ namespace DAL.Repository
 
         public async Task<List<GameRequest>> GetAllGameRequestByRecipientId(int recipientId)
         {
-            return await this._db.GameRequests.Where(x => x.RecipientId == recipientId).ToListAsync();
+            //return await this._db.GameRequests.Include(x=> x.Sender).Where(x => x.RecipientId == recipientId && (DateTime.Now - x.Timestamp).TotalSeconds < 30).ToListAsync();
+            var thresholdTime = DateTime.Now.AddSeconds(-30);
+
+            return await this._db.GameRequests
+                .Include(x => x.Sender)
+                .Where(x => x.RecipientId == recipientId && x.Timestamp > thresholdTime)
+                .ToListAsync();
         }
     }
 }

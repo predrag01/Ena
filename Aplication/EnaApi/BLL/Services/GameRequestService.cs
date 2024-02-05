@@ -25,19 +25,25 @@ namespace BLL.Services
             this._playerService = playerService;
         }
 
-        public async Task SendGameRequest(GameRequestDTO request)
+        public async Task<GameRequest> SendGameRequest(GameRequestDTO request)
         {
             if (request != null)
             {
-                var requestFound = await this._unitOfWork.GameRequest.GetGameRequestBySenderAndRecipient(request.SenderId, request.RecipientId);
+                var requestFound = await this._unitOfWork.GameRequest.GetGameRequestBySenderAndRecipient(request.SenderId, request.RecipientId, request.GameId);
                 if (requestFound != null)
                 {
-                    throw new Exception("Friend request already sent.");
+                    return null;
                 }
 
                 var requestCreated = new GameRequest(request.SenderId, request.RecipientId, request.GameId, false, request.Timestamp);
                 await _unitOfWork.GameRequest.Add(requestCreated);
                 await _unitOfWork.Save();
+
+                return requestCreated;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -68,11 +74,11 @@ namespace BLL.Services
             await _unitOfWork.Save();
         }
 
-        public Task<List<GameRequest>> GetAllGameRequestByRecipientId(int recipientId)
+        public async Task<List<GameRequest>> GetAllGameRequestByRecipientId(int recipientId)
         {
             try
             {
-                return _unitOfWork.GameRequest.GetAllGameRequestByRecipientId(recipientId);
+                return await _unitOfWork.GameRequest.GetAllGameRequestByRecipientId(recipientId);
             }
             catch
             {

@@ -13,13 +13,15 @@ namespace EnaApi
         public IChatMessageService _messageService { get; set; }
         public IUserService _userService { get; set; }
         public IRequestService _requestService { get; set; }
+        public IGameRequestService _gameRequestService { get; set; }
         public IFriendsListService _friendsListService { get; set; }
         public IUnitOfWork _unitOfWork { get; set; }
-        public ChatHub(EnaContext db, IChatMessageService messageService, IUserService userService, IRequestService requestService, IFriendsListService friendsListService, IUnitOfWork unitOfWork)
+        public ChatHub(EnaContext db, IChatMessageService messageService, IUserService userService, IRequestService requestService, IGameRequestService gameRequestService, IFriendsListService friendsListService, IUnitOfWork unitOfWork)
         {
             _messageService = messageService;
             _userService = userService;
             _requestService = requestService;
+            _gameRequestService = gameRequestService;
             _friendsListService = friendsListService;
             this._unitOfWork = unitOfWork;
         }
@@ -107,9 +109,21 @@ namespace EnaApi
             _unitOfWork.Request.Delete(request);
             await Clients.Group(username).SendAsync("FetchFriendRequests", Context.User.Identity.Name);
         }
-        public async Task SendGameInviteToUser(string username, string friendname)
+        public async Task SendGameInviteToUser(string username, string friendname, GameRequestDTO gameRequest)
         {
-            await Clients.Group(friendname).SendAsync("ReceiveGameInvite", username);
+            GameRequest gamereq = await this._gameRequestService.SendGameRequest(gameRequest);
+            if(gamereq!= null)
+            {
+                await Clients.Group(friendname).SendAsync("ReceiveGameInvite", username, gamereq);
+            }
+           
+        }
+
+        public async Task AcceptGameInviteToUser(string username, string friendname, int gameRequestId)
+        {
+            await Clients.Group(friendname).SendAsync("GameInviteAccepted", username, gameRequestId);
+
+            await this._gameRequestService.AcceptGameRequset(gameRequestId);
         }
     }
 }

@@ -12,6 +12,8 @@ import Cookies from "js-cookie";
 import { any } from "prop-types";
 import { Store } from 'react-notifications-component';
 import { Message } from "../models/message.model";
+import { GameRequest } from "../models/gameRequest.model";
+import GameRequests from "./GameRequests";
 
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
@@ -23,8 +25,8 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   const [showFriendrequest, setShowFriendrequest] = useState(false);
   const [friendRequest, setFriendrequest] = useState(false);
   const [messages, setMessages] = useState(false);
-  // const [showMessages, setShowMessages] = useState(false);
-  const [gameRequest, setMGameRequest] = useState(false);
+  const [showGameRequest, setShowGameRequests] = useState(false);
+  const [gameRequests, setGameRequests] = useState<GameRequest[]>([])
   
    
   const menuRef = useRef<HTMLDivElement>(null);
@@ -40,6 +42,22 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     console.log(messages);
     
   },[props.showMessages]);
+
+  const fetchGameRequests = async () => {
+    const response = await fetch('https://localhost:44364' + `/GameRequest/GetAllGameRequestByRecipientId/${props.userId}`, {
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + Cookies.get('jwt')
+                },
+                credentials: 'include'
+    });
+
+    if(response.ok){
+      var req: GameRequest[] = await response.json();
+      setGameRequests(req);
+      console.log(req);
+    }
+  }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -91,6 +109,25 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
 
         const newConnection = new signalR.HubConnectionBuilder().withUrl('https://localhost:44364/chatHub').build();
     
+        newConnection.on('ReceiveGameInvite', (username: string, friendname: string, gameRequest: GameRequest) => {
+          
+          fetchGameRequests();
+
+          Store.addNotification({
+            title: "New Game Request!",
+            message: `${username} sent you a game request`,
+            type: "danger",
+            insert: "bottom",
+            container: "bottom-right",
+            animationIn: ["animate__animated", "animate__fadeIn"],
+            animationOut: ["animate__animated", "animate__fadeOut"],
+            dismiss: {
+              duration: 5000,
+              onScreen: false
+            }
+          });
+        });
+
         newConnection.on('FetchFriendRequests', (username: string) => {
           fetchFriendRequests();
         });
@@ -111,7 +148,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
             animationOut: ["animate__animated", "animate__fadeOut"],
             dismiss: {
               duration: 5000,
-              onScreen: true
+              onScreen: false
             }
           });
         });
@@ -134,7 +171,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
             animationOut: ["animate__animated", "animate__fadeOut"],
             dismiss: {
               duration: 5000,
-              onScreen: true
+              onScreen: false
             }
           });
         });
@@ -150,7 +187,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
             animationOut: ["animate__animated", "animate__fadeOut"],
             dismiss: {
               duration: 5000,
-              onScreen: true
+              onScreen: false
             }
           });
         });
@@ -166,7 +203,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
           });
       
           setConnection(newConnection);
-          props.setConnection(newConnection);
+          //props.setConnection(connection)
 
         }
       
@@ -188,6 +225,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     
     if(props.username !== "success" && props.username !== undefined && props.username !== ''){ 
       fetchFriendRequests();
+      fetchGameRequests();
     }
 
     return () => {
@@ -195,6 +233,12 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     };
 
   }, [props.username]);
+
+  useEffect(() => {
+    props.setConnection(connection)
+    console.log("novi use effect")
+    console.log(connection);
+  },[connection]);
 
   const acceptFriendRequest = async (requestId: number, sender: string) => {
     if (connection) {
@@ -220,6 +264,32 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     }
   };
 
+  const acceptGameRequest = async (requestId: number, sender: string) => {
+    console.log("accept game req");
+    // if (connection) {
+    //   try {
+    //     // Invoke the 'SendMessageToUser' method on the server
+    //     await connection.invoke('AcceptFriendRequest', requestId, props.username, sender);
+    //     setFriendrequest(false);
+    //   } catch (error) {
+    //     console.error('Error acceptiing friend request:', error);
+    //   }
+    // }
+  };
+
+  const declineGameRequest = async (requestId: number) => { 
+    console.log("decline game req");
+    // if (connection) {
+    //   try {
+    //     // Invoke the 'SendMessageToUser' method on the server
+    //     await connection.invoke('DeclineFriendRequest', requestId, props.username);
+    //     setFriendrequest(false);
+    //   } catch (error) {
+    //     console.error('Error acceptiing friend request:', error);
+    //   }
+    // }
+  };
+
   const showHideMenu = () => {
     setShowMenu(!showMenu);
   };
@@ -227,6 +297,11 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   const showHideFriendRequest = () => {
     setShowFriendrequest(!showFriendrequest);
     console.log('clicked')
+  };
+
+  const showHideGameRequests = () => {
+    
+    setShowGameRequests(!showGameRequest);
   };
   
   let menu;
@@ -246,15 +321,10 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     menu = (
       <div className="nav-menu" ref={menuRef}>
         <div className="icons">
-          <Link className="nav-icons game-request-icon" to={''} >
-            {gameRequest ? 
-              (<div>
-                <i className="bi bi-controller"></i>
-              </div>) : 
-              (<div>
-                <i className="bi bi-controller"></i>
-              </div>)}
-          </Link>
+          <label className="nav-icons game-request-icon" onClick={showHideGameRequests} >
+            <i className="bi bi-controller"></i>
+            {showGameRequest && <GameRequests gameRequests={gameRequests} acceptGameRequest={acceptGameRequest} declineGameRequest={declineGameRequest}/>}
+          </label>
           <label className="nav-icons friend-request-icon" onClick={showHideFriendRequest}>
             {friendRequest ? 
               (<div>

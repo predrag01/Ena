@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import image from "./../assets/noProfilePicture.png"
 import Cookies from "js-cookie";
+import { GameRequest, GameRequestDTO } from "../models/gameRequest.model";
 // props:{connection:signalR.HubConnection}
-const Friend = (props: {result: FriendList, connection:signalR.HubConnection|null}) => {
+const Friend = (props: {result: FriendList, connection:signalR.HubConnection|null, gameId: number}) => {
   const [username, setUserName] = useState('');
   useEffect(() => {
     (
@@ -26,10 +27,19 @@ const Friend = (props: {result: FriendList, connection:signalR.HubConnection|nul
     )();
   });
 
-  const handleInviteClick = async () => {
+  const handleInviteClick =  () => {
+    console.log("clicked")
     if (props.connection) {
       try {
-        await props.connection.invoke('SendGameInviteToUser', props.result.user?.username, props.result.friend?.username);
+
+        var req: GameRequestDTO = {
+          senderId: props.result.userId,
+          recipientId: props.result.friendId,
+          gameId:props.gameId
+        };
+
+        console.log(req);
+         props.connection.invoke('SendGameInviteToUser', props.result.user?.username, props.result.friend?.username, req);
       } catch (error) {
         console.error('Error sending friend request:', error);
       }
@@ -51,7 +61,7 @@ const Friend = (props: {result: FriendList, connection:signalR.HubConnection|nul
           </div>
         </div>
         <Link to={`/chat?username=${username}&friendUsername=${props.result.friend?.username}`}><i className="friend-message-game-icon bi bi-chat-left-fill"></i></Link>
-        <label onClick={handleInviteClick}><i className="friend-message-game-icon bi bi-controller"></i></label>
+        {(props.gameId > 0 ? true : false) && <label onClick={handleInviteClick}><i className="friend-message-game-icon bi bi-controller"></i></label>}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { Player } from "../models/player.model";
 const Home = (props: {username:string, userId: number, refetchFriends: boolean, connection: signalR.HubConnection | null}) => {
 
     const[showLobby, setShowLobby] = useState(false);
+    const[gameId, setGameId] = useState<number>(-1);
     const[player, setPlayer] = useState<Player|null>(null);
 
     const handleCreateLobby = async () => {
@@ -24,6 +25,7 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
             setShowLobby(true);
             const player: Player = await response.json();
             setPlayer(player);
+            setGameId(player?.gameId);
         }
 
     };
@@ -35,7 +37,7 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
             </div>            
             <div className="friends">
                 <h3 className="friends-headline">Friends</h3>
-                <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends} connection={props.connection}/>
+                <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends} connection={props.connection} gameId={gameId}/>
             </div>
         </div>
     );
