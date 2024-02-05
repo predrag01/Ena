@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import image from "./../assets/noProfilePicture.png"
 import Cookies from "js-cookie";
-
-const Friend = (props: {result: FriendList}) => {
+// props:{connection:signalR.HubConnection}
+const Friend = (props: {result: FriendList, connection:signalR.HubConnection|null}) => {
   const [username, setUserName] = useState('');
   useEffect(() => {
     (
@@ -26,6 +26,16 @@ const Friend = (props: {result: FriendList}) => {
     )();
   });
 
+  const handleInviteClick = async () => {
+    if (props.connection) {
+      try {
+        await props.connection.invoke('SendFriendRequest', props.result.user?.username, props.result.friend?.username);
+      } catch (error) {
+        console.error('Error sending friend request:', error);
+      }
+    }
+  }
+
   return (
     <div className="friend">
         <img className="friend-profile-image" src={props.result.friend?.profilePicture ? ('./../public/' + props.result.friend?.profilePicture) : image } alt={props.result.friend?.username} />
@@ -41,7 +51,7 @@ const Friend = (props: {result: FriendList}) => {
           </div>
         </div>
         <Link to={`/chat?username=${username}&friendUsername=${props.result.friend?.username}`}><i className="friend-message-game-icon bi bi-chat-left-fill"></i></Link>
-        <i className="friend-message-game-icon bi bi-controller"></i>
+        <label onClick={handleInviteClick}><i className="friend-message-game-icon bi bi-controller"></i></label>
     </div>
   );
 };

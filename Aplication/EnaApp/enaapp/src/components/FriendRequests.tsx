@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FriendRequest } from "../models/friendRequest.model";
 import * as signalR from "@microsoft/signalr";
-const FriendRequests = (props:{ username: String, friendRequests: FriendRequest[], connection: signalR.HubConnection | null, declineFriendRequest:(requestId: number)=> void, acceptFriendRequest:(requestId: number)=> void }) => {
+const FriendRequests = (props:{ username: String, friendRequests: FriendRequest[], connection: signalR.HubConnection | null, declineFriendRequest:(requestId: number)=> void, acceptFriendRequest:(requestId: number, sender: string)=> void }) => {
 
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
   // const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
@@ -76,8 +76,8 @@ const FriendRequests = (props:{ username: String, friendRequests: FriendRequest[
   //   }
   // };
 
-  const handleAcceptClick = (requestId : number) => {
-    props.acceptFriendRequest(requestId)
+  const handleAcceptClick = (requestId : number, sender: string) => {
+    props.acceptFriendRequest(requestId, sender)
   }
 
   const handleDeclineClick = (requestId : number) => {
@@ -90,9 +90,9 @@ const FriendRequests = (props:{ username: String, friendRequests: FriendRequest[
       {(Array.isArray(props.friendRequests) && props.friendRequests.length > 0) ? (
         props.friendRequests.map((request) => (
           <div key={request.id} className="friends-request-item">
-            {request.sender?.username}
-            <label>Sented you a friend request.</label>
-            <label onClick={() => handleAcceptClick(request.id!)}><i className="bi bi-check2"></i></label>
+            {request.sender?.username}&nbsp;
+            <label>sent you a friend request.</label>
+            <label onClick={() => handleAcceptClick(request.id!, request.sender?.username!)}><i className="bi bi-check2"></i></label>
             <label onClick={() => handleDeclineClick(request.id!)}><i className="bi bi-x"></i></label>
           </div>
         ))

@@ -4,6 +4,7 @@ using DAL.DataContext;
 using Microsoft.AspNetCore.Mvc;
 using DAL.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using DAL.Models;
 
 namespace EnaApi.Controllers
 {
@@ -14,20 +15,25 @@ namespace EnaApi.Controllers
     {
         private readonly EnaContext _db;
         public IGameService _gameService { get; set; }
+        public IPlayerService _playerService { get; set; }
 
-        public GameController(EnaContext db, IGameService gameService)
+        public GameController(EnaContext db, IGameService gameService, IPlayerService playerService)
         {
             this._db = db;
             _gameService = gameService;
+            _playerService = playerService;
         }
 
-        [Route("CreateGame")]
+        [Route("CreateGame/{HostId}")]
         [HttpPost]
-        public async Task<IActionResult> CreateGame()
+        public async Task<IActionResult> CreateGame(int HostId)
         {
             try
             {
-                await this._gameService.CreateGame();
+                Game game = await this._gameService.CreateGame();
+
+                await this._playerService.CreatePlayer(HostId, game.Id, true);
+
                 return Ok();
             }
             catch (Exception e)

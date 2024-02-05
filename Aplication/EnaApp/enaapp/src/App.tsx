@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react'
 import Chat from './pages/Chat'
 import FriendRequests from './components/FriendRequests'
 import Settings from './pages/Settings'
+import { ReactNotifications } from 'react-notifications-component'
+import 'react-notifications-component/dist/theme.css'
 
 function App() {
   const [profileImg, setProfileImg] = useState('');
@@ -15,6 +17,11 @@ function App() {
   const [userId, setUserId] = useState(-1);
   const [gamesWon, setGamesWon] = useState(0);
   const [gamesLost, setGamesLost] = useState(0);
+
+  const [showNotifications, setShowNotifications] = useState(true);
+  const[showMessages, setShowMessages] = useState(true);
+
+  const [refetchFriends, setRefetchFriends] = useState(false);
   
 
     useEffect(() => {
@@ -39,15 +46,18 @@ function App() {
 
   return (
     <div className="App">
+      {showNotifications&&
+      <ReactNotifications />
+      }
       <BrowserRouter>
-        <Nav username={username} setUsername={setUserName} userId={userId} setUserId={setUserId} profileImg={profileImg} gamesLost={gamesLost} gamesWon={gamesWon}/>
+        <Nav username={username} setUsername={setUserName} userId={userId} setUserId={setUserId} profileImg={profileImg} gamesLost={gamesLost} gamesWon={gamesWon} setRefetchFriends={setRefetchFriends} refetchFriends={refetchFriends} showMessages={showMessages}/>
 
         <main className='main'>
           <Routes>
-            <Route path='/' element={<Home username={username} userId={userId}/>} />
+            <Route path='/' element={<Home username={username} userId={userId} refetchFriends={refetchFriends}/>} />
             <Route path='/Login' element={<Login setUsername={setUserName}/>}/>
             <Route path='/Register' element={<Register />}/>
-            <Route path='/Chat' element={<Chat />}/>
+            <Route path='/Chat' element={<Chat setShowNotifications={setShowNotifications} setShowMessages={setShowMessages} showMessages={showMessages}/>}/>
             {/* <Route path='/FriendRequests' element={<FriendRequests username={username} />}/> */}
             <Route path='/Settings' element={<Settings setUsername={setUserName} setProfilePic={setProfileImg}/>}/>
           </Routes>

@@ -23,12 +23,14 @@ namespace BLL.Services
             this._unitOfWork = unitOfWork;
         }
 
-        public async Task CreateGame()
+        public async Task<Game> CreateGame()
         {
             var game = new Game();
+
             await this._unitOfWork.Game.Add(game);
             await this._unitOfWork.Save();
 
+            return game;
         }
     }
 }

@@ -8,7 +8,8 @@ import image from "./../assets/noProfilePicture.png"
 import { Message } from "../models/message.model";
 import Cookies from "js-cookie";
 // const ChatComponent = (props: { username: string; friendUsername: string}) => {
-const Chat = () => {
+const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessages:(value: boolean)=>void, showMessages:boolean}) => {
+	
 	const location = useLocation();
   	const searchParams = new URLSearchParams(location.search);
 	const username = searchParams.get('username');
@@ -19,6 +20,7 @@ const Chat = () => {
   	const [userId, setUserId] = useState(-1);
 	const [chatUer, setChatUser] = useState<User>();
 	const [user, setUser] = useState<User>();
+
 
 	// useEffect(() => {
 	// 	// Create a new SignalR connection
@@ -87,7 +89,8 @@ const Chat = () => {
 	  };
 
 	useEffect(() => {
-
+		props.setShowNotifications(false);
+		props.setShowMessages(false);
 		const fetchUser = async () => {
 			const respone = await fetch('https://localhost:44364' + '/User/GetUser', {
 				headers: {
@@ -132,11 +135,17 @@ const Chat = () => {
 			loadUser(friendUsername);
 		}
 		
-		fetchUser();
+		fetchUser()
+
+		return() => {
+			props.setShowNotifications(true);
+			props.setShowMessages(true);
+		};
 	},[]);
 
 
 	useEffect(() => {
+		
 		const newConnection = new signalR.HubConnectionBuilder()
 			.withUrl('https://localhost:44364/chatHub') 
 			.build();
@@ -222,7 +231,7 @@ const Chat = () => {
 		<div className="chat-main">
 			<div className="friends">
 				<label className="chat-title">Chat</label>
-				<FrindsList userId={userId} chat={true} setUser={setChatUserAndFetchMessages}/>
+				<FrindsList userId={userId} chat={true} setUser={setChatUserAndFetchMessages} refetchFriends={false} connection={null}/>
 			</div>
 			<div className="chat-messages">
 				{(user && chatUer) && 

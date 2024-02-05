@@ -10,6 +10,6 @@ namespace BLL.Services.IServices
 {
     public interface IGameService
     {
-        Task CreateGame();
+        Task<Game> CreateGame();
     }
 }
