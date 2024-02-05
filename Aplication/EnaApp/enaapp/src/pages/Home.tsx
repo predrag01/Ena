@@ -2,11 +2,12 @@ import { useState } from "react";
 import FrindsList from "../components/FriendsList";
 import Cookies from 'js-cookie'
 import GameLobby from "../components/GameLobby";
+import { Player } from "../models/player.model";
 
 const Home = (props: {username:string, userId: number, refetchFriends: boolean, connection: signalR.HubConnection | null}) => {
 
     const[showLobby, setShowLobby] = useState(false);
-    const[playerId, setPlayerId] = useState(-1);
+    const[player, setPlayer] = useState<Player|null>(null);
 
     const handleCreateLobby = async () => {
         const response = await fetch('https://localhost:44364' + `/Game/CreateGame/${props.userId}`, {
@@ -21,8 +22,8 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
 
         if(response.ok){
             setShowLobby(true);
-            const id: number = await response.json();
-            setPlayerId(id);
+            const player: Player = await response.json();
+            setPlayer(player);
         }
 
     };
@@ -30,7 +31,7 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
         <div className="home-div">
             <div className="home">
                 <button onClick={handleCreateLobby}>Create game</button>
-                {showLobby && <GameLobby playerId={playerId}/>}
+                {showLobby && <GameLobby player={player}/>}
             </div>            
             <div className="friends">
                 <h3 className="friends-headline">Friends</h3>
