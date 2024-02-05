@@ -22,5 +22,6 @@ namespace DAL.Utility
         public const string reverse = "Reverse";
         public const string draw_two = "Draw two";
         public const string draw_four = "Draw four";
+        public const string wild = "Wild";
     }
 }
