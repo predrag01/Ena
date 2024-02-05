@@ -10,6 +10,6 @@ namespace BLL.Services.IServices
 {
     public interface IPlayerService
     {
-        Task CreatePlayer(int userId, int gameId, bool host=false);
+        Task<Player> CreatePlayer(int userId, int gameId, bool host=false);
     }
 }

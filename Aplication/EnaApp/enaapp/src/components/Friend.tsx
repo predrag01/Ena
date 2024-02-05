@@ -29,7 +29,7 @@ const Friend = (props: {result: FriendList, connection:signalR.HubConnection|nul
   const handleInviteClick = async () => {
     if (props.connection) {
       try {
-        await props.connection.invoke('SendFriendRequest', props.result.user?.username, props.result.friend?.username);
+        await props.connection.invoke('SendGameInviteToUser', props.result.user?.username, props.result.friend?.username);
       } catch (error) {
         console.error('Error sending friend request:', error);
       }

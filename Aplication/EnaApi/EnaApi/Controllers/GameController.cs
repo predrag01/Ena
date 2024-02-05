@@ -32,9 +32,9 @@ namespace EnaApi.Controllers
             {
                 Game game = await this._gameService.CreateGame();
 
-                await this._playerService.CreatePlayer(HostId, game.Id, true);
+                Player player = await this._playerService.CreatePlayer(HostId, game.Id, true);
 
-                return Ok();
+                return Ok(player.ID);
             }
             catch (Exception e)
             {

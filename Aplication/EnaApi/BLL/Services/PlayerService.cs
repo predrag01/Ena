@@ -22,7 +22,7 @@ namespace BLL.Services
             this._unitOfWork = unitOfWork;
         }
 
-        public async Task CreatePlayer(int userId, int gameId, bool host = false)
+        public async Task<Player> CreatePlayer(int userId, int gameId, bool host = false)
         {
             var player = await this._unitOfWork.Player.GetPlayerByIdInGameById(userId, gameId);
             if (player != null)
@@ -33,6 +33,8 @@ namespace BLL.Services
             var playerCreated = new Player(userId, gameId, host);
             this._unitOfWork.Player.Add(playerCreated);
             await _unitOfWork.Save();
+
+            return playerCreated;
         }
 
     }
