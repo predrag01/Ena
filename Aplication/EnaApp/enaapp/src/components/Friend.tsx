@@ -5,8 +5,9 @@ import { Link } from 'react-router-dom';
 import image from "./../assets/noProfilePicture.png"
 import Cookies from "js-cookie";
 import { GameRequest, GameRequestDTO } from "../models/gameRequest.model";
+import { User } from "../models/user.model";
 // props:{connection:signalR.HubConnection}
-const Friend = (props: {result: FriendList, connection:signalR.HubConnection|null, gameId: number}) => {
+const Friend = (props: {result: FriendList, connection:signalR.HubConnection|null, gameId: number, addInvitedPlayer:(user:User|undefined)=> void}) => {
   const [username, setUserName] = useState('');
   useEffect(() => {
     (
@@ -40,6 +41,7 @@ const Friend = (props: {result: FriendList, connection:signalR.HubConnection|nul
 
         console.log(req);
          props.connection.invoke('SendGameInviteToUser', props.result.user?.username, props.result.friend?.username, req);
+         props.addInvitedPlayer(props.result?.friend);
       } catch (error) {
         console.error('Error sending friend request:', error);
       }

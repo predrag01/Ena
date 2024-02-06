@@ -80,5 +80,20 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Route("DeleteGameRequests/{gameId}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteGameRequests(int gameId)
+        {
+            try
+            {
+                await this._gameRequestService.DeleteGameRequests(gameId);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

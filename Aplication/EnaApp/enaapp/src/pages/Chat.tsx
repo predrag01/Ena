@@ -227,11 +227,15 @@ const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessag
         }
     };
 
+	const addInvitedPlayer = () => {
+
+	}
+
 	return (
 		<div className="chat-main">
 			<div className="friends">
 				<label className="chat-title">Chat</label>
-				<FrindsList userId={userId} chat={true} setUser={setChatUserAndFetchMessages} refetchFriends={false} connection={null}/>
+				<FrindsList userId={userId} chat={true} setUser={setChatUserAndFetchMessages} refetchFriends={false} connection={null} gameId={-1} addInvitedPlayer={addInvitedPlayer}/>
 			</div>
 			<div className="chat-messages">
 				{(user && chatUer) && 

@@ -37,7 +37,17 @@ namespace DAL.Repository
 
             return await this._db.GameRequests
                 .Include(x => x.Sender)
+                .Include(x => x.Recipient)
                 .Where(x => x.RecipientId == recipientId && x.Timestamp > thresholdTime)
+                .Where(x => x.IsAccepted == false)
+                .ToListAsync();
+        }
+
+        public async Task<List<GameRequest>> GetGameRequests(int gameId)
+        {
+            return await this._db.GameRequests
+                .Where(x => x.GameId == gameId)
+                .Where(x => x.IsAccepted == false)
                 .ToListAsync();
         }
     }

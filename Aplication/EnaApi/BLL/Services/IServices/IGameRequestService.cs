@@ -13,6 +13,7 @@ namespace BLL.Services.IServices
         Task<GameRequest> SendGameRequest(GameRequestDTO request);
         Task AcceptGameRequset(int gameRequestId);
         Task DeclineGameRequset(int gameRequestId);
+        Task DeleteGameRequests(int gameId);
         Task<List<GameRequest>> GetAllGameRequestByRecipientId(int recipientId);
     }
 }

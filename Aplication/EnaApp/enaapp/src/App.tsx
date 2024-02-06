@@ -10,6 +10,7 @@ import FriendRequests from './components/FriendRequests'
 import Settings from './pages/Settings'
 import { ReactNotifications } from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
+import { User } from './models/user.model'
 
 function App() {
   const [profileImg, setProfileImg] = useState('');
@@ -24,7 +25,11 @@ function App() {
   const [refetchFriends, setRefetchFriends] = useState(false);
 
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
-  
+  const [acceptedPlayer, addAcceptedPlayer] = useState<User|null>(null);
+
+  const[showLobby, setShowLobby] = useState(false);
+
+
 
     useEffect(() => {
         (
@@ -52,11 +57,11 @@ function App() {
       <ReactNotifications />
       }
       <BrowserRouter>
-        <Nav username={username} setUsername={setUserName} userId={userId} setUserId={setUserId} profileImg={profileImg} gamesLost={gamesLost} gamesWon={gamesWon} setRefetchFriends={setRefetchFriends} refetchFriends={refetchFriends} showMessages={showMessages} setConnection={setConnection}/>
+        <Nav username={username} setUsername={setUserName} userId={userId} setUserId={setUserId} profileImg={profileImg} gamesLost={gamesLost} gamesWon={gamesWon} setRefetchFriends={setRefetchFriends} refetchFriends={refetchFriends} showMessages={showMessages} setConnection={setConnection} addAcceptedPlayer={addAcceptedPlayer} setShowLobby={setShowLobby}/>
 
         <main className='main'>
           <Routes>
-            <Route path='/' element={<Home username={username} userId={userId} refetchFriends={refetchFriends} connection={connection}/>} />
+            <Route path='/' element={<Home username={username} userId={userId} refetchFriends={refetchFriends} connection={connection} acceptedPlayer={acceptedPlayer} showLobby={showLobby} setShowLobby={setShowLobby}/>} />
             <Route path='/Login' element={<Login setUsername={setUserName}/>}/>
             <Route path='/Register' element={<Register />}/>
             <Route path='/Chat' element={<Chat setShowNotifications={setShowNotifications} setShowMessages={setShowMessages} showMessages={showMessages}/>}/>

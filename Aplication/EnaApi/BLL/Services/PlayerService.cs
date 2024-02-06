@@ -31,7 +31,7 @@ namespace BLL.Services
             }
 
             var playerCreated = new Player(userId, gameId, host);
-            this._unitOfWork.Player.Add(playerCreated);
+            await this._unitOfWork.Player.Add(playerCreated);
             await _unitOfWork.Save();
 
             return playerCreated;

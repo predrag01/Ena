@@ -18,7 +18,7 @@ import GameRequests from "./GameRequests";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
-const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, username:string, profileImg:string, setUsername: (username: string) => void, setUserId: (userId: number) => void, setRefetchFriends:(value: boolean) => void, refetchFriends: boolean, showMessages: boolean, setConnection:(connection:signalR.HubConnection | null) => void}) => {
+const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, username:string, profileImg:string, setUsername: (username: string) => void, setUserId: (userId: number) => void, setRefetchFriends:(value: boolean) => void, refetchFriends: boolean, showMessages: boolean, setConnection:(connection:signalR.HubConnection | null) => void, addAcceptedPlayer:(user:User)=>void, setShowLobby:(value:boolean)=> void}) => {
 
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [showMenu, setShowMenu] = useState(false);
@@ -157,6 +157,12 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
           props.setRefetchFriends(!props.refetchFriends);
         });
 
+        newConnection.on('GameInviteAccepted', (user: User) => {
+          console.log('radi');
+          
+          props.addAcceptedPlayer(user);
+        });
+
         newConnection.on('ReceiveMessage', (username: string, message: Message) => {
           if(props.showMessages)
             setMessages(true);
@@ -264,30 +270,34 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     }
   };
 
-  const acceptGameRequest = async (requestId: number, sender: string) => {
+  const acceptGameRequest = async (request:GameRequest) => {
     console.log("accept game req");
-    // if (connection) {
-    //   try {
-    //     // Invoke the 'SendMessageToUser' method on the server
-    //     await connection.invoke('AcceptFriendRequest', requestId, props.username, sender);
-    //     setFriendrequest(false);
-    //   } catch (error) {
-    //     console.error('Error acceptiing friend request:', error);
-    //   }
-    // }
+    if (connection) {
+      try {
+        // Invoke the 'SendGameInviteToUser' method on the server
+        await connection.invoke('AcceptGameInviteToUser', request.recipient, request.sender?.username, request.id);
+        console.log(request);
+        // setGameRequests([]);
+        props.setShowLobby(true);
+        fetchGameRequests();
+        // props.addAcceptedPlayer(request.recipient);
+      } catch (error) {
+        console.error('Error accepting game request:', error);
+      }
+    }
   };
 
   const declineGameRequest = async (requestId: number) => { 
     console.log("decline game req");
-    // if (connection) {
-    //   try {
-    //     // Invoke the 'SendMessageToUser' method on the server
-    //     await connection.invoke('DeclineFriendRequest', requestId, props.username);
-    //     setFriendrequest(false);
-    //   } catch (error) {
-    //     console.error('Error acceptiing friend request:', error);
-    //   }
-    // }
+    if (connection) {
+      try {
+        // Invoke the 'SendGameInviteToUser' method on the server
+        await connection.invoke('DeclineGameInviteToUser', requestId);
+        fetchGameRequests();
+      } catch (error) {
+        console.error('Error acceptiing game request:', error);
+      }
+    }
   };
 
   const showHideMenu = () => {

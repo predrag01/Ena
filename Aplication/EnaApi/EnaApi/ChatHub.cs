@@ -116,14 +116,18 @@ namespace EnaApi
             {
                 await Clients.Group(friendname).SendAsync("ReceiveGameInvite", username, gamereq);
             }
-           
         }
 
-        public async Task AcceptGameInviteToUser(string username, string friendname, int gameRequestId)
+        public async Task AcceptGameInviteToUser(User user, string friendname, int gameRequestId)
         {
-            await Clients.Group(friendname).SendAsync("GameInviteAccepted", username, gameRequestId);
+            await Clients.Group(friendname).SendAsync("GameInviteAccepted", user);
 
             await this._gameRequestService.AcceptGameRequset(gameRequestId);
+        }
+        public async Task DeclineGameInviteToUser(int gameRequestId)
+        {
+
+            await this._gameRequestService.DeclineGameRequset(gameRequestId);
         }
     }
 }

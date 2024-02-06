@@ -1,9 +1,11 @@
 import { GameRequest } from "../models/gameRequest.model";
 
-const GameRequests = (props: {gameRequests: GameRequest[], declineGameRequest:(requestId: number)=> void, acceptGameRequest:(requestId: number, sender: string)=> void}) => {
+const GameRequests = (props: {gameRequests: GameRequest[], declineGameRequest:(requestId: number)=> void, acceptGameRequest:(request:GameRequest)=> void}) => {
 
-    const handleAcceptClick = (requestId : number, sender: string) => {
-        props.acceptGameRequest(requestId, sender)
+    const handleAcceptClick = (request:GameRequest) => {
+        props.acceptGameRequest(request)
+        console.log(request);
+        
       }
     
       const handleDeclineClick = (requestId : number) => {
@@ -18,7 +20,7 @@ const GameRequests = (props: {gameRequests: GameRequest[], declineGameRequest:(r
               <div key={request.id} className="friends-request-item">
                 {request.sender?.username}&nbsp;
                 <label>sent you a game request.</label>
-                <label onClick={() => handleAcceptClick(request.id!, request.sender?.username!)}><i className="bi bi-check2"></i></label>
+                <label onClick={() => handleAcceptClick(request)}><i className="bi bi-check2"></i></label>
                 <label onClick={() => handleDeclineClick(request.id!)}><i className="bi bi-x"></i></label>
               </div>
             ))
