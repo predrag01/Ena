@@ -47,7 +47,7 @@ namespace BLL.Services
             }
         }
 
-        public async Task AcceptGameRequset(int gameRequestId)
+        public async Task<Player> AcceptGameRequset(int gameRequestId)
         {
             var request = await this._unitOfWork.GameRequest.GetGameRequestById(gameRequestId);
             if (request == null)
@@ -55,11 +55,13 @@ namespace BLL.Services
                 throw new Exception("No game request");
             }
 
-            await this._playerService.CreatePlayer(request.RecipientId, request.GameId);
+            Player player = await this._playerService.CreatePlayer(request.RecipientId, request.GameId);
 
             request.IsAccepted= true;
             this._unitOfWork.GameRequest.Update(request);
             await _unitOfWork.Save();
+
+            return player;
         }
 
         public async Task DeclineGameRequset(int gameRequestId)

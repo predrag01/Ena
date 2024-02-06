@@ -4,6 +4,7 @@ import Cookies from 'js-cookie'
 import GameLobby from "../components/GameLobby";
 import { Player } from "../models/player.model";
 import { User } from "../models/user.model";
+import Game from "../components/Game";
 
 const Home = (props: {username:string, userId: number, refetchFriends: boolean, connection: signalR.HubConnection | null, acceptedPlayer:User|null, showLobby:boolean, setShowLobby:(value:boolean)=> void}) => {
 
@@ -11,8 +12,10 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     const[gameId, setGameId] = useState<number>(-1);
     const[player, setPlayer] = useState<Player|null>(null);
 
-    const [invitedUsers, setInvitedUsers] = useState<User[]>([])
-    const [acceptedUsers, setAcceptedUsers] = useState<User[]>([])
+    const [invitedUsers, setInvitedUsers] = useState<User[]>([]);
+    const [acceptedUsers, setAcceptedUsers] = useState<User[]>([]);
+
+    const [showGame, setShowGame] = useState(false);
 
     const addInvitedPlayer = (user:User|undefined) => {
         if(user)
@@ -25,6 +28,10 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     }
 
     useEffect(()=>{
+        props.setShowLobby(false);
+    },[showGame])
+
+    useEffect(()=>{
         console.log('aaa');
                 
         if(props.acceptedPlayer!== null){
@@ -35,6 +42,20 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
             
         }
     },[props.acceptedPlayer])
+
+    if(props.connection){
+        props.connection.on('CreatedPlayer', (playerParam: Player) => {
+            setPlayer(playerParam);
+            setGameId(playerParam.gameId);
+        });
+
+        props.connection.on('GameStarted', () => {
+            setShowGame(true);
+            props.setShowLobby(false);
+        });
+    }
+
+    
 
     const handleCreateLobby = async () => {
         const response = await fetch('https://localhost:44364' + `/Game/CreateGame/${props.userId}`, {
@@ -58,8 +79,9 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     return (
         <div className="home-div">
             <div className="home">
-                {!props.showLobby &&<button onClick={handleCreateLobby}>Create game</button>}
-                {props.showLobby && <GameLobby player={player} invitedUsers={invitedUsers} acceptedUsers={acceptedUsers} connection={props.connection}/>}
+                {(!props.showLobby && !showGame) &&<button onClick={handleCreateLobby}>Create game</button>}
+                {props.showLobby && <GameLobby player={player} invitedUsers={invitedUsers} acceptedUsers={acceptedUsers} connection={props.connection} setShowGame={setShowGame}/>}
+                {showGame && <Game />}
             </div>            
             <div className="friends">
                 <h3 className="friends-headline">Friends</h3>

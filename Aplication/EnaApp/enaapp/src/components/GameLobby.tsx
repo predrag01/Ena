@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import { User } from "../models/user.model";
 import { Player } from "../models/player.model";
 import Cookies from 'js-cookie'
-const GameLobby = ( props: {player: Player|null, invitedUsers:User[], acceptedUsers:User[], connection: signalR.HubConnection | null}) => {
+const GameLobby = ( props: {player: Player|null, invitedUsers:User[], acceptedUsers:User[], connection: signalR.HubConnection | null, setShowGame:(value: boolean)=> void}) => {
     
     // useEffect(()=> {
-        
+    //     if(props.connection){
+    //         props.connection.on('CreatedPlayer', (player: Player) => {
+    //             props.setRefetchFriends(!props.refetchFriends);
+    //           });
+    //     }
+       
     // },[props.acceptedUsers])
 
     const handleOnClick = async () =>{
@@ -18,7 +23,21 @@ const GameLobby = ( props: {player: Player|null, invitedUsers:User[], acceptedUs
             },
             credentials: 'include'
         });
+
+        props.connection?.invoke("StartGame", props.player?.gameId);
+
+        props.setShowGame(true);
     }
+
+    useEffect(() => {
+        if(props.connection){
+            props.connection.invoke('JoinGroup', 'game:' + props.player?.gameId);  
+            console.log('uso u grupu')  
+        }
+    },[]);
+
+    
+
 
     return(
         <>
@@ -41,6 +60,7 @@ const GameLobby = ( props: {player: Player|null, invitedUsers:User[], acceptedUs
             </>:
             <>
                 <label>Waiting to start </label>
+                <label>{props.player?.gameId}</label>
             </>
         }
         </>

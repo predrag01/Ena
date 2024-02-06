@@ -4,6 +4,7 @@ using DAL.DataContext;
 using Microsoft.AspNetCore.Mvc;
 using DAL.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using DAL.Models;
 
 namespace EnaApi.Controllers
 {
@@ -42,8 +43,8 @@ namespace EnaApi.Controllers
         {
             try
             {
-                await this._gameRequestService.AcceptGameRequset(requestId);
-                return Ok();
+                Player player = await this._gameRequestService.AcceptGameRequset(requestId);
+                return Ok(player);
             }
             catch (Exception e)
             {

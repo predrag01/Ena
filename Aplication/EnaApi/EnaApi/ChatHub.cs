@@ -122,12 +122,19 @@ namespace EnaApi
         {
             await Clients.Group(friendname).SendAsync("GameInviteAccepted", user);
 
-            await this._gameRequestService.AcceptGameRequset(gameRequestId);
+            Player playerParam = await this._gameRequestService.AcceptGameRequset(gameRequestId);
+
+            await Clients.Group(user.Username).SendAsync("CreatedPlayer", playerParam);
         }
         public async Task DeclineGameInviteToUser(int gameRequestId)
         {
 
             await this._gameRequestService.DeclineGameRequset(gameRequestId);
+        }
+
+        public async Task StartGame(int gameId)
+        {
+            await Clients.Group("game:"+gameId).SendAsync("GameStarted");
         }
     }
 }

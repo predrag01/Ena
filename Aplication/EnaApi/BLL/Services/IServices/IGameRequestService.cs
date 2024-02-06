@@ -11,7 +11,7 @@ namespace BLL.Services.IServices
     public interface IGameRequestService
     {
         Task<GameRequest> SendGameRequest(GameRequestDTO request);
-        Task AcceptGameRequset(int gameRequestId);
+        Task<Player> AcceptGameRequset(int gameRequestId);
         Task DeclineGameRequset(int gameRequestId);
         Task DeleteGameRequests(int gameId);
         Task<List<GameRequest>> GetAllGameRequestByRecipientId(int recipientId);
