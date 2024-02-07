@@ -18,6 +18,7 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     const [acceptedUsers, setAcceptedUsers] = useState<User[]>([]);
 
     const [showGame, setShowGame] = useState(false);
+    const [inGame, setInGame] = useState(false);
 
     const addInvitedPlayer = (user:User|undefined) => {
         if(user)
@@ -29,6 +30,7 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     }
 
     useEffect(()=>{
+        console.log('igra je pocela')
         props.setShowLobby(false);
         const getPlayers= async ()=>{
             const response = await fetch('https://localhost:44364' + `/Player/GetAllPlayersByGameId/${gameId}`, {
@@ -57,6 +59,18 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
         }
         getPlayers();
     },[showGame])
+
+    useEffect(() => {
+        if(player && !player?.host && props.showLobby){
+            setInGame(true);
+        }
+    }, [props.showLobby, player])
+
+    useEffect(() => {
+        if(player && player?.host && props.showLobby){
+            setInGame(true);
+        }
+    }, [showGame])
 
     useEffect(()=>{
         console.log('aaa');
@@ -114,11 +128,15 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
                 {(!props.showLobby && !showGame) &&<button className="home-create-game" onClick={handleCreateLobby}>Create game</button>}
                 {props.showLobby && <GameLobby player={player} invitedUsers={invitedUsers} acceptedUsers={acceptedUsers} connection={props.connection} setShowGame={setShowGame}/>}
                 {showGame && <GameComponent game={game} gameId={gameId} connection={props.connection} player={player}/>}
-            </div>            
-            <div className="friends">
+            </div>  
+            {/* <div className="friends">
                 <h3 className="friends-headline">Friends</h3>
                 <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends} connection={props.connection} gameId={gameId}  addInvitedPlayer={addInvitedPlayer}/>
-            </div>
+            </div>           */}
+            {!inGame && <div className="friends">
+                <h3 className="friends-headline">Friends</h3>
+                <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends} connection={props.connection} gameId={gameId}  addInvitedPlayer={addInvitedPlayer}/>
+            </div>}
         </div>
     );
 };

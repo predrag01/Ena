@@ -30,8 +30,10 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
     },[])
 
     useEffect(()=>{
+        console.log("doso sam u game")
         if(props.connection){
             if(props.game!==undefined && props.game.pile!==undefined){
+                console.log(props.game);
                 props.connection.invoke('SendPile', props.gameId, props.game.pile[0]);
                 setPile(props.game.pile[0]);
                 players?.forEach(element => {

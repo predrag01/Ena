@@ -14,7 +14,6 @@ const DropDownMenu = (props: {userId:number, setUsername: (username: string) => 
         });
     
         props.setUserId(-1);
-        console.log("logout")
     };
 
     const closeMenu =() =>

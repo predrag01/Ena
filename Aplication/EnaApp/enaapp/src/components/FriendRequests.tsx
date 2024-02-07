@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { FriendRequest } from "../models/friendRequest.model";
 import * as signalR from "@microsoft/signalr";
+import image from "./../assets/noProfilePicture.png"
+
 const FriendRequests = (props:{ username: String, friendRequests: FriendRequest[], connection: signalR.HubConnection | null, declineFriendRequest:(requestId: number)=> void, acceptFriendRequest:(requestId: number, sender: string)=> void }) => {
 
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
@@ -86,14 +88,22 @@ const FriendRequests = (props:{ username: String, friendRequests: FriendRequest[
 
   return (
     <div className="friends-request">
-      <h3>Friend Requests</h3>
       {(Array.isArray(props.friendRequests) && props.friendRequests.length > 0) ? (
         props.friendRequests.map((request) => (
           <div key={request.id} className="friends-request-item">
-            {request.sender?.username}&nbsp;
-            <label>sent you a friend request.</label>
-            <label onClick={() => handleAcceptClick(request.id!, request.sender?.username!)}><i className="bi bi-check2"></i></label>
-            <label onClick={() => handleDeclineClick(request.id!)}><i className="bi bi-x"></i></label>
+            <img className="request-img" src={request.sender?.profilePicture ? request.sender?.profilePicture : image}/>
+              <div className="request-info">
+                <label className="request-username">{request.sender?.username}</label>
+                <label className="request-label">sent</label>
+                <label className="request-label">you</label>
+                <label className="request-label">a</label>
+                <label className="request-label">friend</label>
+                <label className="request-label">request.</label>
+              </div>
+              <div className="request-accept-decline">
+                <label className="reuqest-button" onClick={() => handleAcceptClick(request.id!, request.sender?.username!)}><i className="bi bi-check2"></i></label>
+                <label className="reuqest-button" onClick={() => handleDeclineClick(request.id!)}><i className="bi bi-x"></i></label>
+              </div>
           </div>
         ))
       ) : (

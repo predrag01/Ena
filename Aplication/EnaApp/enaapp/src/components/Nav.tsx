@@ -31,6 +31,8 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
    
   const menuRef = useRef<HTMLDivElement>(null);
   const searchResultsRef = useRef<HTMLDivElement>(null);
+  const gameRequestRef = useRef<HTMLLabelElement>(null);
+  const friendRequestRef = useRef<HTMLLabelElement>(null);
 
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
@@ -68,6 +70,15 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
       if (searchResultsRef.current && !searchResultsRef.current.contains(event.target as Node)) {
         setSearchResults([]);
       }
+
+      //ne brisi, zatvara komponente za game request i friend request kada se klikne bilo gde
+      // if (gameRequestRef.current && !gameRequestRef.current.contains(event.target as Node)) {
+      //   setShowGameRequests(false);
+      // }
+
+      // if (friendRequestRef.current && !friendRequestRef.current.contains(event.target as Node)) {
+      //   setFriendrequest(false);
+      // }
     };
 
     document.addEventListener("click", handleClickOutside);
@@ -331,11 +342,11 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     menu = (
       <div className="nav-menu" ref={menuRef}>
         <div className="icons">
-          <label className="nav-icons game-request-icon" onClick={showHideGameRequests} >
+          <label className="nav-icons game-request-icon" onClick={showHideGameRequests} ref={gameRequestRef}>
             <i className="bi bi-controller"></i>
-            {showGameRequest && <GameRequests gameRequests={gameRequests} acceptGameRequest={acceptGameRequest} declineGameRequest={declineGameRequest}/>}
+            {showGameRequest && <GameRequests gameRequests={gameRequests} acceptGameRequest={acceptGameRequest} declineGameRequest={declineGameRequest} />}
           </label>
-          <label className="nav-icons friend-request-icon" onClick={showHideFriendRequest}>
+          <label className="nav-icons friend-request-icon" onClick={showHideFriendRequest} ref={friendRequestRef}>
             {friendRequest ? 
               (<div>
                 <i className="bi bi-person-fill"></i>
