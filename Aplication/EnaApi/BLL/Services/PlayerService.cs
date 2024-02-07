@@ -37,5 +37,10 @@ namespace BLL.Services
             return playerCreated;
         }
 
+        public async Task<List<Player>> GetAllPlayersByGameId(int gameId)
+        {
+            return await this._unitOfWork.Player.GetAllPlayersByGameId(gameId);
+        }
+
     }
 }

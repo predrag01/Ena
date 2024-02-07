@@ -136,5 +136,25 @@ namespace EnaApi
         {
             await Clients.Group("game:"+gameId).SendAsync("GameStarted");
         }
+        public async Task SendPile(int gameId, Card card)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceivePile", card);
+        }
+        public async Task SendHand(int gameId, int playerId, List<Card> cards)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceiveHand", playerId, cards);
+        }
+        public async Task PlayCard(int gameId, int playerId, Card card)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceivePlayedCard", playerId, card);
+        }
+        public async Task DrawCard(int gameId, int playerId)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceiveDrawCardRequest", playerId);
+        }
+        public async Task SendDrawCard(int gameId, int playerId, Card card)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceiveDrawCard", playerId, card);
+        }
     }
 }

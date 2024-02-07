@@ -6,6 +6,6 @@ export interface Player{
     userId?: number;
     user?: User;
     gameId: number;
-    game?: Game;
+    game: Game;
     host?: boolean;
 }

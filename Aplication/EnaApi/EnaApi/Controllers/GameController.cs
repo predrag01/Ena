@@ -34,6 +34,8 @@ namespace EnaApi.Controllers
 
                 Player player = await this._playerService.CreatePlayer(HostId, game.Id, true);
 
+                player.Game = game;
+
                 return Ok(player);
             }
             catch (Exception e)

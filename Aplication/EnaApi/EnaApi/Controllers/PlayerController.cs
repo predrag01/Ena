@@ -4,6 +4,7 @@ using DAL.DataContext;
 using Microsoft.AspNetCore.Mvc;
 using DAL.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using DAL.Models;
 
 namespace EnaApi.Controllers
 {
@@ -29,6 +30,20 @@ namespace EnaApi.Controllers
             {
                 await this._playerService.CreatePlayer(player.UserId, player.GameId, player.Host);
                 return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        [Route("GetAllPlayersByGameId/{gameId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllPlayersByGameId(int gameId)
+        {
+            try
+            {
+                var players = await this._playerService.GetAllPlayersByGameId(gameId);
+                return Ok(players);
             }
             catch (Exception e)
             {

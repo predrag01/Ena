@@ -26,5 +26,9 @@ namespace DAL.Repository
         {
             return await this._db.Players.Where(x => x.ID == playerId).FirstOrDefaultAsync();
         }
+        public async Task<List<Player>> GetAllPlayersByGameId(int gameId)
+        {
+            return await this._db.Players.Where(x => x.GameId == gameId).ToListAsync();
+        }
     }
 }

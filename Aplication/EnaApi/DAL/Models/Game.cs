@@ -14,13 +14,13 @@ namespace DAL.Models
         [Key]
         public int Id { get; set; }
         [NotMapped]
-        public ListOfCards Deck { get; set; }
+        public List<Card> Deck { get; set; }
         [NotMapped]
-        public ListOfCards Pile { get; set; }
+        public List<Card> Pile { get; set; }
         [NotMapped]
         public List<Player>? Players { get; set; }
         [NotMapped]
-        public bool TurnDirection { get; set; }
+        public bool TurnDirection { get; set; } = true;
         [NotMapped]
         public Player PlayerOnTurn { get; set; }
         public virtual ICollection<GameRequest> GameInvitations { get; set; }
