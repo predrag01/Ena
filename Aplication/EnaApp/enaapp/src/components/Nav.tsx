@@ -9,7 +9,6 @@ import FriendRequests from "./FriendRequests";
 import { FriendRequest } from "../models/friendRequest.model";
 import * as signalR from "@microsoft/signalr";
 import Cookies from "js-cookie";
-import { any } from "prop-types";
 import { Store } from 'react-notifications-component';
 import { Message } from "../models/message.model";
 import { GameRequest } from "../models/gameRequest.model";

@@ -64,7 +64,7 @@ function App() {
 
         <main className='main'>
           <Routes>
-            <Route path='/' element={<Home username={username} userId={userId} refetchFriends={refetchFriends} connection={connection} acceptedPlayer={acceptedPlayer} showLobby={showLobby} setShowLobby={setShowLobby}/>} />
+            <Route path='/' element={<UnauthenticatedGuard><Home username={username} userId={userId} refetchFriends={refetchFriends} connection={connection} acceptedPlayer={acceptedPlayer} showLobby={showLobby} setShowLobby={setShowLobby}/></UnauthenticatedGuard>} />
             <Route path='/Login' element={<AuthenticatedGuard>{<Login setUsername={setUserName}/>}</AuthenticatedGuard>}/>
             <Route path='/Register' element={<AuthenticatedGuard>{<Register />}</AuthenticatedGuard>}/>
             <Route path='/Chat' element={<UnauthenticatedGuard><Chat setShowNotifications={setShowNotifications} setShowMessages={setShowMessages} showMessages={showMessages} connection={connection}/></UnauthenticatedGuard>}/>

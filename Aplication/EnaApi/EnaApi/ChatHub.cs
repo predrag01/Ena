@@ -156,5 +156,9 @@ namespace EnaApi
         {
             await Clients.Group("game:" + gameId).SendAsync("ReceiveDrawCard", playerId, card);
         }
+        public async Task SendTurn(int gameId, int playerId)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceiveTurn", playerId);
+        }
     }
 }
