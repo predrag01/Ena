@@ -1,7 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { User } from "../models/user.model";
 import { Player } from "../models/player.model";
 import Cookies from 'js-cookie'
+import image from "./../assets/noProfilePicture.png"
+import { dotPulse } from 'ldrs'
+
+ dotPulse.register()
+
+
+
 const GameLobby = ( props: {player: Player|null, invitedUsers:User[], acceptedUsers:User[], connection: signalR.HubConnection | null, setShowGame:(value: boolean)=> void}) => {
     
     // useEffect(()=> {
@@ -36,34 +43,43 @@ const GameLobby = ( props: {player: Player|null, invitedUsers:User[], acceptedUs
         }
     },[]);
 
-    
-
-
     return(
-        <>
-        {props.player?.host?
-            <>
-                <label>Lobby</label>
-                <label >{props.player?.id}</label>
-                <h3>Invited users users</h3>
-                {props.invitedUsers.length>0 && props.invitedUsers.map((user, id) => {
-                        return (user.username)
-                    })}
-                <h3>Accepted users</h3>
-                {props.acceptedUsers.length>0 && props.acceptedUsers.map((user, id) => {
-                        return (user.username)
-                    })}
-                <button className="start-game" disabled={props.acceptedUsers.length === 0} onClick={handleOnClick}>
-                    Start game
-                </button>
-                
-            </>:
-            <>
-                <label>Waiting to start </label>
-                <label>{props.player?.gameId}</label>
-            </>
-        }
-        </>
+        <div className="lobby">
+            <div className="lobby-title-div">
+                    <label className="lobby-title">Lobby</label>
+            </div>
+            {props.player?.host?
+                <div className="lobby-host">
+                    <div className="lobby-host-list">
+                        <label className="players-list-title">Invited users</label>
+                        {props.invitedUsers.length>0 && props.invitedUsers.map((user, id) => {
+                                return (<div className="lobby-list-item" key={id}>
+                                            <img className="lobby-profile-img" src={user.profilePicture ? user.profilePicture : image}/>
+                                            <label className="lobby-username">{user.username}</label>
+                                        </div>)
+                        })}
+                    </div>
+                    <div className="lobby-host-list">
+                        <label className="players-list-title">Accepted users</label>
+                        {props.acceptedUsers.length>0 && props.acceptedUsers.map((user, id) => {
+                                return (<div className="lobby-list-item" key={id}>
+                                            <img className="lobby-profile-img" src={user.profilePicture ? user.profilePicture : image}/>
+                                            <label className="lobby-username">{user.username}</label>
+                                        </div>)
+                        })}
+                    </div>
+                    <div className="lobby-start-game">
+                        <button className="start-game" disabled={props.acceptedUsers.length === 0} onClick={handleOnClick}>Start game</button>
+                    </div>
+                </div>:
+                <div className="lobby-waiting-to-start">
+                    <label className="waiting-to-start-label">Waiting to start</label>
+                    <div className="lobby-animation">
+                        <l-dot-pulse size="40" speed="1.5" color="black"></l-dot-pulse>
+                    </div>
+                </div>
+            }
+        </div>
     );
 }
 

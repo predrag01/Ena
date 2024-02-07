@@ -79,7 +79,7 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     return (
         <div className="home-div">
             <div className="home">
-                {(!props.showLobby && !showGame) &&<button onClick={handleCreateLobby}>Create game</button>}
+                {(!props.showLobby && !showGame) &&<button className="home-create-game" onClick={handleCreateLobby}>Create game</button>}
                 {props.showLobby && <GameLobby player={player} invitedUsers={invitedUsers} acceptedUsers={acceptedUsers} connection={props.connection} setShowGame={setShowGame}/>}
                 {showGame && <Game />}
             </div>            

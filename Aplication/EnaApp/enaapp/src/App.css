@@ -77,6 +77,9 @@ body {
 .home{
   width: calc(100% - 290px);
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .friends{
@@ -593,4 +596,119 @@ body {
   align-items: center;
   border-radius: 10px;
   padding: 8px;
+}
+
+.home-create-game {
+  background-color: rgba(255, 0, 0, 0.877);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.lobby{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 30px;
+}
+
+.lobby-title-div{
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.lobby-title{
+  font-size: 40px;
+  font-weight: 500;
+}
+
+.lobby-host{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.lobby-host-list{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin-left: 40px;
+  background-color: #f5f5f5;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  min-width: 250px;
+  border-radius: 15px;
+}
+
+.players-list-title{
+  font-size: 25px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.lobby-list-item{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.lobby-list-item:hover{
+  background-color: #ddd;
+  border-radius: 15px;
+}
+
+.lobby-profile-img{
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+}
+
+.lobby-username{
+  font-size: 23px;
+  font-weight: 400;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.lobby-start-game{
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-game{
+  background-color: #1616ff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.lobby-waiting-to-start{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.waiting-to-start-label{
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.lobby-animation{
+  margin-top: 12px;
+  margin-left: 7px;
 }
