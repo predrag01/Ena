@@ -11,5 +11,6 @@ namespace DAL.Repository.IRepository
     {
         Task<Player> GetPlayerByIdInGameById(int playerId, int gameId);
         Task<Player> GetPlayerById(int playerId);
+        Task<List<Player>> GetAllPlayersByGameId(int gameId);
     }
 }

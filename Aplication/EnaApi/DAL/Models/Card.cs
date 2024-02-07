@@ -12,8 +12,8 @@ namespace DAL.Models
     [NotMapped]
     public class Card
     {
-        [Key]
-        public int ID { get; set; }
+        //[Key]
+        //public int ID { get; set; }
         public string? Value{ get; set; }
         public string? Color { get; set; }
         public Card(string Value, string Color) {

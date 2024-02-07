@@ -30,11 +30,11 @@ const GameLobby = ( props: {player: Player|null, invitedUsers:User[], acceptedUs
     }
 
     useEffect(() => {
-        if(props.connection){
+        if(props.connection && props.player?.gameId){
             props.connection.invoke('JoinGroup', 'game:' + props.player?.gameId);  
-            console.log('uso u grupu')  
+            console.log('uso u grupu'+props.player?.gameId);
         }
-    },[]);
+    },[props.player?.gameId]);
 
     
 
