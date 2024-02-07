@@ -8,13 +8,13 @@ import image from "./../assets/noProfilePicture.png"
 import { Message } from "../models/message.model";
 import Cookies from "js-cookie";
 // const ChatComponent = (props: { username: string; friendUsername: string}) => {
-const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessages:(value: boolean)=>void, showMessages:boolean}) => {
+const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessages:(value: boolean)=>void, showMessages:boolean, connection: signalR.HubConnection | null}) => {
 	
 	const location = useLocation();
   	const searchParams = new URLSearchParams(location.search);
 	const username = searchParams.get('username');
 	const friendUsername = searchParams.get('friendUsername');
-	const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+	// const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [newMessage, setNewMessage] = useState<string>('');
   	const [userId, setUserId] = useState(-1);
@@ -145,61 +145,18 @@ const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessag
 
 
 	useEffect(() => {
-		
-		const newConnection = new signalR.HubConnectionBuilder()
-			.withUrl('https://localhost:44364/chatHub') 
-			.build();
-	
-		newConnection.on('ReceiveMessage', (username: string, message: Message) => {
-			setMessages(prevMessages => [...prevMessages, message]);
+		props.connection?.on('ReceiveMessage', (senderName: string, message: Message) => {
+			console.log(senderName);
+			console.log(chatUer?.username);
+			
+			if(senderName==chatUer?.username)
+				setMessages(prevMessages => [...prevMessages, message]);
 		});
-	
-		newConnection.start()
-			.then(() => {
-				// Join a group using the usernames of the two users
-				newConnection.invoke('JoinGroup', username);
-				newConnection.invoke('JoinGroup', friendUsername);
-				console.log('SignalR connection established');
-			})
-			.catch((error) => {
-				console.error('Error establishing SignalR connection:', error);
-			});
-	
-		setConnection(newConnection);
-	
 		return () => {
-			if (newConnection) {
-				// Leave the group when the component unmounts
-				newConnection.invoke('LeaveGroup', username);
-				newConnection.invoke('LeaveGroup', friendUsername);
-				newConnection.stop();
-			}
-		};
-	}, [username, friendUsername]);
-
-	// const sendMessage = async () => {
-	// 	if (connection && newMessage.trim() !== '') {
-	// 	try {
-	// 		// Invoke the 'SendMessage' method on the server
-	// 		await connection.invoke('SendMessage', props.username, newMessage);
-	// 		setNewMessage('');
-	// 	} catch (error) {
-	// 		console.error('Error sending message:', error);
-	// 	}
-	// 	}
-	// };
-
-	// const sendMessage = async () => {
-	// 	if (connection && newMessage.trim() !== '') {
-	// 		try {
-	// 			// Invoke the 'SendMessageToGroup' method on the server
-	// 			await connection.invoke('SendMessageToGroup', friendUsername, newMessage);
-	// 			setNewMessage('');
-	// 		} catch (error) {
-	// 			console.error('Error sending message:', error);
-	// 		}
-	// 	}
-	// };
+			// Cleanup: Remove the event listener when the component unmounts
+			props.connection?.off('ReceiveMessage');
+		  };
+	}, [chatUer]);
 
 	const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === "Enter" && newMessage.trim() !== "") {
@@ -208,7 +165,7 @@ const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessag
 	  };
 
 	const sendMessage = async () => {
-        if (connection && newMessage.trim() !== '') {
+        if (props.connection && newMessage.trim() !== '') {
             try {
 				const newMessageObj: Message = {
 					sender: user,
@@ -219,7 +176,10 @@ const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessag
 					Timestamp: new Date()
 				};
                 // Invoke the 'SendMessageToUser' method on the server
-                await connection.invoke('SendMessageToUser', friendUsername, username, newMessageObj);
+                await props.connection.invoke('SendMessageToUser', chatUer?.username, username, newMessageObj);
+				console.log(chatUer?.username);
+				
+				setMessages(prevMessages => [...prevMessages, newMessageObj]);
                 setNewMessage('');
             } catch (error) {
                 console.error('Error sending message:', error);

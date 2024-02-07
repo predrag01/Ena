@@ -63,14 +63,14 @@ namespace EnaApi
         {
             await Clients.Group(groupName).SendAsync("ReceiveMessage", Context.User.Identity.Name, message);
         }
-        public async Task SendMessageToUser(string userId,string username, ChatMessage message)
+        public async Task SendMessageToUser(string recipient, string sender, ChatMessage message)
         {
-            var friend1 = await this._userService.GetUserByUsername(userId);
-            var friend2 = await this._userService.GetUserByUsername(username);
+            var friend1 = await this._userService.GetUserByUsername(sender);
+            var friend2 = await this._userService.GetUserByUsername(recipient);
 
-            ChatMessageDTO messagedto = new ChatMessageDTO(friend2.Id, friend1.Id, message.Content, DateTime.Now);
+            ChatMessageDTO messagedto = new(friend1.Id, friend2.Id, message.Content, DateTime.Now);
             await this._messageService.SendMessage(messagedto);
-            await Clients.Group(userId).SendAsync("ReceiveMessage", username, message);
+            await Clients.Group(recipient).SendAsync("ReceiveMessage", sender, message);
         }
         public async Task SendFriendRequest(string username, string friendUsername)
         {

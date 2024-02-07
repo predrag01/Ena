@@ -11,6 +11,9 @@ import Settings from './pages/Settings'
 import { ReactNotifications } from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 import { User } from './models/user.model'
+import Cookies from 'js-cookie'
+import AuthenticatedGuard from './guards/AuthenticatedGuard'
+import UnauthenticatedGuard from './guards/UnauthenticatedGuard'
 
 function App() {
   const [profileImg, setProfileImg] = useState('');
@@ -62,11 +65,10 @@ function App() {
         <main className='main'>
           <Routes>
             <Route path='/' element={<Home username={username} userId={userId} refetchFriends={refetchFriends} connection={connection} acceptedPlayer={acceptedPlayer} showLobby={showLobby} setShowLobby={setShowLobby}/>} />
-            <Route path='/Login' element={<Login setUsername={setUserName}/>}/>
-            <Route path='/Register' element={<Register />}/>
-            <Route path='/Chat' element={<Chat setShowNotifications={setShowNotifications} setShowMessages={setShowMessages} showMessages={showMessages}/>}/>
-            {/* <Route path='/FriendRequests' element={<FriendRequests username={username} />}/> */}
-            <Route path='/Settings' element={<Settings setUsername={setUserName} setProfilePic={setProfileImg}/>}/>
+            <Route path='/Login' element={<AuthenticatedGuard>{<Login setUsername={setUserName}/>}</AuthenticatedGuard>}/>
+            <Route path='/Register' element={<AuthenticatedGuard>{<Register />}</AuthenticatedGuard>}/>
+            <Route path='/Chat' element={<UnauthenticatedGuard><Chat setShowNotifications={setShowNotifications} setShowMessages={setShowMessages} showMessages={showMessages} connection={connection}/></UnauthenticatedGuard>}/>
+            <Route path='/Settings' element={<UnauthenticatedGuard><Settings setUsername={setUserName} setProfilePic={setProfileImg}/></UnauthenticatedGuard>}/>
           </Routes>
         </main>
       </BrowserRouter>
