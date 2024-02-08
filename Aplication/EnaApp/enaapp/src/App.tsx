@@ -31,6 +31,7 @@ function App() {
   const [acceptedPlayer, addAcceptedPlayer] = useState<User|null>(null);
 
   const[showLobby, setShowLobby] = useState(false);
+  const [inGame, setInGame] = useState(false);
 
 
 
@@ -52,7 +53,7 @@ function App() {
                 setGamesLost(content.gamesLost);
             }
         )();
-    });
+    }, []);
 
   return (
     <div className="App">
@@ -64,7 +65,7 @@ function App() {
 
         <main className='main'>
           <Routes>
-            <Route path='/' element={<UnauthenticatedGuard><Home username={username} userId={userId} refetchFriends={refetchFriends} connection={connection} acceptedPlayer={acceptedPlayer} showLobby={showLobby} setShowLobby={setShowLobby}/></UnauthenticatedGuard>} />
+            <Route path='/' element={<UnauthenticatedGuard><Home username={username} userId={userId} refetchFriends={refetchFriends} connection={connection} acceptedPlayer={acceptedPlayer} showLobby={showLobby} setShowLobby={setShowLobby} ingame={inGame} setInGame={setInGame}/></UnauthenticatedGuard>} />
             <Route path='/Login' element={<AuthenticatedGuard>{<Login setUsername={setUserName}/>}</AuthenticatedGuard>}/>
             <Route path='/Register' element={<AuthenticatedGuard>{<Register />}</AuthenticatedGuard>}/>
             <Route path='/Chat' element={<UnauthenticatedGuard><Chat setShowNotifications={setShowNotifications} setShowMessages={setShowMessages} showMessages={showMessages} connection={connection}/></UnauthenticatedGuard>}/>

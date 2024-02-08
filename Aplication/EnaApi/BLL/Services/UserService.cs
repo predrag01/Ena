@@ -222,5 +222,36 @@ namespace BLL.Services
             return user;
         }
 
+        public async Task<User> IncrementWins(int userId)
+        {
+            var user = await this._unitOfWork.User.GetUserById(userId);
+
+            if (user == null)
+            {
+                throw new Exception("This user not exist!");
+            }
+
+            user.GamesWon = user.GamesWon + 1;
+            this._unitOfWork.User.Update(user);
+            await this._unitOfWork.Save();
+
+            return user;
+        }
+
+        public async Task<User> IncrementLose(int userId)
+        {
+            var user = await this._unitOfWork.User.GetUserById(userId);
+
+            if (user == null)
+            {
+                throw new Exception("This user not exist!");
+            }
+
+            user.GamesLost = user.GamesLost + 1;
+            this._unitOfWork.User.Update(user);
+            await this._unitOfWork.Save();
+
+            return user;
+        }
     }
 }

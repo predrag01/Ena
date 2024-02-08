@@ -7,7 +7,7 @@ import { User } from "../models/user.model";
 import GameComponent from "../components/Game";
 import { Game } from "../models/game.model";
 
-const Home = (props: {username:string, userId: number, refetchFriends: boolean, connection: signalR.HubConnection | null, acceptedPlayer:User|null, showLobby:boolean, setShowLobby:(value:boolean)=> void}) => {
+const Home = (props: {username:string, userId: number, refetchFriends: boolean, connection: signalR.HubConnection | null, acceptedPlayer:User|null, showLobby:boolean, setShowLobby:(value:boolean)=> void, ingame:boolean, setInGame:(value:boolean)=> void}) => {
 
     
     const[gameId, setGameId] = useState<number>(-1);
@@ -18,7 +18,6 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     const [acceptedUsers, setAcceptedUsers] = useState<User[]>([]);
 
     const [showGame, setShowGame] = useState(false);
-    const [inGame, setInGame] = useState(false);
 
     const addInvitedPlayer = (user:User|undefined) => {
         if(user)
@@ -62,13 +61,13 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
 
     useEffect(() => {
         if(player && !player?.host && props.showLobby){
-            setInGame(true);
+            props.setInGame(true);
         }
     }, [props.showLobby, player])
 
     useEffect(() => {
         if(player && player?.host && props.showLobby){
-            setInGame(true);
+            props.setInGame(true);
         }
     }, [showGame])
 
@@ -127,15 +126,15 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
             <div className="home">
                 {(!props.showLobby && !showGame) &&<button className="home-create-game" onClick={handleCreateLobby}>Create game</button>}
                 {props.showLobby && <GameLobby player={player} invitedUsers={invitedUsers} acceptedUsers={acceptedUsers} connection={props.connection} setShowGame={setShowGame}/>}
-                {showGame && <GameComponent game={game} gameId={gameId} connection={props.connection} player={player}/>}
+                {showGame && <GameComponent game={game} gameId={gameId} connection={props.connection} player={player} setShowGame={setShowGame} setShowLobby={props.setShowLobby} setInGame={props.setInGame}/>}
             </div>  
             {/* <div className="friends">
                 <h3 className="friends-headline">Friends</h3>
                 <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends} connection={props.connection} gameId={gameId}  addInvitedPlayer={addInvitedPlayer}/>
             </div>           */}
-            {!inGame && <div className="friends">
+            {!props.ingame && <div className="friends">
                 <h3 className="friends-headline">Friends</h3>
-                <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends} connection={props.connection} gameId={gameId}  addInvitedPlayer={addInvitedPlayer}/>
+                <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends} connection={props.connection} gameId={gameId}  addInvitedPlayer={addInvitedPlayer} />
             </div>}
         </div>
     );

@@ -12,14 +12,16 @@ namespace EnaApi
     {
         public IChatMessageService _messageService { get; set; }
         public IUserService _userService { get; set; }
+        public IWinnerService _winnerService { get; set; }
         public IRequestService _requestService { get; set; }
         public IGameRequestService _gameRequestService { get; set; }
         public IFriendsListService _friendsListService { get; set; }
         public IUnitOfWork _unitOfWork { get; set; }
-        public ChatHub(EnaContext db, IChatMessageService messageService, IUserService userService, IRequestService requestService, IGameRequestService gameRequestService, IFriendsListService friendsListService, IUnitOfWork unitOfWork)
+        public ChatHub(EnaContext db, IChatMessageService messageService, IUserService userService, IWinnerService winnerService, IRequestService requestService, IGameRequestService gameRequestService, IFriendsListService friendsListService, IUnitOfWork unitOfWork)
         {
             _messageService = messageService;
             _userService = userService;
+            _winnerService = winnerService;
             _requestService = requestService;
             _gameRequestService = gameRequestService;
             _friendsListService = friendsListService;
@@ -112,7 +114,7 @@ namespace EnaApi
         public async Task SendGameInviteToUser(string username, string friendname, GameRequestDTO gameRequest)
         {
             GameRequest gamereq = await this._gameRequestService.SendGameRequest(gameRequest);
-            if(gamereq!= null)
+            if (gamereq != null)
             {
                 await Clients.Group(friendname).SendAsync("ReceiveGameInvite", username, gamereq);
             }
@@ -134,7 +136,7 @@ namespace EnaApi
 
         public async Task StartGame(int gameId)
         {
-            await Clients.Group("game:"+gameId).SendAsync("GameStarted");
+            await Clients.Group("game:" + gameId).SendAsync("GameStarted");
         }
         public async Task SendPile(int gameId, Card card)
         {
@@ -144,9 +146,9 @@ namespace EnaApi
         {
             await Clients.Group("game:" + gameId).SendAsync("ReceiveHand", playerId, cards);
         }
-        public async Task PlayCard(int gameId, int playerId, Card card)
+        public async Task PlayCard(int gameId, int playerId, Card card, bool direction)
         {
-            await Clients.Group("game:" + gameId).SendAsync("ReceivePlayedCard", playerId, card);
+            await Clients.Group("game:" + gameId).SendAsync("ReceivePlayedCard", playerId, card, direction);
         }
         public async Task DrawCard(int gameId, int playerId)
         {
@@ -167,6 +169,22 @@ namespace EnaApi
         public async Task Next(int gameId, int playerId)
         {
             await Clients.Group("game:" + gameId).SendAsync("ReceiveNext", playerId);
+        }
+
+        public async Task ChangeColor(int gameId, string color)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ColorChanged", color);
+        }
+
+        public async Task SendEna(int gameId, int playerId)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceiveEna", playerId);
+        }
+
+        public async Task SendWinner(int gameId, int playerId)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceiveWinner", playerId);
+            await this._winnerService.CreateWinner(playerId);
         }
     }
 }

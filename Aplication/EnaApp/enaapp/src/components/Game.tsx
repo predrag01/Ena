@@ -5,7 +5,7 @@ import { Player } from "../models/player.model";
 import Cookies from 'js-cookie';
 import { Store } from 'react-notifications-component';
 
-const GameComponent = (props:{game:Game|undefined, gameId:number, connection: signalR.HubConnection | null, player:Player|null}) => {
+const GameComponent = (props:{game:Game|undefined, gameId:number, connection: signalR.HubConnection | null, player:Player|null, setShowGame:(value: boolean) => void, setInGame:(value: boolean)=> void, setShowLobby:(value: boolean) => void}) => {
 
     const[pile, setPile] = useState<Card>();
     const[hand, setHand] = useState<Card[]>();
@@ -15,7 +15,7 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
     const [winner, setWinner] = useState<Player>();
     const [myTurn, setMyturn] = useState(false);
     const [drawCard, setDrawCard] = useState(true);
-    const [turnDirection, setTurnDirection] = useState(true)
+    const [turnDirection, setTurnDirection] = useState(true);
 
     const [pickColor, setPickColor] = useState(false);
 
@@ -39,6 +39,17 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
         getPlayers();
     },[])
 
+
+    const lose = async () => {
+        const response = await fetch('https://localhost:44364' + `/USer/Lose/${props.player?.userId}`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + Cookies.get('jwt')
+              },
+              credentials: 'include'
+        });
+    } 
     useEffect(()=>{
         console.log("doso sam u game")
         if(props.connection){
@@ -117,7 +128,7 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                         animationIn: ["animate__animated", "animate__fadeIn"],
                         animationOut: ["animate__animated", "animate__fadeOut"],
                         dismiss: {
-                          duration: 3000,
+                          duration: 1500,
                           onScreen: false
                         }
                       });
@@ -134,10 +145,69 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                     animationIn: ["animate__animated", "animate__fadeIn"],
                     animationOut: ["animate__animated", "animate__fadeOut"],
                     dismiss: {
-                      duration: 3000,
+                      duration: 1500,
                       onScreen: false
                     }
                   });
+            });
+
+            props.connection.on('ReceiveEna', (playerId: number) => {
+                Store.addNotification({
+                    title: "Uno!",
+                    message: `Player ${players.find((player) => player.id === playerId)?.gameId} has ENA!`,
+                    type: "default",
+                    insert: "top",
+                    container: "top-center",
+                    animationIn: ["animate__animated", "animate__fadeIn"],
+                    animationOut: ["animate__animated", "animate__fadeOut"],
+                    dismiss: {
+                      duration: 1500,
+                      onScreen: false
+                    }
+                  });
+            });
+
+            props.connection.on('ReceiveWinner', (playerId: number) => {
+                if(props.player?.id !== playerId){
+                    Store.addNotification({
+                        title: "Lose!",
+                        message: `Player ${players.find((player) => player.id === playerId)?.gameId} won the game!`,
+                        type: "danger",
+                        insert: "top",
+                        container: "top-center",
+                        animationIn: ["animate__animated", "animate__fadeIn"],
+                        animationOut: ["animate__animated", "animate__fadeOut"],
+                        dismiss: {
+                          duration: 3000,
+                          onScreen: false
+                        }
+                    });
+
+                    lose();
+                }
+                else{
+                    Store.addNotification({
+                        title: "Victory!",
+                        message: `You won the game!`,
+                        type: "success",
+                        insert: "top",
+                        container: "top-center",
+                        animationIn: ["animate__animated", "animate__fadeIn"],
+                        animationOut: ["animate__animated", "animate__fadeOut"],
+                        dismiss: {
+                          duration: 3000,
+                          onScreen: false
+                        }
+                    });
+                }
+
+                setTimeout(() =>{ 
+                    props.setShowGame(false);
+                    props.setShowLobby(false);
+                    props.setInGame(false);
+                }, 5000)
+                
+                
             });
         }
         return () => {
@@ -148,62 +218,190 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
             props.connection?.off('ReceiveHand');
             props.connection?.off('ReceiveNext');
             props.connection?.off('ReceivePlus');
+            props.connection?.off('ReceiveEna');
+            props.connection?.off('ReceiveWinner');
+            props.connection?.off('ColorChanged');
         };
     },[playersList]);
 
     useEffect(()=>{
-        props.connection?.on('ReceivePlayedCard', (id:number, card: Card) => {  
+        props.connection?.on('ReceivePlayedCard', (id:number, card: Card, direction: boolean) => {  
             console.log("ReceivePlayedCard");
             console.log(card);
             setPile(card);
+
+            if(turnDirection !== direction)
+            {
+                setTurnDirection(direction);
+            }
             
             console.log(props.player?.host);
             if(props.player?.host){
 
-                if(card.value === "Reverse"){
-                    console.log('reverse');
+                // if(card.value === "Reverse"){
+                //     console.log('reverse');
                     
-                    console.log(players);
-                    const reversedPlayers = [...players].reverse();
-                    console.log(reversedPlayers);
-                    setPlayers(reversedPlayers);
-                    console.log(players);
-                }
-                var targetPlayerIndex = players.findIndex(player => player.id === id);
-                var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip") ? 2 : 1)) % players.length;
-                if(!turnDirection){
-                    nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                }
-                console.log(players);
-                const nextPlayer: Player = players[nextPlayerIndex];
-                console.log(nextPlayer);
+                //     console.log(players);
+                //     const reversedPlayers = [...players].reverse();
+                //     console.log(reversedPlayers);
+                //     setPlayers(reversedPlayers);
+                //     console.log(players);
+                // }
 
-                if(card.value === "Draw Two"){
-                    var list:Card[]= props.game!.deck!.splice(0, 2);
-                    console.log(list);
-                    if(!nextPlayer.host){
-                        props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
+                if(players.length === 2)
+                {
+                    var targetPlayerIndex = players.findIndex(player => player.id === id);
+                    var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip" || card.value === "Reverse") ? 2 : 1)) % players.length;
+                    console.log(targetPlayerIndex)
+                    console.log(nextPlayerIndex)
+                    console.log(id);
+                    // if(!turnDirection){
+                    //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                    // }
+                    console.log(players);
+                    const nextPlayer: Player = players[nextPlayerIndex];
+                    console.log(nextPlayer);
+
+                    if(card.value === "Draw Two"){
+                        var list:Card[]= props.game!.deck!.splice(0, 2);
+                        console.log(list);
+                        if(!nextPlayer.host){
+                            props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
+                        }
+                        else{
+                            setHand(prevList => [...(prevList ?? []), ...list]);
+                        }
+                    }
+    
+                    if(card.value === "Draw Four"){
+                        var list:Card[]= props.game!.deck!.splice(0, 4);
+                        console.log(list);
+                        if(!nextPlayer.host){
+                            props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
+                        }
+                        else{
+                            setHand(prevList => [...(prevList ?? []), ...list]);
+                        }
+                    }
+                    
+                    if(card.value === "Wild"){
+                        props.connection?.invoke('ChangeColor', props.gameId,  card.color);
+                    }
+                    props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
+                }else{
+                    if(direction){
+                        var targetPlayerIndex = players.findIndex(player => player.id === id);
+                        var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip") ? 2 : 1)) % players.length;
+                        // if(!turnDirection){
+                        //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                        // }
+                        console.log(players);
+                        const nextPlayer: Player = players[nextPlayerIndex];
+                        console.log(nextPlayer);
+    
+                        if(card.value === "Draw Two"){
+                            var list:Card[]= props.game!.deck!.splice(0, 2);
+                            console.log(list);
+                            if(!nextPlayer.host){
+                                props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
+                            }
+                            else{
+                                setHand(prevList => [...(prevList ?? []), ...list]);
+                            }
+                        }
+        
+                        if(card.value === "Draw Four"){
+                            var list:Card[]= props.game!.deck!.splice(0, 4);
+                            console.log(list);
+                            if(!nextPlayer.host){
+                                props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
+                            }
+                            else{
+                                setHand(prevList => [...(prevList ?? []), ...list]);
+                            }
+                        }
+                        
+                        if(card.value === "Wild"){
+                            props.connection?.invoke('ChangeColor', props.gameId,  card.color);
+                        }
+                        props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
                     }
                     else{
-                        setHand(prevList => [...(prevList ?? []), ...list]);
+                        var targetPlayerIndex = players.findIndex(player => player.id === id);
+                        var nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                        // if(!turnDirection){
+                        //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                        // }
+                        console.log(players);
+                        const nextPlayer: Player = players[nextPlayerIndex];
+                        console.log(nextPlayer);
+    
+                        if(card.value === "Draw Two"){
+                            var list:Card[]= props.game!.deck!.splice(0, 2);
+                            console.log(list);
+                            if(!nextPlayer.host){
+                                props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
+                            }
+                            else{
+                                setHand(prevList => [...(prevList ?? []), ...list]);
+                            }
+                        }   
+    
+                        if(card.value === "Draw Four"){
+                            var list:Card[]= props.game!.deck!.splice(0, 4);
+                            console.log(list);
+                            if(!nextPlayer.host){
+                                props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
+                            }
+                            else{
+                                setHand(prevList => [...(prevList ?? []), ...list]);
+                            }
+                        }
+                        
+                        if(card.value === "Wild"){
+                            props.connection?.invoke('ChangeColor', props.gameId,  card.color);
+                        }
+                        props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
                     }
                 }
 
-                if(card.value === "Draw Four"){
-                    var list:Card[]= props.game!.deck!.splice(0, 4);
-                    console.log(list);
-                    if(!nextPlayer.host){
-                        props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
-                    }
-                    else{
-                        setHand(prevList => [...(prevList ?? []), ...list]);
-                    }
-                }
                 
-                if(card.value === "Wild"){
-                    props.connection?.invoke('ChangeColor', props.gameId,  card.color);
-                }
-                props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
+
+                // var targetPlayerIndex = players.findIndex(player => player.id === id);
+                // var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip") ? 2 : 1)) % players.length;
+                // // if(!turnDirection){
+                // //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                // // }
+                // console.log(players);
+                // const nextPlayer: Player = players[nextPlayerIndex];
+                // console.log(nextPlayer);
+
+                // if(card.value === "Draw Two"){
+                //     var list:Card[]= props.game!.deck!.splice(0, 2);
+                //     console.log(list);
+                //     if(!nextPlayer.host){
+                //         props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
+                //     }
+                //     else{
+                //         setHand(prevList => [...(prevList ?? []), ...list]);
+                //     }
+                // }
+
+                // if(card.value === "Draw Four"){
+                //     var list:Card[]= props.game!.deck!.splice(0, 4);
+                //     console.log(list);
+                //     if(!nextPlayer.host){
+                //         props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
+                //     }
+                //     else{
+                //         setHand(prevList => [...(prevList ?? []), ...list]);
+                //     }
+                // }
+                
+                // if(card.value === "Wild"){
+                //     props.connection?.invoke('ChangeColor', props.gameId,  card.color);
+                // }
+                // props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
             }
         });
         return () => {
@@ -212,8 +410,13 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
     },[playersList])
 
     useEffect(()=>{
-        setTurnDirection(!turnDirection);
-    },[players])
+        if(hand?.length === 1){
+            props.connection?.invoke('SendEna', props.gameId, props.player?.id);
+        }
+        if(hand?.length === 0){
+            props.connection?.invoke('SendWinner', props.gameId, props.player?.id);
+        }
+    },[hand])
 
     const handleDrawCard = () => {
         if(drawCard){
@@ -240,17 +443,61 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
             else if(pile?.color === card.color || pile?.value === card.value || card.color === "Black" || pile?.color === "Black")
             {
                 setPickColor(false);
+                setDrawCard(true)
                 setPile(card);
-                props.connection.invoke('PlayCard', props.gameId, props.player?.id, card);
+                var direction: boolean = card.value === "Wild" ? !turnDirection : turnDirection; 
+                props.connection.invoke('PlayCard', props.gameId, props.player?.id, card, direction);
+                setTurnDirection(!turnDirection);
                 var handPom = hand?.filter((c) => c !== card);
                 setHand(handPom);
                 if(props.player?.host){
-                    const targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
-                    const nextPlayerIndex = (targetPlayerIndex + 1) % players.length;
+                    if(players.length === 2)
+                    {
+                        var targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
+                        var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip" || card.value === "Reverse") ? 2 : 1)) % players.length;
+                        // if(!turnDirection){
+                        //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                        // }
+                        console.log(players);
+                        const nextPlayer: Player = players[nextPlayerIndex];
+                        console.log(nextPlayer);
+                        
+                        if(card.value === "Wild"){
+                            props.connection?.invoke('ChangeColor', props.gameId,  card.color);
+                        }
+                        props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
+                    } else{
+                        if(direction)
+                        {
+                            var targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
+                            var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip") ? 2 : 1)) % players.length;
+                            // if(!turnDirection){
+                            //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                            // }
+                            console.log(players);
+                            const nextPlayer: Player = players[nextPlayerIndex];
+                            console.log(nextPlayer);
+                            props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
+                        }
+                        else{
+                            var targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
+                            var nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                            // if(!turnDirection){
+                            //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                            // }
+                            console.log(players);
+                            const nextPlayer: Player = players[nextPlayerIndex];
+                            console.log(nextPlayer);
+                            props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
+                        }
+                    }
+                    
+                    // const targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
+                    // const nextPlayerIndex = (targetPlayerIndex + 1) % players.length;
 
-                    const nextPlayer: Player = players[nextPlayerIndex];
-                    props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
-                    console.log('a');
+                    // const nextPlayer: Player = players[nextPlayerIndex];
+                    // props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
+                    // console.log('a');
                     
                 }
                 setMyturn(false);
@@ -265,7 +512,7 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
             color:value,
         }        
 
-        props.connection?.invoke('PlayCard', props.gameId, props.player?.id, card);
+        props.connection?.invoke('PlayCard', props.gameId, props.player?.id, card, turnDirection);
         var handPom = hand?.filter((c) => c.value !== 'Wild');
         setHand(handPom);
         setPickColor(false);

@@ -130,6 +130,15 @@ namespace EnaApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Route("Lose/{userId}")]
+        [HttpPost]
+        public async Task<IActionResult> Lose(int userId)
+        {
+            await this._userService.IncrementLose(userId);
+
+            return Ok();
+        }
     }
 
     

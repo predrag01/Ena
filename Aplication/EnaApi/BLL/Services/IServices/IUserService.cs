@@ -17,5 +17,7 @@ namespace BLL.Services.IServices
         Task<User> GetUser(string jwt);
         Task<User> GetUserByUsername(string username);
         Task<IQueryable<User>> Search(string username, string ownerUsername);
+        Task<User> IncrementWins(int userId);
+        Task<User> IncrementLose(int userId);
     }
 }
