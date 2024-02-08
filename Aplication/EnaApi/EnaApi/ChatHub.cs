@@ -160,5 +160,13 @@ namespace EnaApi
         {
             await Clients.Group("game:" + gameId).SendAsync("ReceiveTurn", playerId);
         }
+        public async Task SendPlus(int gameId, int playerId, List<Card> cards)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceivePlus", playerId, cards);
+        }
+        public async Task Next(int gameId, int playerId)
+        {
+            await Clients.Group("game:" + gameId).SendAsync("ReceiveNext", playerId);
+        }
     }
 }
