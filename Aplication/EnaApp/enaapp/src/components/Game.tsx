@@ -11,9 +11,11 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
     const[hand, setHand] = useState<Card[]>();
 
     const [players, setPlayers] = useState<Player[]>([]);
+    const [playersList, setPlayersList] = useState<Player[]>([]);
     const [winner, setWinner] = useState<Player>();
     const [myTurn, setMyturn] = useState(false);
     const [drawCard, setDrawCard] = useState(true);
+    const [turnDirection, setTurnDirection] = useState(true)
 
     const [pickColor, setPickColor] = useState(false);
 
@@ -32,6 +34,7 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
             var players:Player[] = await response.json();
             console.log(players);
             setPlayers(players);
+            setPlayersList(players);
         }
         getPlayers();
     },[])
@@ -39,11 +42,15 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
     useEffect(()=>{
         console.log("doso sam u game")
         if(props.connection){
-            if(props.game!==undefined && props.game.pile!==undefined){
-                setMyturn(true)
+            if(props.game!==undefined && props.player?.host){
+                setMyturn(true);
                 console.log(props.game);
-                props.connection.invoke('SendPile', props.gameId, props.game.pile[0]);
-                setPile(props.game.pile[0]);
+                if(props.game.pile!==undefined){
+                    console.log(props.game)
+                    props.connection.invoke('SendPile', props.gameId, props.game.pile[0]);
+                    setPile(props.game.pile[0]);
+                }
+                
                 players?.forEach(element => {
                     var list:Card[]= props.game!.deck!.splice(0, 7);
                     if(!element.host){
@@ -52,36 +59,42 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                     else
                         setHand(list);
                 });
+
                 props.connection.on('ReceiveDrawCardRequest', (playerId:number) => {
+                    console.log("ReceiveDrawCardRequest");
                     console.log('draw card req');
                     
                     props.connection?.invoke('SendDrawCard',props.gameId, playerId, props.game?.deck?.pop());
                 });
 
                 props.connection.on('ReceiveNext', (id:number)=>{
+                    console.log("ReceiveNext");
                     const targetPlayerIndex = players.findIndex(player => player.id === id)
                     const nextPlayerIndex = (targetPlayerIndex + 1) % players.length;
                     const nextPlayer: Player = players[nextPlayerIndex];
                     props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
-                })
+                });
             }
+
             props.connection.on('ReceivePile', (card: Card) => {
+                console.log("ReceivePile");
                 setPile(card);
             });
             
             props.connection.on('ReceiveHand', (id:number, cards: Card[]) => {
+                console.log("ReceiveHand");
                 if(id===props.player?.id)
                     setHand(cards);
             });
 
             props.connection.on('ReceivePlus', (id:number, cards: Card[]) => {
+                console.log("ReceivePlus");
                 if(id===props.player?.id)
                     setHand(prevList => [...(prevList ?? []), ...cards]);
             });
     
-            
-    
             props.connection.on('ReceiveDrawCard', (id:number, card: Card) => {
+                console.log("ReceiveDrawCard");
                 if(props.player?.id===id){
                     console.log(id);
                     setHand(prevHand => [...prevHand ?? [], card]);
@@ -90,12 +103,11 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
             });
 
             props.connection.on('ReceiveTurn', (id: number) => {
-                
+                console.log("ReceiveTurn");
                 if(id === props.player?.id){
                     console.log('b');
                     setMyturn(true);
                     setDrawCard(true);
-
 
                     Store.addNotification({
                         title: "Your turn!",
@@ -105,14 +117,28 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                         animationIn: ["animate__animated", "animate__fadeIn"],
                         animationOut: ["animate__animated", "animate__fadeOut"],
                         dismiss: {
-                          duration: 5000,
+                          duration: 3000,
                           onScreen: false
                         }
                       });
                 }
             });
 
-
+            props.connection.on('ColorChanged', (color: string) => {
+                Store.addNotification({
+                    title: "Changed color!",
+                    message: `New card color is ${color}`,
+                    type: "default",
+                    insert: "top",
+                    container: "top-center",
+                    animationIn: ["animate__animated", "animate__fadeIn"],
+                    animationOut: ["animate__animated", "animate__fadeOut"],
+                    dismiss: {
+                      duration: 3000,
+                      onScreen: false
+                    }
+                  });
+            });
         }
         return () => {
             props.connection?.off('ReceiveDrawCardRequest');
@@ -121,30 +147,42 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
             props.connection?.off('ReceivePile');
             props.connection?.off('ReceiveHand');
             props.connection?.off('ReceiveNext');
+            props.connection?.off('ReceivePlus');
         };
-    },[players]);
+    },[playersList]);
 
     useEffect(()=>{
         props.connection?.on('ReceivePlayedCard', (id:number, card: Card) => {  
-            console.log(id);
+            console.log("ReceivePlayedCard");
+            console.log(card);
             setPile(card);
             
-            if(props.game?.pile!==undefined){
+            console.log(props.player?.host);
+            if(props.player?.host){
 
                 if(card.value === "Reverse"){
                     console.log('reverse');
                     
-                    setPlayers(players.reverse());
-
+                    console.log(players);
+                    const reversedPlayers = [...players].reverse();
+                    console.log(reversedPlayers);
+                    setPlayers(reversedPlayers);
+                    console.log(players);
                 }
-                const targetPlayerIndex = players.findIndex(player => player.id === id)
-                const nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip") ? 2 : 1)) % players.length;
+                var targetPlayerIndex = players.findIndex(player => player.id === id);
+                var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip") ? 2 : 1)) % players.length;
+                if(!turnDirection){
+                    nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
+                }
+                console.log(players);
                 const nextPlayer: Player = players[nextPlayerIndex];
+                console.log(nextPlayer);
 
                 if(card.value === "Draw Two"){
                     var list:Card[]= props.game!.deck!.splice(0, 2);
+                    console.log(list);
                     if(!nextPlayer.host){
-                        props.connection!.invoke('SendHand', props.gameId, nextPlayer.id, list);
+                        props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
                     }
                     else{
                         setHand(prevList => [...(prevList ?? []), ...list]);
@@ -153,6 +191,7 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
 
                 if(card.value === "Draw Four"){
                     var list:Card[]= props.game!.deck!.splice(0, 4);
+                    console.log(list);
                     if(!nextPlayer.host){
                         props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
                     }
@@ -161,61 +200,20 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                     }
                 }
                 
-                // if(card.value === "Wild"){
-                //     var list:Card[]= props.game!.deck!.splice(0, 4);
-                //     if(!nextPlayer.host){
-                //         props.connection!.invoke('SendHand', props.gameId, nextPlayer.id, list);
-                //     }
-                //     else{
-                //         setHand(prevList => [...(prevList ?? []), ...list]);
-                //     }
-                // }
+                if(card.value === "Wild"){
+                    props.connection?.invoke('ChangeColor', props.gameId,  card.color);
+                }
                 props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
             }
         });
         return () => {
             props.connection?.off('ReceivePlayedCard');
         };
-    },[props.gameId])
+    },[playersList])
 
-    
-    // useEffect(()=>{
-
-    // })
-    // if(props.connection){
-    //     if(props.game!==undefined){
-    //         props.connection.on('ReceiveDrawCardRequest', (playerId:number) => {
-    //             console.log('draw card req');
-                
-    //             props.connection?.invoke('SendDrawCard',props.gameId, playerId, props.game?.deck?.pop());
-    //         });
-    //     }
-    //     props.connection.on('ReceivePile', (card: Card) => {
-    //         setPile(card);
-    //     });
-        
-    //     props.connection.on('ReceiveHand', (id:number, cards: Card[]) => {
-    //         if(id===props.player?.id)
-    //             setHand(cards);
-    //     });
-
-    //     props.connection.on('ReceivePlayedCard', (id:number, card: Card) => {  
-    //         console.log(id);
-    //         setPile(card);
-    //     });
-
-    //     props.connection.on('ReceiveDrawCard', (id:number, card: Card) => {
-    //         if(props.player?.id===id){
-    //             console.log(id);
-    //             setHand(prevHand => [...prevHand ?? [], card]);
-    //             //setMessages(prevMessages => [...prevMessages, message]);
-    //         }
-    //     });
-    //     // props.connection.on('GameStarted', () => {
-    //     //     setShowGame(true);
-    //     //     props.setShowLobby(false);
-    //     // });
-    // }
+    useEffect(()=>{
+        setTurnDirection(!turnDirection);
+    },[players])
 
     const handleDrawCard = () => {
         if(drawCard){
@@ -231,8 +229,7 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
             props.connection?.invoke('Next', props.gameId, props.player?.id);
             setDrawCard(true);
         }
-    }
-    
+    } 
 
     const handlePlayCard = (card:Card) => {
         if(props.connection && myTurn){
@@ -247,7 +244,7 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                 props.connection.invoke('PlayCard', props.gameId, props.player?.id, card);
                 var handPom = hand?.filter((c) => c !== card);
                 setHand(handPom);
-                if(props.game?.pile!==undefined){
+                if(props.player?.host){
                     const targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
                     const nextPlayerIndex = (targetPlayerIndex + 1) % players.length;
 
@@ -266,13 +263,10 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
         var card:Card = {
             value:'Wild',
             color:value,
-        }
-
-        console.log(card);
-        
+        }        
 
         props.connection?.invoke('PlayCard', props.gameId, props.player?.id, card);
-        var handPom = hand?.filter((c) => c !== card);
+        var handPom = hand?.filter((c) => c.value !== 'Wild');
         setHand(handPom);
         setPickColor(false);
     }
