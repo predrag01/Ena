@@ -1,8 +1,6 @@
 import { SyntheticEvent, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-
-
 const Register = () => {
     const [profilePicture, setProfilePictureFile] = useState<File | null>(null);
     const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
@@ -12,7 +10,6 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [repeatedPassword, setRepeatedPassword] = useState('');
-    // const [profilePicture] = useState('');
     const [gamesWon] = useState(0);
     const [gamesLost] = useState(0);
     const [redirect, setRedirect] = useState(false);
@@ -61,8 +58,6 @@ const Register = () => {
         });
 
         if (response.ok) {
-            const result = await response.json();
-            console.log('Success:', result);
             setRedirect(true);
       };
     }
@@ -72,45 +67,49 @@ const Register = () => {
     };
     
     return (
-        <form onSubmit={submit} className="form-signin">
-            <h1 className="h3 mb-3 fw-normal">Registration</h1>
-            <div className="profile-picture-container">
-                {profilePicturePreview ? (
-                  <img src={profilePicturePreview} alt="Profile Preview" className="profile-preview" onClick={clearProfilePicture}/>) : 
-                  (<>
-                      <label htmlFor="profile-picture" className="profile-picture-label"><i className="bi bi-camera-fill"></i></label>
-                      <input type="file" id="profile-picture" onChange={handleFileChange} accept="image/*" className="profile-picture-input" ref={fileInputRef}/>
-                    </>
-                  )
-                }
-            </div>
-            <div className="form-floating input-row">
-              <input className="form-control" placeholder="Name" required onChange={e => setName(e.target.value)}/>
-              <label >Name</label>
-            </div>
-            <div className="form-floating input-row">
-              <input className="form-control" placeholder="Last Name" required onChange={e => setLastName(e.target.value)}/>
-              <label >Last Name</label>
-            </div>
-            <div className="form-floating input-row">
-              <input className="form-control" placeholder="Username" required onChange={e => setUserName(e.target.value)}/>
-              <label >Username</label>
-            </div>
-            <div className="form-floating input-row">
-              <input type="email" className="form-control" placeholder="name@example.com" required onChange={e => setEmail(e.target.value)}/>
-              <label >Email</label>
-            </div>
-            <div className="form-floating input-row">
-              <input type="password" className="form-control" placeholder="Password" required onChange={e => setPassword(e.target.value)}/>
-              <label >Password</label>
-            </div>
-            <div className="form-floating input-row">
-              <input type="password" className="form-control" placeholder="Repeated password" required onChange={e => setRepeatedPassword(e.target.value)}/>
-              <label >Repeated password</label>
-            </div>
-            <Link className="nav-link login-label" to={"/Login"} >Already have an account?</Link>
-            <button className="btn btn-primary w-100 py-2 mb-4" type="submit">Register</button>
-        </form>
+      <div className="w-100 h-100 login-div">
+        <div className="login-form">
+          <form onSubmit={submit} className="form-signin">
+              <h1 className="h3 mb-3 fw-normal">Registration</h1>
+              <div className="profile-picture-container">
+                  {profilePicturePreview ? (
+                    <img src={profilePicturePreview} alt="Profile Preview" className="profile-preview" onClick={clearProfilePicture}/>) : 
+                    (<>
+                        <label htmlFor="profile-picture" className="profile-picture-label"><i className="bi bi-camera-fill"></i></label>
+                        <input type="file" id="profile-picture" onChange={handleFileChange} accept="image/*" className="profile-picture-input" ref={fileInputRef}/>
+                      </>
+                    )
+                  }
+              </div>
+              <div className="form-floating input-row">
+                <input className="form-control" placeholder="Name" required onChange={e => setName(e.target.value)}/>
+                <label >Name</label>
+              </div>
+              <div className="form-floating input-row">
+                <input className="form-control" placeholder="Last Name" required onChange={e => setLastName(e.target.value)}/>
+                <label >Last Name</label>
+              </div>
+              <div className="form-floating input-row">
+                <input className="form-control" placeholder="Username" required onChange={e => setUserName(e.target.value)}/>
+                <label >Username</label>
+              </div>
+              <div className="form-floating input-row">
+                <input type="email" className="form-control" placeholder="name@example.com" required onChange={e => setEmail(e.target.value)}/>
+                <label >Email</label>
+              </div>
+              <div className="form-floating input-row">
+                <input type="password" className="form-control" placeholder="Password" required onChange={e => setPassword(e.target.value)}/>
+                <label >Password</label>
+              </div>
+              <div className="form-floating input-row">
+                <input type="password" className="form-control" placeholder="Repeated password" required onChange={e => setRepeatedPassword(e.target.value)}/>
+                <label >Repeated password</label>
+              </div>
+              <Link className="nav-link login-label" to={"/Login"} >Already have an account?</Link>
+              <button className="btn btn-primary w-100 py-2 mb-4" type="submit">Register</button>
+          </form>
+        </div>
+      </div>
     );
 };
 

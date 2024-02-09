@@ -33,19 +33,25 @@ const Login = (props: {setUsername: (username: string) => void}) => {
     };
     
     return (
-        <form className="login" onSubmit={submit}>
-            <h1 className="h3 mb-3 fw-normal">Log in</h1>
-            <div className="form-floating input-row">
-                <input type="email" className="form-control" placeholder="name@example.com" required onChange={e => setEmail(e.target.value)}/>
-                <label >Email address</label>
+        <div className="w-100 h-100 login-div">
+            <div className="login-form">
+                <form className="login " onSubmit={submit}>
+                    <h1 className="h3 mb-3 fw-normal">Log in</h1>
+                    <div className="form-floating input-row">
+                        <input type="email" className="form-control" placeholder="name@example.com" required onChange={e => setEmail(e.target.value)}/>
+                        <label >Email address</label>
+                    </div>
+                    <div className="form-floating text-start input-row">
+                        <input type="password" className="form-control" placeholder="Password" required onChange={e => setPassword(e.target.value)}/>
+                        <label >Password</label>
+                    </div>
+                    <Link className="nav-link login-label" to={"/Register"}>Don't have an account?</Link>
+                    <button className="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+                </form>
+
             </div>
-            <div className="form-floating text-start input-row">
-                <input type="password" className="form-control" placeholder="Password" required onChange={e => setPassword(e.target.value)}/>
-                <label >Password</label>
-            </div>
-            <Link className="nav-link login-label" to={"/Register"}>Don't have an account?</Link>
-            <button className="btn btn-primary w-100 py-2" type="submit">Sign in</button>
-        </form>
+
+        </div>
     );
 };
 

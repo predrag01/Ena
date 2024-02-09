@@ -7,54 +7,17 @@ import ChatMessages from "../components/ChatMessages";
 import image from "./../assets/noProfilePicture.png"
 import { Message } from "../models/message.model";
 import Cookies from "js-cookie";
-// const ChatComponent = (props: { username: string; friendUsername: string}) => {
-const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessages:(value: boolean)=>void, showMessages:boolean, connection: signalR.HubConnection | null}) => {
-	
+
+const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessages:(value: boolean)=>void, connection: signalR.HubConnection | null}) => {
 	const location = useLocation();
   	const searchParams = new URLSearchParams(location.search);
 	const username = searchParams.get('username');
 	const friendUsername = searchParams.get('friendUsername');
-	// const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [newMessage, setNewMessage] = useState<string>('');
   	const [userId, setUserId] = useState(-1);
 	const [chatUer, setChatUser] = useState<User>();
 	const [user, setUser] = useState<User>();
-
-
-	// useEffect(() => {
-	// 	// Create a new SignalR connection
-	// 	const newConnection = new signalR.HubConnectionBuilder()
-	// 	.withUrl('https://localhost:44364/chatHub') 
-	// 	.build();
-
-	// 	// Set up event handlers for receiving messages
-	// 	newConnection.on('ReceiveMessage', (username: string, message: string) => {
-	// 		// console.log(messages);
-	// 		// setMessages([...messages, `${username}: ${message}`]);
-	// 		setMessages(prevMessages => [...prevMessages, `${username}: ${message}`]);
-	// 		// console.log(messages);
-	// 	});
-
-	// 	// Start the connection
-	// 	newConnection
-	// 	.start()
-	// 	.then(() => {
-	// 		console.log('SignalR connection established');
-	// 	})
-	// 	.catch((error) => {
-	// 		console.error('Error establishing SignalR connection:', error);
-	// 	});
-
-	// 	setConnection(newConnection);
-
-	// 	return () => {
-	// 	// Cleanup function to close the connection when the component unmounts
-	// 	if (newConnection) {
-	// 		newConnection.stop();
-	// 	}
-	// 	};
-  	// }, []); // Only run this effect on component mount and unmount
 
 	const loadUser = async (username: string) => {
 		const respone = await fetch('https://localhost:44364' + `/User/GetUserByUsername/${encodeURIComponent(username)}`, {
@@ -69,7 +32,6 @@ const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessag
 			const content:User = await respone.json();         
 			
 			setChatUser(content);
-			console.log(content.username + "chat");
 	};
 
 	const setChatUserAndFetchMessages = async (newChatUser: User) => {
@@ -116,19 +78,8 @@ const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessag
 					},
 					credentials: 'include'
 				});
-					
-				// const data = await response.json();
-				// data.forEach((message: any) => {
-				// // console.log(message.sender.name);
-				// // console.log(message.content);
-				// setMessages(prevMessages => [...prevMessages, `${message.sender.name}: ${message.content}`]);
-				// });
-				// console.log(data);
-
 				const data: Message[] = await response.json();
       			setMessages((prevMessages) => [...prevMessages, ...data]);
-			
-			//   setFriendRequests(data);
 			};
 			
 			fetchMessages();
@@ -143,17 +94,13 @@ const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessag
 		};
 	},[]);
 
-
 	useEffect(() => {
 		props.connection?.on('ReceiveMessage', (senderName: string, message: Message) => {
-			console.log(senderName);
-			console.log(chatUer?.username);
 			
 			if(senderName==chatUer?.username)
 				setMessages(prevMessages => [...prevMessages, message]);
 		});
 		return () => {
-			// Cleanup: Remove the event listener when the component unmounts
 			props.connection?.off('ReceiveMessage');
 		  };
 	}, [chatUer]);
@@ -175,9 +122,7 @@ const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessag
 					content: newMessage.trim(),
 					Timestamp: new Date()
 				};
-                // Invoke the 'SendMessageToUser' method on the server
                 await props.connection.invoke('SendMessageToUser', chatUer?.username, username, newMessageObj);
-				console.log(chatUer?.username);
 				
 				setMessages(prevMessages => [...prevMessages, newMessageObj]);
                 setNewMessage('');
@@ -204,7 +149,7 @@ const Chat = (props: {setShowNotifications:(value: boolean)=>void, setShowMessag
 							<img className="friend-profile-image" src={chatUer?.profilePicture ? ('./../public/' + chatUer.profilePicture) : image } alt={chatUer?.username} />
 							<label className="chat-message-username">{chatUer?.username}</label>
 						</div>
-						<ChatMessages user={user} friend={chatUer} messages={messages}/>
+						<ChatMessages user={user} messages={messages}/>
 						<div className="chat-input-message">
 							<input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type your message..." onKeyPress={handleKeyPress}/>
 							<button onClick={sendMessage}>Send</button>

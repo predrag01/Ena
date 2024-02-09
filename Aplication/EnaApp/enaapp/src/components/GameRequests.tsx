@@ -29,7 +29,6 @@ const GameRequests = (props: {gameRequests: GameRequest[], declineGameRequest:(r
                     </div>
                   </div>
                   <div>
-                    {/* <label className="d-flex flex-row">{request.timestamp ? request.timestamp.getDate() + " " + request.timestamp.getTime() : ""}</label> */}
                   </div>
                 </div>
                 <div className="request-accept-decline">

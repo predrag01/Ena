@@ -3,7 +3,7 @@ import { Message } from "../models/message.model";
 import { User } from "../models/user.model";
 import MessageComonent from "./Message";
 
-const ChatMessages = (props: {user: User, friend: User, messages: Message[]}) => {
+const ChatMessages = (props: {user: User, messages: Message[]}) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 
-const DropDownMenu = (props: {userId:number, setUsername: (username: string) => void, setUserId: (userId: number) => void, closeMenu: (close: boolean) => void}) => {
+const DropDownMenu = (props: { setUserId: (userId: number) => void, closeMenu: (close: boolean) => void}) => {
 
     const logout = async () => {
           await fetch('https://localhost:44364' + '/User/Logout', {

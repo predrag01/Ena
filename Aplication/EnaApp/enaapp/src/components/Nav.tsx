@@ -14,9 +14,6 @@ import { Message } from "../models/message.model";
 import { GameRequest } from "../models/gameRequest.model";
 import GameRequests from "./GameRequests";
 
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import { faUserPlus } from '@fortawesome/free-solid-svg-icons'
-
 const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, username:string, profileImg:string, setUsername: (username: string) => void, setUserId: (userId: number) => void, setRefetchFriends:(value: boolean) => void, refetchFriends: boolean, showMessages: boolean, setConnection:(connection:signalR.HubConnection | null) => void, addAcceptedPlayer:(user:User)=>void, setShowLobby:(value:boolean)=> void}) => {
 
   const [searchResults, setSearchResults] = useState<User[]>([]);
@@ -26,7 +23,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   const [messages, setMessages] = useState(false);
   const [showGameRequest, setShowGameRequests] = useState(false);
   const [gameRequests, setGameRequests] = useState<GameRequest[]>([])
-  
    
   const menuRef = useRef<HTMLDivElement>(null);
   const searchResultsRef = useRef<HTMLDivElement>(null);
@@ -39,10 +35,9 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   useEffect(()=>{
     if(props.showMessages===false)
       setMessages(props.showMessages);
-    console.log(props.showMessages);
-    console.log(messages);
-    
   },[props.showMessages]);
+
+  const isAuthenticated = Cookies.get('jwt') !== undefined;
 
   const fetchGameRequests = async () => {
     const response = await fetch('https://localhost:44364' + `/GameRequest/GetAllGameRequestByRecipientId/${props.userId}`, {
@@ -56,7 +51,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     if(response.ok){
       var req: GameRequest[] = await response.json();
       setGameRequests(req);
-      console.log(req);
     }
   }
 
@@ -69,24 +63,10 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
       if (searchResultsRef.current && !searchResultsRef.current.contains(event.target as Node)) {
         setSearchResults([]);
       }
-
-      //ne brisi, zatvara komponente za game request i friend request kada se klikne bilo gde
-      // if (gameRequestRef.current && !gameRequestRef.current.contains(event.target as Node)) {
-      //   setShowGameRequests(false);
-      // }
-
-      // if (friendRequestRef.current && !friendRequestRef.current.contains(event.target as Node)) {
-      //   setFriendrequest(false);
-      // }
     };
 
     document.addEventListener("click", handleClickOutside);
 
-    // return () => {
-    //   document.removeEventListener("click", handleClickOutside);
-    // };
-
-    
     const fetchFriendRequests = async () => {
       if(props.username){
         const response = await fetch('https://localhost:44364' + '/Request/GetAllFriendRequests?username=' + props.username, {
@@ -98,8 +78,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
         });
         
         const data: FriendRequest[] = await response.json();
-        console.log(data);
-        console.log(props.username + " korisnicko ime");
 
         var list: FriendRequest[] = [];
 
@@ -113,7 +91,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
           setFriendrequest(true);
         } else {
           setFriendrequest(false);
-          console.log(list);
         }
         
 
@@ -143,7 +120,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
         });
 
         newConnection.on('FriendRequestSent', (username: string) => {
-          console.log(username);
           setFriendrequest(true);
 
           fetchFriendRequests();
@@ -168,7 +144,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
         });
 
         newConnection.on('GameInviteAccepted', (user: User) => {
-          console.log('radi');
           
           props.addAcceptedPlayer(user);
         });
@@ -195,7 +170,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
         newConnection.on('FriendRequestAccepted', (username: string) => {
           Store.addNotification({
             title: `${username} accepted your friend request!`,
-            // message: `${username} sent you a friend request`,
             type: "default",
             insert: "bottom",
             container: "bottom-right",
@@ -208,26 +182,18 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
           });
         });
 
-        // newConnection.start();
         if(connection === null){
           newConnection.start().then(() => {
-            // Join a group using the usernames of the two users
             newConnection.invoke('JoinGroup', props.username);
-            console.log('SignalR connection established');
           }).catch((error) => {
             console.error('Error establishing SignalR connection:', error);
           });
-      
           setConnection(newConnection);
-          //props.setConnection(connection)
-
         }
       
         return () => {
           if (newConnection) {
-            // Leave the group when the component unmounts
             newConnection.invoke('LeaveGroup', props.username);
-            // newConnection.invoke('LeaveGroup', friendUsername);
             newConnection.stop();
 
             document.removeEventListener("click", handleClickOutside);
@@ -237,8 +203,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
       };
     }
 
-
-    
     if(props.username !== "success" && props.username !== undefined && props.username !== ''){ 
       fetchFriendRequests();
       fetchGameRequests();
@@ -252,14 +216,11 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
 
   useEffect(() => {
     props.setConnection(connection)
-    console.log("novi use effect")
-    console.log(connection);
   },[connection]);
 
   const acceptFriendRequest = async (requestId: number, sender: string) => {
     if (connection) {
       try {
-        // Invoke the 'SendMessageToUser' method on the server
         await connection.invoke('AcceptFriendRequest', requestId, props.username, sender);
         setFriendrequest(false);
       } catch (error) {
@@ -271,7 +232,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   const declineFriendRequest = async (requestId: number) => { 
     if (connection) {
       try {
-        // Invoke the 'SendMessageToUser' method on the server
         await connection.invoke('DeclineFriendRequest', requestId, props.username);
         setFriendrequest(false);
       } catch (error) {
@@ -281,16 +241,11 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   };
 
   const acceptGameRequest = async (request:GameRequest) => {
-    console.log("accept game req");
     if (connection) {
       try {
-        // Invoke the 'SendGameInviteToUser' method on the server
         await connection.invoke('AcceptGameInviteToUser', request.recipient, request.sender?.username, request.id);
-        console.log(request);
-        // setGameRequests([]);
         props.setShowLobby(true);
         fetchGameRequests();
-        // props.addAcceptedPlayer(request.recipient);
       } catch (error) {
         console.error('Error accepting game request:', error);
       }
@@ -298,10 +253,8 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   };
 
   const declineGameRequest = async (requestId: number) => { 
-    console.log("decline game req");
     if (connection) {
       try {
-        // Invoke the 'SendGameInviteToUser' method on the server
         await connection.invoke('DeclineGameInviteToUser', requestId);
         fetchGameRequests();
       } catch (error) {
@@ -316,7 +269,6 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
 
   const showHideFriendRequest = () => {
     setShowFriendrequest(!showFriendrequest);
-    console.log('clicked')
   };
 
   const showHideGameRequests = () => {
@@ -330,10 +282,10 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
     menu = (
       <ul className="navbar-nav me-auto mb-2 mb-md-0">
         <li className="nav-item active">
-          <Link className="nav-link" to={"Login"} >Login</Link>
+          <Link className="nav-link " to={"Login"} ><img className="my-nav-link" src="./../public/Titles/Login.png" alt="Login" /></Link>
         </li>
         <li className="nav-item active">
-          <Link className="nav-link" to={"Register"}>Register</Link>
+          <Link className="nav-link " to={"Register"}><img className="my-nav-link" src="./../public/Titles/Register.png" alt="Register" /></Link>
         </li>
       </ul>
     )
@@ -354,7 +306,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
                 <i className="bi bi-person"></i>
               </div>
             )}
-            {showFriendrequest && <FriendRequests username={props.username} friendRequests={friendRequests} connection={connection} acceptFriendRequest={acceptFriendRequest} declineFriendRequest={declineFriendRequest}/>}
+            {showFriendrequest && <FriendRequests friendRequests={friendRequests} acceptFriendRequest={acceptFriendRequest} declineFriendRequest={declineFriendRequest}/>}
           </label>
           <Link className="nav-icons message-icon" to={`/chat?username=${props.username}&friendUsername=${props.username}`} >
             {messages && props.showMessages ? 
@@ -375,7 +327,7 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
           <label className="gamesWonLost"> {props.gamesLost}</label>
         </div>
         <div className="nav-username-img" onClick={showHideMenu}>
-          {showMenu && <DropDownMenu setUsername={props.setUsername} userId={props.userId} setUserId={props.setUserId} closeMenu={setShowMenu}/>}
+          {showMenu && <DropDownMenu setUserId={props.setUserId} closeMenu={setShowMenu}/>}
           <label className="nav-username">{props.username}</label>
           <img className="nav-profile-image" src={props.profileImg ? ('./../public/' + props.profileImg) : image } alt={props.username} />
         </div>  
@@ -384,11 +336,14 @@ const Nav = (props: {gamesWon: number, gamesLost: number,userId: number, usernam
   }
 
   return (
-    <nav className="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <nav className="navbar navbar-expand-md navbar-dark my-nav mb-4">
       <div className="container-fluid">
-        <Link className="navbar-brand" to={"/"} >Ena</Link>
+        <Link className="navbar-brand" to={"/"} ><img src="./../public/Buttons/Title.png" alt="" /></Link>
         <div className="collapse navbar-collapse" id="navbarCollapse">
-          <SearchBar username = {props.username} setResults={setSearchResults}/>
+          {isAuthenticated&&
+            <SearchBar username = {props.username} setResults={setSearchResults}/>
+          
+          }
           {searchResults.length > 0 && (
             <div ref={searchResultsRef}>
               <SearchResultList username={props.username} results={searchResults}  />

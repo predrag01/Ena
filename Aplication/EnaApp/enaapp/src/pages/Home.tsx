@@ -7,7 +7,7 @@ import { User } from "../models/user.model";
 import GameComponent from "../components/Game";
 import { Game } from "../models/game.model";
 
-const Home = (props: {username:string, userId: number, refetchFriends: boolean, connection: signalR.HubConnection | null, acceptedPlayer:User|null, showLobby:boolean, setShowLobby:(value:boolean)=> void, ingame:boolean, setInGame:(value:boolean)=> void}) => {
+const Home = (props: {userId: number, refetchFriends: boolean, connection: signalR.HubConnection | null, acceptedPlayer:User|null, showLobby:boolean, setShowLobby:(value:boolean)=> void, ingame:boolean, setInGame:(value:boolean)=> void}) => {
 
     
     const[gameId, setGameId] = useState<number>(-1);
@@ -29,7 +29,6 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     }
 
     useEffect(()=>{
-        console.log('igra je pocela')
         props.setShowLobby(false);
         const getPlayers= async ()=>{
             const response = await fetch('https://localhost:44364' + `/Player/GetAllPlayersByGameId/${gameId}`, {
@@ -43,18 +42,11 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
             });
             var gamePom = game;
             var players:Player[] = await response.json();
-            console.log(players);
             
             if(gamePom){
                 gamePom.players=players;
                 setGame(gamePom);
-                console.log(game);
-                
             }
-            // players.forEach(player => {
-            //     gamePom?.players?.push(player);
-            // });
-            
         }
         getPlayers();
     },[showGame])
@@ -72,13 +64,10 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     }, [showGame])
 
     useEffect(()=>{
-        console.log('aaa');
                 
         if(props.acceptedPlayer!== null){
-            console.log(props.acceptedPlayer);
 
             setAcceptedUsers((prevAcceptedUsers) => [...prevAcceptedUsers, props.acceptedPlayer!]);
-            console.log(acceptedUsers);
             
         }
     },[props.acceptedPlayer])
@@ -87,7 +76,6 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
         props.connection.on('CreatedPlayer', (playerParam: Player) => {
             setPlayer(playerParam);
             setGameId(playerParam.gameId);
-            // setGame(playerParam.game);
         });
 
         props.connection.on('GameStarted', () => {
@@ -95,8 +83,6 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
             props.setShowLobby(false);
         });
     }
-
-    
 
     const handleCreateLobby = async () => {
         const response = await fetch('https://localhost:44364' + `/Game/CreateGame/${props.userId}`, {
@@ -124,14 +110,10 @@ const Home = (props: {username:string, userId: number, refetchFriends: boolean, 
     return (
         <div className="home-div">
             <div className="home">
-                {(!props.showLobby && !showGame) &&<button className="home-create-game" onClick={handleCreateLobby}>Create game</button>}
+                {(!props.showLobby && !showGame) &&<img onClick={handleCreateLobby} className="home-create-game-img" src="./../public/Buttons/Ena-Button.png" alt="Create Game" />}
                 {props.showLobby && <GameLobby player={player} invitedUsers={invitedUsers} acceptedUsers={acceptedUsers} connection={props.connection} setShowGame={setShowGame}/>}
                 {showGame && <GameComponent game={game} gameId={gameId} connection={props.connection} player={player} setShowGame={setShowGame} setShowLobby={props.setShowLobby} setInGame={props.setInGame}/>}
             </div>  
-            {/* <div className="friends">
-                <h3 className="friends-headline">Friends</h3>
-                <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends} connection={props.connection} gameId={gameId}  addInvitedPlayer={addInvitedPlayer}/>
-            </div>           */}
             {!props.ingame && <div className="friends">
                 <h3 className="friends-headline">Friends</h3>
                 <FrindsList userId={props.userId} chat={false} refetchFriends={props.refetchFriends} connection={props.connection} gameId={gameId}  addInvitedPlayer={addInvitedPlayer} />

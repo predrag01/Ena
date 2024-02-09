@@ -4,6 +4,7 @@ import { Card } from "../models/card.model";
 import { Player } from "../models/player.model";
 import Cookies from 'js-cookie';
 import { Store } from 'react-notifications-component';
+import image from "./../assets/noProfilePicture.png"
 
 const GameComponent = (props:{game:Game|undefined, gameId:number, connection: signalR.HubConnection | null, player:Player|null, setShowGame:(value: boolean) => void, setInGame:(value: boolean)=> void, setShowLobby:(value: boolean) => void}) => {
 
@@ -12,12 +13,16 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
 
     const [players, setPlayers] = useState<Player[]>([]);
     const [playersList, setPlayersList] = useState<Player[]>([]);
-    const [winner, setWinner] = useState<Player>();
+    const [winner, setWinner] = useState<boolean>();
     const [myTurn, setMyturn] = useState(false);
     const [drawCard, setDrawCard] = useState(true);
     const [turnDirection, setTurnDirection] = useState(true);
 
     const [pickColor, setPickColor] = useState(false);
+
+    const [showLabel, setShowLabel] = useState(false);
+
+    const [turnId, setTurnId] = useState<number>(-1);
 
 
     useEffect(()=>{
@@ -32,16 +37,18 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
           
             });
             var players:Player[] = await response.json();
-            console.log(players);
             setPlayers(players);
             setPlayersList(players);
+            var hostPlayer:Player | undefined = players.find((f)=>f.host===true)
+            if(hostPlayer)
+                setTurnId(hostPlayer.id);
         }
         getPlayers();
     },[])
 
 
     const lose = async () => {
-        const response = await fetch('https://localhost:44364' + `/USer/Lose/${props.player?.userId}`, {
+        await fetch('https://localhost:44364' + `/USer/Lose/${props.player?.userId}`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -51,13 +58,10 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
         });
     } 
     useEffect(()=>{
-        console.log("doso sam u game")
         if(props.connection){
             if(props.game!==undefined && props.player?.host){
                 setMyturn(true);
-                console.log(props.game);
                 if(props.game.pile!==undefined){
-                    console.log(props.game)
                     props.connection.invoke('SendPile', props.gameId, props.game.pile[0]);
                     setPile(props.game.pile[0]);
                 }
@@ -72,14 +76,10 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                 });
 
                 props.connection.on('ReceiveDrawCardRequest', (playerId:number) => {
-                    console.log("ReceiveDrawCardRequest");
-                    console.log('draw card req');
-                    
                     props.connection?.invoke('SendDrawCard',props.gameId, playerId, props.game?.deck?.pop());
                 });
 
                 props.connection.on('ReceiveNext', (id:number)=>{
-                    console.log("ReceiveNext");
                     const targetPlayerIndex = players.findIndex(player => player.id === id)
                     const nextPlayerIndex = (targetPlayerIndex + 1) % players.length;
                     const nextPlayer: Player = players[nextPlayerIndex];
@@ -88,50 +88,30 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
             }
 
             props.connection.on('ReceivePile', (card: Card) => {
-                console.log("ReceivePile");
                 setPile(card);
             });
             
             props.connection.on('ReceiveHand', (id:number, cards: Card[]) => {
-                console.log("ReceiveHand");
                 if(id===props.player?.id)
                     setHand(cards);
             });
 
             props.connection.on('ReceivePlus', (id:number, cards: Card[]) => {
-                console.log("ReceivePlus");
                 if(id===props.player?.id)
                     setHand(prevList => [...(prevList ?? []), ...cards]);
             });
     
             props.connection.on('ReceiveDrawCard', (id:number, card: Card) => {
-                console.log("ReceiveDrawCard");
                 if(props.player?.id===id){
-                    console.log(id);
                     setHand(prevHand => [...prevHand ?? [], card]);
-                    //setMessages(prevMessages => [...prevMessages, message]);
                 }
             });
 
             props.connection.on('ReceiveTurn', (id: number) => {
-                console.log("ReceiveTurn");
+                setTurnId(id);
                 if(id === props.player?.id){
-                    console.log('b');
                     setMyturn(true);
                     setDrawCard(true);
-
-                    Store.addNotification({
-                        title: "Your turn!",
-                        type: "default",
-                        insert: "top",
-                        container: "top-center",
-                        animationIn: ["animate__animated", "animate__fadeIn"],
-                        animationOut: ["animate__animated", "animate__fadeOut"],
-                        dismiss: {
-                          duration: 1500,
-                          onScreen: false
-                        }
-                      });
                 }
             });
 
@@ -169,38 +149,12 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
 
             props.connection.on('ReceiveWinner', (playerId: number) => {
                 if(props.player?.id !== playerId){
-                    Store.addNotification({
-                        title: "Lose!",
-                        message: `Player ${players.find((player) => player.id === playerId)?.gameId} won the game!`,
-                        type: "danger",
-                        insert: "top",
-                        container: "top-center",
-                        animationIn: ["animate__animated", "animate__fadeIn"],
-                        animationOut: ["animate__animated", "animate__fadeOut"],
-                        dismiss: {
-                          duration: 3000,
-                          onScreen: false
-                        }
-                    });
-
                     lose();
                 }
                 else{
-                    Store.addNotification({
-                        title: "Victory!",
-                        message: `You won the game!`,
-                        type: "success",
-                        insert: "top",
-                        container: "top-center",
-                        animationIn: ["animate__animated", "animate__fadeIn"],
-                        animationOut: ["animate__animated", "animate__fadeOut"],
-                        dismiss: {
-                          duration: 3000,
-                          onScreen: false
-                        }
-                    });
+                    setWinner(true);
                 }
-
+                setShowLabel(true);
                 setTimeout(() =>{ 
                     props.setShowGame(false);
                     props.setShowLobby(false);
@@ -226,8 +180,6 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
 
     useEffect(()=>{
         props.connection?.on('ReceivePlayedCard', (id:number, card: Card, direction: boolean) => {  
-            console.log("ReceivePlayedCard");
-            console.log(card);
             setPile(card);
 
             if(turnDirection !== direction)
@@ -235,36 +187,16 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                 setTurnDirection(direction);
             }
             
-            console.log(props.player?.host);
             if(props.player?.host){
-
-                // if(card.value === "Reverse"){
-                //     console.log('reverse');
-                    
-                //     console.log(players);
-                //     const reversedPlayers = [...players].reverse();
-                //     console.log(reversedPlayers);
-                //     setPlayers(reversedPlayers);
-                //     console.log(players);
-                // }
 
                 if(players.length === 2)
                 {
                     var targetPlayerIndex = players.findIndex(player => player.id === id);
                     var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip" || card.value === "Reverse") ? 2 : 1)) % players.length;
-                    console.log(targetPlayerIndex)
-                    console.log(nextPlayerIndex)
-                    console.log(id);
-                    // if(!turnDirection){
-                    //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                    // }
-                    console.log(players);
                     const nextPlayer: Player = players[nextPlayerIndex];
-                    console.log(nextPlayer);
 
                     if(card.value === "Draw Two"){
                         var list:Card[]= props.game!.deck!.splice(0, 2);
-                        console.log(list);
                         if(!nextPlayer.host){
                             props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
                         }
@@ -275,7 +207,6 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
     
                     if(card.value === "Draw Four"){
                         var list:Card[]= props.game!.deck!.splice(0, 4);
-                        console.log(list);
                         if(!nextPlayer.host){
                             props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
                         }
@@ -292,16 +223,10 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                     if(direction){
                         var targetPlayerIndex = players.findIndex(player => player.id === id);
                         var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip") ? 2 : 1)) % players.length;
-                        // if(!turnDirection){
-                        //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                        // }
-                        console.log(players);
                         const nextPlayer: Player = players[nextPlayerIndex];
-                        console.log(nextPlayer);
     
                         if(card.value === "Draw Two"){
                             var list:Card[]= props.game!.deck!.splice(0, 2);
-                            console.log(list);
                             if(!nextPlayer.host){
                                 props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
                             }
@@ -312,7 +237,6 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
         
                         if(card.value === "Draw Four"){
                             var list:Card[]= props.game!.deck!.splice(0, 4);
-                            console.log(list);
                             if(!nextPlayer.host){
                                 props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
                             }
@@ -329,16 +253,10 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                     else{
                         var targetPlayerIndex = players.findIndex(player => player.id === id);
                         var nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                        // if(!turnDirection){
-                        //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                        // }
-                        console.log(players);
                         const nextPlayer: Player = players[nextPlayerIndex];
-                        console.log(nextPlayer);
     
                         if(card.value === "Draw Two"){
                             var list:Card[]= props.game!.deck!.splice(0, 2);
-                            console.log(list);
                             if(!nextPlayer.host){
                                 props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
                             }
@@ -349,7 +267,6 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
     
                         if(card.value === "Draw Four"){
                             var list:Card[]= props.game!.deck!.splice(0, 4);
-                            console.log(list);
                             if(!nextPlayer.host){
                                 props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
                             }
@@ -364,44 +281,6 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                         props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
                     }
                 }
-
-                
-
-                // var targetPlayerIndex = players.findIndex(player => player.id === id);
-                // var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip") ? 2 : 1)) % players.length;
-                // // if(!turnDirection){
-                // //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                // // }
-                // console.log(players);
-                // const nextPlayer: Player = players[nextPlayerIndex];
-                // console.log(nextPlayer);
-
-                // if(card.value === "Draw Two"){
-                //     var list:Card[]= props.game!.deck!.splice(0, 2);
-                //     console.log(list);
-                //     if(!nextPlayer.host){
-                //         props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
-                //     }
-                //     else{
-                //         setHand(prevList => [...(prevList ?? []), ...list]);
-                //     }
-                // }
-
-                // if(card.value === "Draw Four"){
-                //     var list:Card[]= props.game!.deck!.splice(0, 4);
-                //     console.log(list);
-                //     if(!nextPlayer.host){
-                //         props.connection!.invoke('SendPlus', props.gameId, nextPlayer.id, list);
-                //     }
-                //     else{
-                //         setHand(prevList => [...(prevList ?? []), ...list]);
-                //     }
-                // }
-                
-                // if(card.value === "Wild"){
-                //     props.connection?.invoke('ChangeColor', props.gameId,  card.color);
-                // }
-                // props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
             }
         });
         return () => {
@@ -419,20 +298,22 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
     },[hand])
 
     const handleDrawCard = () => {
-        if(drawCard){
+        if(drawCard && myTurn){
             if(props.connection){
-                console.log('handle draw card');
-                
                 props.connection.invoke('DrawCard', props.gameId, props.player?.id);
             }
             setDrawCard(false);
         }
-        else{
+    } 
+
+    const handleNext = () => {
+        if(myTurn&&!drawCard){
+
             setMyturn(false);
             props.connection?.invoke('Next', props.gameId, props.player?.id);
             setDrawCard(true);
         }
-    } 
+    }
 
     const handlePlayCard = (card:Card) => {
         if(props.connection && myTurn){
@@ -455,12 +336,7 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                     {
                         var targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
                         var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip" || card.value === "Reverse") ? 2 : 1)) % players.length;
-                        // if(!turnDirection){
-                        //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                        // }
-                        console.log(players);
                         const nextPlayer: Player = players[nextPlayerIndex];
-                        console.log(nextPlayer);
                         
                         if(card.value === "Wild"){
                             props.connection?.invoke('ChangeColor', props.gameId,  card.color);
@@ -471,34 +347,16 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                         {
                             var targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
                             var nextPlayerIndex = (targetPlayerIndex + ((card.value === "Skip") ? 2 : 1)) % players.length;
-                            // if(!turnDirection){
-                            //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                            // }
-                            console.log(players);
                             const nextPlayer: Player = players[nextPlayerIndex];
-                            console.log(nextPlayer);
                             props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
                         }
                         else{
                             var targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
                             var nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                            // if(!turnDirection){
-                            //     nextPlayerIndex = (targetPlayerIndex - ((card.value === "Skip") ? 2 : 1) + players.length) % players.length;
-                            // }
-                            console.log(players);
                             const nextPlayer: Player = players[nextPlayerIndex];
-                            console.log(nextPlayer);
                             props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
                         }
                     }
-                    
-                    // const targetPlayerIndex = players.findIndex(player => player.id === props.player?.id);
-                    // const nextPlayerIndex = (targetPlayerIndex + 1) % players.length;
-
-                    // const nextPlayer: Player = players[nextPlayerIndex];
-                    // props.connection?.invoke('SendTurn', props.gameId,  nextPlayer.id);
-                    // console.log('a');
-                    
                 }
                 setMyturn(false);
             }
@@ -506,7 +364,6 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
     }
 
     const handleWildCard = (value:string)=>{
-        console.log(value);
         var card:Card = {
             value:'Wild',
             color:value,
@@ -520,23 +377,46 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
 
     return (
         <div className="game">
-            {/* Game Component {props.gameId} */}
-            {/* {props.game?.deck?.map((item)=>(
-                <label>{item.value}/{item.color}</label>
-            ))} */}
-            {/* {props.game?.players?.map((player,id)=>(
-                <label key={id} >{player.userId}</label>
-            ))} */}
+            {showLabel && (
+                <div className="fullscreen-label">
+                {winner?
+                    <img src="./../public/Titles/Victory.png" alt="victory" />
+                    :
+                    <img src="./../public/Titles/Defeat.png" alt="victory" />
+                }
+                </div>
+            )}
             <div className="game-pile">
                 <div className="col-4">
+                    <div className="d-flex flex-column ms-5 game-players-list">
+                        {players.map((player, id)=> {
+                            return <div className="d-flex flex-row justify-content-between w-100 mb-3" key={id}>
+                            <div className="d-flex flex-row align-items-center w-100">
+                                <div className="d-flex flex-row">
+                                    <img className="friend-profile-image" src={player.user?.profilePicture ? ('./../public/' + player.user?.profilePicture) : image } alt={player.user?.username} />
+                                    <div className="friend-username-div d-flex flex-row justify-content-evenly align-items-center ms-3">
+                                        <div>
+                                            <label className="friend-username game-username-label">{player.user?.username}</label>
+                                            {player.host && <label className="host-label ms-2">host</label>}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="ms-auto"> 
+                                    {player.id === turnId && <i className="bi bi-caret-left-fill"></i>}
+                                </div>
+                            </div>
+                        </div>
+                        })}
+                    </div>
+                </div>
+                <div className="col-4 game-deck" >
+                    <div className="game-deck-background">
+                        <img className="game-card m-5" src={"UnoCards/" + (pile?.value==='Wild'?'Black':pile?.color) + " " + pile?.value + ".png"}/>
+                    </div>
                 </div>
                 <div className="col-4">
-                    <img className="game-card" src={"UnoCards/" + (pile?.value==='Wild'?'Black':pile?.color) + " " + pile?.value + ".png"}/>
-                    {/* <img className="game-card" src={"UnoCards/" + pile?.color + " " + pile?.value + ".png"}/> */}
-                </div>
-                <div className="col-4">
-                    {/* <button className="game-next" onClick={handleNext} disabled={!myTurn}>Draw Card</button> */}
-                    <button className="game-draw-card" onClick={handleDrawCard} disabled={!myTurn}>{drawCard ?'Draw Card':'Next'}</button>
+                    <img className="draw-deck" src="./../public/Backgrounds/Ena-Card-Back-Deck.png" alt="Draw Card" onClick={handleDrawCard}/>
+                    <button className="game-draw-card" onClick={handleNext} disabled={!myTurn&&!drawCard}>{'Next'}</button>
                     {pickColor&&
                         <div className="d-flex justify-content-between p-3">
                             <button onClick={()=>handleWildCard('Red')} className="btn btn-danger" style={{ width: '25%'}}></button>
@@ -548,10 +428,29 @@ const GameComponent = (props:{game:Game|undefined, gameId:number, connection: si
                 </div>
             </div>
             <div className="game-hand">
-                {hand?.map((card,id)=>(
-                    <img  key={id} onClick={()=>handlePlayCard(card)} className="game-hand-card" src={"UnoCards/" + card.color + " " + card?.value + ".png"}/>
-                ))}
-            </div>            
+                {hand?.map((card, id) => {
+                    const xOffset = (id - (hand.length - 1) / 2) * 20;
+                    const yOffset = Math.abs(id - (hand.length - 1) / 2) * 10;
+                    const rotation = (id - (hand.length - 1) / 2) * 5;
+
+                    const additionalYOffset = id === 0 || id === Math.floor(hand.length / 2) || id === hand.length - 1 ? 10 : 0;
+
+                    return (
+                        <div style={{
+                            transform: `translateX(${xOffset}px) translateY(${yOffset + additionalYOffset}px) rotate(${rotation}deg)`,
+                            zIndex: id,
+                        }}>
+                            <img
+                                key={id}
+                                onClick={() => handlePlayCard(card)}
+                                className="game-hand-card"
+                                src={"UnoCards/" + card.color + " " + card?.value + ".png"}
+                                
+                            />
+                        </div>
+                    );
+                })}
+            </div>          
         </div>
     );
 };
