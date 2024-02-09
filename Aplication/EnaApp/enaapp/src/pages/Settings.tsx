@@ -125,7 +125,7 @@ const Settings = ( props: {setUsername: (username: string) => void, setProfilePi
                         <input type="text" className="form-control " placeholder="Username" required value={username} onChange={(e) => setUsername(e.target.value)}/>
                     </div>
                 </div>
-                <div className="settings-row row-name-lastname">
+                <div className="settings-row row-name-lastname flex-wrap">
                     <div className="settings-name">
                         <label className="settings-label">Name:</label>
                         <input type="text" className="form-control input-name-lastname" placeholder="Name" required value={name} onChange={(e) => setName(e.target.value)}/>

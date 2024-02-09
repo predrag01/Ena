@@ -2,7 +2,7 @@ import { Game } from "./game.model";
 import { User } from "./user.model";
 
 export interface Player{
-    id?:number;
+    id:number;
     userId?: number;
     user?: User;
     gameId: number;

@@ -18,8 +18,8 @@ body {
 }
 
 .form-signin {
-  min-width: 300px;
-  max-width: 330px;
+  /* min-width: 300px;
+  max-width: 330px; */
   padding: 1rem;
 }
 
@@ -50,6 +50,7 @@ body {
 .App {
   width: 100%;
   height: 100%;
+  overflow: hidden; 
 }
 
 .result-list {
@@ -73,6 +74,10 @@ body {
   height: 100%;
   display: flex;
   flex-direction: row;
+  background-image: url('/public/Backgrounds/Uno-Spiral.png');
+  background-size: cover; 
+  background-repeat: no-repeat; 
+  background-position: center;  
 }
 
 .home{
@@ -82,12 +87,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+
 }
 
 .friends{
   width: 290px;
   height: 100%;
-  background-color: #f5f5f5;
+  background-color: #f5f5f52c;
   display: flex;
   flex-direction: column;
 }
@@ -100,6 +106,7 @@ body {
   display: flex;
   flex-direction: column;
   margin-right: 10px;
+  /* background: linear-gradient( #923F06, #5E1807); */
 }
 
 .friend-list::-webkit-scrollbar {
@@ -122,7 +129,7 @@ body {
 }
 
 .gamesWonLost{
-  font-size: 16px;
+  font-size: 22px;
   color: white;
 }
 
@@ -131,15 +138,15 @@ body {
 }
 
 .nav-profile-image{
-  width: 30px;
+  width: 40px;
   height: auto;
-  border-radius: 15px;
+  border-radius: 20px;
 }
 
 .nav-username{
   margin-left: 10px;
   color: white;
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 400;
   cursor: pointer;
 }
@@ -182,18 +189,18 @@ body {
 .nav-wons{
   color: white;
   margin-right: 5px;
-  font-size: 18px;
+  font-size: 25px;
 }
 .message-icon{
-  font-size: 20px;
+  font-size: 25px;
 }
 
 .friend-request-icon{
-  font-size: 23px;
+  font-size: 30px;
 }
 
 .game-request-icon{
-  font-size: 22px;
+  font-size: 30px;
 }
 
 .icons {
@@ -252,7 +259,7 @@ body {
 }
 
 .friend:hover{
-  background-color: #ddd;
+  background-color: #dddddd7d;
   border-radius: 15px;
 }
 
@@ -306,6 +313,25 @@ body {
 
 .login{
   margin-top: 30px;
+}
+
+.login-div{
+  display: flex;
+  justify-content: center;
+  background-image: url('/public/Backgrounds/Uno-Spiral.png');
+  background-size: cover; 
+  background-repeat: no-repeat; 
+  background-position: center; 
+}
+
+.login-form{
+  background-color: #f5f5f52c;
+  width: 25%;
+  max-width: 400px;
+  border-radius: 10px;
+  margin-top: 20px;
+  padding: 20px;
+  height: fit-content;
 }
 
 .input-row{
@@ -587,7 +613,8 @@ body {
   height: calc(100% - 68px);
   overflow-y: auto;
   padding-top: 10px;
-
+  background-size: cover;
+  background-color: rgba(255, 255, 255, 0.2); 
 }
 
 .chat-messages-user-info{
@@ -596,6 +623,8 @@ body {
   align-items: center;
   padding: 10px;
   border-bottom: 2px solid black;
+  color: #ffffff;
+  background-color: #333;
 }
 
 .chat-message-username{
@@ -624,6 +653,7 @@ body {
   flex-direction: row-reverse;
   width: 100%;
   margin-bottom: 10px;
+  
 }
 
 .message-profile-img{
@@ -636,7 +666,9 @@ body {
 
 .message-content{
   max-width: 35%;
-  background-color: #d3d3d3;
+  /* background-color: #d3d3d3; */
+  color: #d3d3d3;
+  background-color: #333;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -644,13 +676,15 @@ body {
   padding: 8px;
 }
 
-.home-create-game {
-  background-color: rgba(255, 0, 0, 0.877);
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 7px;
+.home-create-game-img{
+  width: 40%;
+  height:auto;
+  transition: transform 0.3s ease-in-out;
   cursor: pointer;
+}
+
+.home-create-game-img:hover{
+  transform: scale(1.1);
 }
 
 .lobby{
@@ -667,8 +701,8 @@ body {
 }
 
 .lobby-title{
-  font-size: 40px;
-  font-weight: 500;
+  height: 70%;
+ width:auto;
 }
 
 .lobby-host{
@@ -683,7 +717,7 @@ body {
   flex-direction: column;
   align-items: start;
   margin-left: 40px;
-  background-color: #f5f5f5;
+  background-color: #f5f5f589;
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 10px;
@@ -714,7 +748,7 @@ body {
 }
 
 .lobby-list-item:hover{
-  background-color: #ddd;
+  background-color: #dddddd5b;
   border-radius: 15px;
 }
 
@@ -798,13 +832,69 @@ body {
 }
 
 .game-hand-card{
-  width: 12%;
+  /* width: 12%; */
   max-width: 150px;
   height: auto;
-  margin-right: 20px;
+  margin-right:-60px;
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer; 
+}
+
+.game-hand-card:hover{
+  transform: scale(1.1); 
 }
 
 .game-draw-card{
   background-color: #f0af0a;
   color: white;
+}
+
+.my-nav{
+  background: linear-gradient( #d12802, #ff6a00);
+}
+
+.my-nav-link{
+  height: 30px;
+}
+
+.form-control{
+  background-color: #fff;
+}
+
+.game-deck-background{
+  background-image: url('/public/Backgrounds/Uno-Deck.png');
+  background-repeat: no-repeat; 
+  background-position: center; 
+  background-size: contain; 
+}
+
+.draw-deck{
+  width: 50%;
+  max-width:240px;
+  max-height: 360px;
+}
+
+.fullscreen-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+}
+
+.game-username-label{
+  font-size: 25px;
+}
+
+.game-players-list{
+  width:65%;
+  padding: 20px;
+  border-radius: 15px;
+  background-color: #f5f5f52c;
 }

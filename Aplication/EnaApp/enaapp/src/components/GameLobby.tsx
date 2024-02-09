@@ -4,24 +4,17 @@ import { Player } from "../models/player.model";
 import Cookies from 'js-cookie'
 import image from "./../assets/noProfilePicture.png"
 import { dotPulse } from 'ldrs'
-
  dotPulse.register()
-
-
 
 const GameLobby = ( props: {player: Player|null, invitedUsers:User[], acceptedUsers:User[], connection: signalR.HubConnection | null, setShowGame:(value: boolean)=> void}) => {
     
-    // useEffect(()=> {
-    //     if(props.connection){
-    //         props.connection.on('CreatedPlayer', (player: Player) => {
-    //             props.setRefetchFriends(!props.refetchFriends);
-    //           });
-    //     }
-       
-    // },[props.acceptedUsers])
+    useEffect(()=> {
+        if(props.acceptedUsers.length===3){
+            handleOnClick();
+        }
+    },[props.acceptedUsers])
 
     const handleOnClick = async () =>{
-        console.log('start game');
         await fetch('https://localhost:44364' + `/GameRequest/DeleteGameRequests/${props.player?.gameId}`, {
             method: 'DELETE',
             headers: {
@@ -39,14 +32,13 @@ const GameLobby = ( props: {player: Player|null, invitedUsers:User[], acceptedUs
     useEffect(() => {
         if(props.connection && props.player?.gameId){
             props.connection.invoke('JoinGroup', 'game:' + props.player?.gameId);  
-            console.log('uso u grupu'+props.player?.gameId);
         }
     },[props.player?.gameId]);
 
     return(
         <div className="lobby">
             <div className="lobby-title-div">
-                    <label className="lobby-title">Lobby</label>
+                    <img className="mt-3 lobby-title" src="./../public/Titles/Lobby-Title.png" alt="Lobby" />
             </div>
             {props.player?.host?
                 <div className="lobby-host">

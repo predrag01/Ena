@@ -6,12 +6,10 @@ import Register from './pages/Register'
 import Login from './pages/Login'
 import { useEffect, useState } from 'react'
 import Chat from './pages/Chat'
-import FriendRequests from './components/FriendRequests'
 import Settings from './pages/Settings'
 import { ReactNotifications } from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 import { User } from './models/user.model'
-import Cookies from 'js-cookie'
 import AuthenticatedGuard from './guards/AuthenticatedGuard'
 import UnauthenticatedGuard from './guards/UnauthenticatedGuard'
 
@@ -33,27 +31,29 @@ function App() {
   const[showLobby, setShowLobby] = useState(false);
   const [inGame, setInGame] = useState(false);
 
+  const getPlayer = async () => {
+    const respone = await fetch('https://localhost:44364' + '/User/GetUser', {
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        mode: 'cors'
+    });
 
-
-    useEffect(() => {
-        (
-            async () => {
-                const respone = await fetch('https://localhost:44364' + '/User/GetUser', {
-                    headers: {'Content-Type': 'application/json'},
-                    credentials: 'include',
-                    mode: 'cors'
-                });
+    const content = await respone.json();         
     
-                const content = await respone.json();         
-                
-                setProfileImg(content.profilePicture);
-                setUserName(content.username);
-                setUserId(content.id);
-                setGamesWon(content.gamesWon);
-                setGamesLost(content.gamesLost);
-            }
-        )();
-    }, []);
+    setProfileImg(content.profilePicture);
+    setUserName(content.username);
+    setUserId(content.id);
+    setGamesWon(content.gamesWon);
+    setGamesLost(content.gamesLost);
+  }
+
+  useEffect(()=>{
+    getPlayer();
+  })
+
+  useEffect(()=>{
+    getPlayer();
+  },[inGame]);
 
   return (
     <div className="App">
@@ -65,10 +65,10 @@ function App() {
 
         <main className='main'>
           <Routes>
-            <Route path='/' element={<UnauthenticatedGuard><Home username={username} userId={userId} refetchFriends={refetchFriends} connection={connection} acceptedPlayer={acceptedPlayer} showLobby={showLobby} setShowLobby={setShowLobby} ingame={inGame} setInGame={setInGame}/></UnauthenticatedGuard>} />
+            <Route path='/' element={<UnauthenticatedGuard><Home userId={userId} refetchFriends={refetchFriends} connection={connection} acceptedPlayer={acceptedPlayer} showLobby={showLobby} setShowLobby={setShowLobby} ingame={inGame} setInGame={setInGame}/></UnauthenticatedGuard>} />
             <Route path='/Login' element={<AuthenticatedGuard>{<Login setUsername={setUserName}/>}</AuthenticatedGuard>}/>
             <Route path='/Register' element={<AuthenticatedGuard>{<Register />}</AuthenticatedGuard>}/>
-            <Route path='/Chat' element={<UnauthenticatedGuard><Chat setShowNotifications={setShowNotifications} setShowMessages={setShowMessages} showMessages={showMessages} connection={connection}/></UnauthenticatedGuard>}/>
+            <Route path='/Chat' element={<UnauthenticatedGuard><Chat setShowNotifications={setShowNotifications} setShowMessages={setShowMessages} connection={connection}/></UnauthenticatedGuard>}/>
             <Route path='/Settings' element={<UnauthenticatedGuard><Settings setUsername={setUserName} setProfilePic={setProfileImg}/></UnauthenticatedGuard>}/>
           </Routes>
         </main>

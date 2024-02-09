@@ -1,12 +1,11 @@
 import { FriendList } from "../models/friendList.model";
-// import ChatComponent from "./ChatComponent";
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import image from "./../assets/noProfilePicture.png"
 import Cookies from "js-cookie";
-import { GameRequest, GameRequestDTO } from "../models/gameRequest.model";
+import { GameRequestDTO } from "../models/gameRequest.model";
 import { User } from "../models/user.model";
-// props:{connection:signalR.HubConnection}
+
 const Friend = (props: {result: FriendList, connection:signalR.HubConnection|null, gameId: number, addInvitedPlayer:(user:User|undefined)=> void}) => {
   const [username, setUserName] = useState('');
   useEffect(() => {
@@ -29,7 +28,6 @@ const Friend = (props: {result: FriendList, connection:signalR.HubConnection|nul
   });
 
   const handleInviteClick =  () => {
-    console.log("clicked")
     if (props.connection) {
       try {
 
@@ -39,7 +37,6 @@ const Friend = (props: {result: FriendList, connection:signalR.HubConnection|nul
           gameId:props.gameId
         };
 
-        console.log(req);
          props.connection.invoke('SendGameInviteToUser', props.result.user?.username, props.result.friend?.username, req);
          props.addInvitedPlayer(props.result?.friend);
       } catch (error) {
